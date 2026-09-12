@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#536e5b">
   <title>种豌豆 · 人物模拟实验室 · Static Mock</title>
   <link rel="stylesheet" href="./styles.css">
+  <script src="./worlds.js" defer></script>
   <script src="./app.js" defer></script>
 </head>
 <body>
@@ -13,10 +14,12 @@
     <p class="eyebrow">PEA / CHARACTER LAB · GITHUB PAGES</p>
     <h1>种豌豆 · 人物模拟实验室</h1>
     <div class="topline"><span id="date">正在读取浏览器存档…</span><strong class="static-mode">STATIC MOCK MODE</strong></div>
+    <div class="world-picker"><label for="world-select">当前世界：</label><select id="world-select" data-mutate><option value="modern">现代</option><option value="ancient">古代</option></select><strong id="world-name">现代</strong></div>
+    <p id="world-description"></p><details><summary>世界卡与目标解释 · Mock临时规则</summary><div id="world-rules"></div></details>
   </div></header>
   <main class="wrap">
     <p class="notice">纯静态 Mock 测试版 · 不调用 Python、真实 AI 或任何远程接口 · 数据只保存在当前浏览器</p>
-    <nav aria-label="实验区域"><button data-tab="single" class="selected" aria-pressed="true">单人物模拟</button><button data-tab="compare" aria-pressed="false">同情境对比</button><button data-tab="logs" aria-pressed="false">测试日志</button><button data-tab="candidates" aria-pressed="false">候选事件</button></nav>
+    <nav aria-label="实验区域"><button data-tab="single" class="selected" aria-pressed="true">单人物模拟</button><button data-tab="compare" aria-pressed="false">同情境对比</button><button data-tab="cross" aria-pressed="false">同人物跨世界</button><button data-tab="logs" aria-pressed="false">测试日志</button><button data-tab="candidates" aria-pressed="false">候选事件</button></nav>
     <div class="statusline"><p id="status" role="status" aria-live="polite">准备就绪</p><button id="stop" hidden>本次完成后暂停</button></div>
 
     <section id="single" class="panel">
@@ -38,9 +41,16 @@
       <label for="batch">已保存的对比</label><select id="batch"></select><div id="comparison-results" class="comparison-grid"></div>
     </section>
 
+    <section id="cross" class="panel" hidden>
+      <h2>同人物跨世界对比</h2>
+      <p class="muted">使用当前人物的同一份完整属性快照和相同随机扰动，两边均不推进时间或修改人物。现代专有兴趣只在古代活动中作临时类比；无法沿用的身份以普通农户 / 对应年龄标签解释。历史保存在发起对比的世界内，不写入另一世界存档。</p>
+      <div class="card"><label for="cross-scenario">共同抽象情境</label><textarea id="cross-scenario" rows="3" maxlength="2000">获得一个可能改变未来的发展机会</textarea><button id="cross-start" class="primary" data-mutate>使用当前人物开始跨世界对比</button></div>
+      <label for="cross-batch">已保存的跨世界对比</label><select id="cross-batch"></select><div id="cross-person"></div><div id="cross-results" class="comparison-grid"></div>
+    </section>
+
     <section id="logs" class="panel" hidden>
       <div class="section-heading"><h2>测试日志</h2><div class="buttonrow"><button id="export-all">导出完整测试存档</button><button id="export-logs">导出测试日志 JSON</button></div></div>
-      <p class="muted">完整存档可在另一台设备导入；日志导出只用于分析，不可恢复全部状态。</p><div id="log-list"></div><button id="more">显示更多记录</button>
+      <p class="muted">导出当前世界的完整存档，包含跨世界对比历史；可在另一台设备的同一世界导入。日志导出只用于分析。</p><div id="log-list"></div><button id="more">显示更多记录</button>
     </section>
 
     <section id="candidates" class="panel" hidden>
@@ -50,7 +60,7 @@
 
     <section class="storage card" aria-labelledby="storage-title">
       <div class="section-heading"><div><h2 id="storage-title">浏览器数据</h2><p class="muted" id="storage-info">当前设备独立保存</p></div><div class="buttonrow"><label class="button" for="import-file">导入完整测试存档</label><input id="import-file" class="visually-hidden" type="file" accept="application/json,.json"><button id="clear-data" class="danger">清空本地测试数据</button></div></div>
-      <p class="muted">导入会先校验文件，再替换当前浏览器存档。不同手机和电脑的 localStorage 不共享，请定期导出完整存档。</p>
+      <p class="muted">导入与清空只作用于当前世界。现代和古代分别导出、分别保存；旧版存档归入现代。不同设备不共享数据。</p>
     </section>
 
     <footer><details><summary>静态模式与临时规则</summary><p><strong>STATIC MOCK MODE</strong> 永久固定：本页面没有真实 AI、API Key、Python 后端或云端同步。</p><p>人物随机范围、人生目标权重、Mock行为评分、兴趣样例和技能成长公式均为临时测试逻辑。技能增量 = 投入档位 × (0.5 + 相关天赋均值 / 100)。</p><p>浏览器隐私模式、清理网站数据或更换域名都可能清除/隔离 localStorage，请使用完整存档导出迁移。</p></details></footer>
