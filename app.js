@@ -4,7 +4,7 @@ const STORAGE_KEY = 'pea_character_sim_static_v1';
 let activeWorld = 'modern';
 const storageKey = (worldId = activeWorld) => `${worldId}_${STORAGE_KEY}`;
 const FORMAT = 'pea-character-sim-static';
-const RULES_VERSION = 'prototype-2-worlds';
+const RULES_VERSION = 'prototype-3-goal-relevance';
 const TALENTS = ['智力', '社交', '运动', '抗压', '好奇心'];
 const PERSONALITY = ['外向性', '直觉性', '思考性', '计划性'];
 const GOALS = ['职业成就', '家庭生活', '声望地位', '财富积累'];
@@ -225,18 +225,17 @@ function mockDecision(c,event,worldId = activeWorld,noise = Array.from({length:4
   if(c.age<3){labels=['主动向照护者表达兴趣','先安静观察，再短暂接触','偏好熟悉的安静陪伴'];scores=[20+.65*e+.15*n,25+.4*j+.2*(100-e),20+.7*(100-e)];}
   else{
     labels=['主动参与，尝试新体验','先询问细节，再按计划有限参与','婉拒本次活动，保留原有安排','选择小范围参与，兼顾熟悉的人'];
-    scores=[12+.5*e+.2*n+.1*(100-j)+(goal==='声望地位'?12:0),15+.45*j+.2*t+(goal==='职业成就'?12:0),10+.4*(100-e)+.3*interest.intensity+(goal==='财富积累'?12:0),15+.35*(100-t)+.2*(100-e)+(goal==='家庭生活'?20:0)];
+    scores=[12+.5*e+.2*n+.1*(100-j),15+.45*j+.2*t,10+.4*(100-e)+.3*interest.intensity,15+.35*(100-t)+.2*(100-e)];
     if(!social&&!family){labels[0]=`投入本次体验，练习${interest.name}相关能力`;scores[0]+=.2*interest.intensity-.15*e;}
     if(family)labels[3]='优先陪伴家人，调整自己的活动安排';
     if(c.age>=6)labels[2]=`婉拒本次活动，自己练习${interest.name}相关能力`;
   }
-  scores=scores.map((value,index)=>round(Math.max(0,Math.min(100,value+noise[index])),1));
-  const actionReasons=[`外向 ${e} 与直觉 ${n} 支持主动尝试；兴趣 ${interest.intensity} 在相关体验中参与评分。`,`计划 ${j} 与思考 ${t} 影响先核实再参与的倾向。`,`内向倾向 ${100-e} 与兴趣 ${interest.name} ${interest.intensity} 影响保留个人安排。`,`情感倾向 ${100-t}、内向倾向 ${100-e} 及家庭目标影响小范围参与。`];
-  const chosenIndex=scores.indexOf(Math.max(...scores)), chosen=labels[chosenIndex];
+  const actionReasons=[`外向 ${e} 与直觉 ${n} 支持主动尝试；兴趣 ${interest.intensity} 在相关体验中参与评分。`,`计划 ${j} 与思考 ${t} 影响先核实再参与的倾向。`,`内向倾向 ${100-e} 与兴趣 ${interest.name} ${interest.intensity} 影响保留个人安排。`,`情感倾向 ${100-t}、内向倾向 ${100-e} 影响小范围参与。`];
+  const scored=scoreActions(labels,scores,actionReasons,event,goal,worldId,noise), chosenIndex=scored.chosenIndex, chosen=scored.chosen;
   const reasons=[
     {factor:'性格',reason:`原始四维：外向 ${e}、直觉 ${n}、思考 ${t}、计划 ${j}；分别影响参与、尝试、权衡和安排方式。`},
     {factor:'兴趣',reason:`${interest.name}强度 ${interest.intensity}，影响愿意投入的方向，不直接增加技能。`},
-    {factor:'人生目标',reason:goal?`长期优先级为${goal}，在可选行为间形成临时偏好。`:'未满12岁，没有人生目标，不按成人目标决策。'},
+    {factor:'人生目标',reason:goalDecisionReason(goal,scored)},
     {factor:'当前情况',reason:`${c.age}岁，测试身份${worldIdentity(c,worldId)}；已记录${c.experiences.length}次月度经历。本次仅处理给定小情境。`}
   ];
   let suggestedEffects=[],newSkillSuggestion=null;
@@ -248,7 +247,7 @@ function mockDecision(c,event,worldId = activeWorld,noise = Array.from({length:4
     reasons.push({factor:'天赋',reason:explanation+'程序按投入和相关天赋计算增长，不设天赋硬上限。'});
   }
   reasons.push({factor:'世界约束',reason:worldConfig(worldId).behavior_constraints.description});
-  return {event,candidate_actions:labels.map((action,index)=>({action,score:scores[index],reasons:[actionReasons[index]||actionReasons.at(-1)]})),chosen_action:chosen,decision_reasons:reasons,suggested_effects:suggestedEffects,new_skill_suggestion:newSkillSuggestion};
+  return {event,candidate_actions:scored.actions,chosen_action:chosen,decision_reasons:reasons,suggested_effects:suggestedEffects,new_skill_suggestion:newSkillSuggestion};
 }
 function skillGrowth(talents,relevant,effort){return round(EFFORT[effort]*(.5+relevant.reduce((sum,key)=>sum+talents[key],0)/relevant.length/100));}
 function validateDecision(output,c,worldId) {

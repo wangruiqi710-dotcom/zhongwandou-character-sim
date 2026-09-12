@@ -68,6 +68,96 @@ const WORLD_CONFIGS = {
   }
 };
 
+// TODO: Mock相关性与分值，集中在此处，未来可由正式事件标签和规则替换。
+const GOAL_RELEVANCE_MULTIPLIER = {unrelated:0, indirect:0.2, direct:1};
+const GOAL_RELEVANCE_LABELS = {unrelated:'无关', indirect:'间接相关', direct:'直接相关'};
+const GOAL_RELEVANCE_RULES = {
+  '职业成就': {
+    direct:['career_opportunity','career_training','promotion','career_change'],
+    indirect:['career_network','career_relocation','short_learning']
+  },
+  '家庭生活': {
+    direct:['family','marriage','parenthood','long_absence','long_relocation','long_family_care','major_family_conflict'],
+    indirect:['stable_career','stable_income','settlement','family_asset']
+  },
+  '声望地位': {
+    direct:['public_office','reputation_activity','public_leadership','title','social_influence'],
+    indirect:['important_network','public_display','public_affairs']
+  },
+  '财富积累': {
+    direct:['investment','business','major_asset','high_income','long_income','loan','major_finance'],
+    indirect:['career_opportunity','income_skill','economic_relocation']
+  }
+};
+const GOAL_ACTION_ADJUSTMENTS = {
+  '职业成就':{pursue_opportunity:18, verify:10, skill_practice:8},
+  '家庭生活':{family_priority:20, decline_long_absence:18, preserve_stability:12, verify:4},
+  '声望地位':{public_participation:18, pursue_opportunity:16, verify:8},
+  '财富积累':{pursue_opportunity:18, verify:12, preserve_stability:4}
+};
+const GOAL_EVENT_TAGS = {
+  modern:{'学习':['short_learning'],'学校':['short_learning'],'工作':['career_network']},
+  ancient:{
+    '手工业学习':['short_learning'],'学徒经历':['career_training'],'商贸机会':['business','high_income'],
+    '借贷':['loan'],'考试 / 科举式机会':['career_training','title'],'婚配':['marriage'],
+    '生育':['parenthood'],'征役':['long_absence'],'服兵役':['long_absence'],
+    '迁徙':['long_relocation','career_relocation','economic_relocation','settlement'],
+    '地方权力关系':['public_affairs'],'声望与身份变化':['reputation_activity','public_affairs']
+  }
+};
+const GOAL_TEXT_TAGS = [
+  [/长期离乡|长期离家/,['long_absence']], [/长期迁居|迁居|定居/,['long_relocation','settlement']],
+  [/结婚|婚配|婚姻/,['marriage']], [/生育|子女|家族延续/,['parenthood']],
+  [/长期.{0,8}照护|长期.{0,8}照料/,['long_family_care']], [/家庭.{0,8}(事业|工作).{0,8}冲突|为了家庭稳定放弃重大机会/,['major_family_conflict']],
+  [/稳定工作/,['stable_career']], [/稳定收入/,['stable_income']], [/置办.{0,8}(家庭资产|房屋|宅院|土地)/,['family_asset']],
+  [/工作.{0,3}机会|学徒.{0,3}机会|升职|转换职业|职业方向|长期职业训练/,['career_opportunity']], [/短期.{0,8}(学习|试学)|试学|兴趣体验/,['short_learning']],
+  [/职业人脉|工作间隙.{0,8}分享/,['career_network']], [/为了.{0,8}(发展|职业).{0,8}(迁居|搬迁)/,['career_relocation']],
+  [/投资|经商|商贸/,['business']], [/购买.{0,8}重要资产|重要资产/,['major_asset']], [/高收益/,['high_income']],
+  [/长期收入/,['long_income']], [/借贷|借用钱粮/,['loan']], [/重大财务|财务决策/,['major_finance']],
+  [/官职|公开职位|功名|头衔/,['public_office','title']], [/提升名望|地方名望|声望/,['reputation_activity']],
+  [/公开领导/,['public_leadership']], [/社会影响力|宗族影响力/,['social_influence']], [/重要人物/,['important_network']],
+  [/公开展示/,['public_display']], [/公共事务|地方事务/,['public_affairs']]
+];
+
+function goalEventTags(event, worldId) {
+  const tags = [...(event.goal_tags || []), ...(GOAL_EVENT_TAGS[worldId]?.[event.category] || [])];
+  const text = `${event.title || ''} ${event.description || ''} ${event.abstract_scenario || ''}`;
+  for (const [pattern,matched] of GOAL_TEXT_TAGS) if (pattern.test(text)) tags.push(...matched);
+  return [...new Set(tags)];
+}
+function actionTags(event, worldId, index) {
+  const eventTags=goalEventTags(event,worldId), longFamily=eventTags.some(tag=>GOAL_RELEVANCE_RULES['家庭生活'].direct.includes(tag));
+  const domain = event.category==='治安问题' ? ['safety'] : /病|医治/.test(event.category) ? ['health'] : /社交|人情|邻里/.test(event.category) ? ['social'] : /学习|学徒|读书|学校/.test(event.category) ? ['learning'] : /商贸|借贷/.test(event.category) ? ['finance'] : [];
+  const common = [
+    ['participate','pursue_opportunity'], ['verify'],
+    ['decline','preserve_stability',...(domain.includes('learning')?['skill_practice']:[]),...(eventTags.includes('long_absence')||eventTags.includes('long_relocation')?['decline_long_absence']:[])],
+    ['limited_participation',...(longFamily?['family','family_priority']:[]),...(eventTags.some(tag=>GOAL_RELEVANCE_RULES['声望地位'].direct.includes(tag))?['public_participation']:[])]
+  ];
+  return [...new Set([...domain,...common[index]])];
+}
+function goalInfluence(goal,event,tags,worldId) {
+  if (!goal) return {relevance:'unrelated',multiplier:0,base_adjustment:0,adjustment:0,event_tags:goalEventTags(event,worldId)};
+  const eventTags=goalEventTags(event,worldId), allTags=new Set([...eventTags,...tags]), rules=GOAL_RELEVANCE_RULES[goal];
+  const relevance=rules.direct.some(tag=>allTags.has(tag))?'direct':rules.indirect.some(tag=>allTags.has(tag))?'indirect':'unrelated';
+  const base=Math.max(0,...tags.map(tag=>GOAL_ACTION_ADJUSTMENTS[goal][tag]||0));
+  return {relevance,multiplier:GOAL_RELEVANCE_MULTIPLIER[relevance],base_adjustment:base,adjustment:round(base*GOAL_RELEVANCE_MULTIPLIER[relevance],1),event_tags:eventTags};
+}
+function scoreActions(labels,baseScores,reasonTexts,event,goal,worldId,noise) {
+  const actions=labels.map((action,index)=>{
+    const tags=actionTags(event,worldId,index), influence=goalInfluence(goal,event,tags,worldId);
+    const score=round(Math.max(0,Math.min(100,baseScores[index]+influence.adjustment+noise[index])),1);
+    const sign=influence.adjustment>0?'+':'';
+    return {action,score,action_tags:tags,goal_relevance:influence.relevance,goal_relevance_multiplier:influence.multiplier,goal_base_adjustment:influence.base_adjustment,goal_adjustment:influence.adjustment,
+      reasons:[reasonTexts[index],`人生目标：${goal||'无'}；相关性：${GOAL_RELEVANCE_LABELS[influence.relevance]}；本次目标修正：${sign}${influence.adjustment}。`]};
+  });
+  const chosenIndex=actions.findIndex(item=>item.score===Math.max(...actions.map(item=>item.score)));
+  return {actions,chosenIndex,chosen:labels[chosenIndex],chosenInfluence:actions[chosenIndex]};
+}
+function goalDecisionReason(goal, scored) {
+  const item=scored.chosenInfluence, sign=item.goal_adjustment>0?'+':'';
+  return goal ? `人生目标：${goal}；相关性：${GOAL_RELEVANCE_LABELS[item.goal_relevance]}；本次目标修正：${sign}${item.goal_adjustment}（倍率 ${item.goal_relevance_multiplier}）。` : '人生目标：无；相关性：无关；本次目标修正：0。';
+}
+
 function worldConfig(id = activeWorld) {
   if (!Object.hasOwn(WORLD_CONFIGS,id)) throw new Error('未知世界卡。');
   return WORLD_CONFIGS[id];
@@ -116,8 +206,8 @@ function ancientDecision(c,event,noise) {
   const [e,n,t,j] = PERSONALITY.map(key=>p[key]), interest = contextualInterest(c,'ancient'), identity = worldIdentity(c,'ancient');
   if (c.age < 6) {
     const labels=['向照护者表达兴趣','安静观察后接触','留在熟悉的陪伴中'];
-    const scores=[20+.6*e+.1*n,20+.3*j+.3*(100-e),20+.6*(100-e)].map((s,i)=>round(s+noise[i],1));
-    return {event,candidate_actions:labels.map((action,i)=>({action,score:scores[i],reasons:['只在照护者陪伴下接触日常活动。']})),chosen_action:labels[scores.indexOf(Math.max(...scores))],decision_reasons:[{factor:'性格',reason:`外向${e}、直觉${n}、思考${t}、计划${j}用于陪伴方式倾向。`},{factor:'世界约束',reason:'幼儿只参与家中适龄陪伴，无独立劳作或出行。'}],suggested_effects:[],new_skill_suggestion:null};
+    const scored=scoreActions(labels,[20+.6*e+.1*n,20+.3*j+.3*(100-e),20+.6*(100-e)],labels.map(()=> '只在照护者陪伴下接触日常活动。'),event,c.life_goal,'ancient',noise);
+    return {event,candidate_actions:scored.actions,chosen_action:scored.chosen,decision_reasons:[{factor:'性格',reason:`外向${e}、直觉${n}、思考${t}、计划${j}用于陪伴方式倾向。`},{factor:'人生目标',reason:goalDecisionReason(c.life_goal,scored)},{factor:'世界约束',reason:'幼儿只参与家中适龄陪伴，无独立劳作或出行。'}],suggested_effects:[],new_skill_suggestion:null};
   }
   const tags = event.tags || Object.entries(w.context_keywords).filter(([,words])=>words.some(word=>event.description.includes(word))).map(([tag])=>tag);
   const travel = tags.includes('travel'), education = tags.includes('education'), family = tags.includes('family');
@@ -127,17 +217,12 @@ function ancientDecision(c,event,noise) {
   const cost = (travel?w.travel_cost:0)+(education&&!access?w.education_barrier:0)+genderBarrier;
   const labels = ['主动争取本次机会，承担协调成本',travel?'先核实资格与路费，再请熟人引介':'先核实条件与时间，再请熟人引介',`暂缓外部机会，留在近处练习${interest.name}基础`,'先协调家中劳动与照护，再有限参与'];
   const scores = [18+.25*e+.2*n+.15*interest.intensity-cost+(access?w.background_access:0),18+.3*j+.25*t+cost*.5,14+.25*(100-e)+.15*interest.intensity+cost*.45,16+.25*(100-t)+.15*j+(family?w.family_duty:0)+w.local_support];
-  if (c.life_goal==='职业成就') { scores[0]+=education?18:8; scores[1]+=10; }
-  if (c.life_goal==='财富积累') { scores[0]+=event.category==='商贸机会'?18:0; scores[1]+=12; }
-  if (c.life_goal==='声望地位') { scores[0]+=16; scores[1]+=8; }
-  if (c.life_goal==='家庭生活') scores[3]+=20;
-  const detail = [`外向${e}、直觉${n}与兴趣${interest.intensity}推动尝试，机会成本扣${cost}。`,`计划${j}、思考${t}及信息不明成本推动先核实。`,`内向倾向${100-e}及出行/教育成本支持就近安排。`,`情感倾向${100-t}、家计责任和家庭目标支持协商。`];
-  const finalScores=scores.map((s,i)=>round(Math.max(0,Math.min(100,s+noise[i])),1));
-  const index=finalScores.indexOf(Math.max(...finalScores)), chosen=labels[index];
+  const detail = [`外向${e}、直觉${n}与兴趣${interest.intensity}推动尝试，机会成本扣${cost}。`,`计划${j}、思考${t}及信息不明成本推动先核实。`,`内向倾向${100-e}及出行/教育成本支持就近安排。`,`情感倾向${100-t}、家计责任和就近协调支持有限参与。`];
+  const scored=scoreActions(labels,scores,detail,event,c.life_goal,'ancient',noise), index=scored.chosenIndex, chosen=scored.chosen;
   const reasons=[
     {factor:'性格',reason:`原始四维：外向${e}、直觉${n}、思考${t}、计划${j}；只用于选择倾向。`},
     {factor:'兴趣',reason:`在本世界以${interest.name}活动解释兴趣，强度${interest.intensity}；原始属性不变，不直接增加技能。`},
-    {factor:'人生目标',reason:c.life_goal?`${c.life_goal}在此解释为${config.goal_meanings[c.life_goal]}。`:'未满12岁，没有人生目标。'},
+    {factor:'人生目标',reason:`${goalDecisionReason(c.life_goal,scored)}${c.life_goal?` 时代解释：${config.goal_meanings[c.life_goal]}。`:''}`},
     {factor:'当前情况',reason:`${c.age}岁；临时机会身份：${identity}。只讨论事件，不自动改变财产、婚育、健康或身份。`},
     {factor:'世界约束',reason:`消息需核实；出行成本${travel?w.travel_cost:0}，教育门槛${education&&!access?w.education_barrier:0}，临时性别机会成本${genderBarrier}；${access?'身份提供引介渠道':'需要寻找引介与资助'}。家庭与宗族协商参与评分。`}
   ];
@@ -149,5 +234,5 @@ function ancientDecision(c,event,noise) {
     if (!c.skills.some(s=>s.name===skill)) suggestion={name:skill,source:'ai_generated',reason:'Mock临时内容：首次基础练习，由程序设初值。'};
     reasons.push({factor:'天赋',reason});
   }
-  return {event,candidate_actions:labels.map((action,i)=>({action,score:finalScores[i],reasons:[detail[i]]})),chosen_action:chosen,decision_reasons:reasons,suggested_effects:effects,new_skill_suggestion:suggestion};
+  return {event,candidate_actions:scored.actions,chosen_action:chosen,decision_reasons:reasons,suggested_effects:effects,new_skill_suggestion:suggestion};
 }
