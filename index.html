@@ -9,6 +9,7 @@
   <script src="./worlds.js" defer></script>
   <script src="./decisions.js" defer></script>
   <script src="./app.js" defer></script>
+  <script src="./behavior_lab.js" defer></script>
 </head>
 <body>
   <header class="top"><div class="wrap">
@@ -21,7 +22,38 @@
   <main class="wrap">
     <p class="notice">纯静态 Mock 测试版 · 不调用 Python、真实 AI 或任何远程接口 · 数据只保存在当前浏览器</p>
     <nav aria-label="实验区域"><button data-tab="single" class="selected" aria-pressed="true">单人物模拟</button><button data-tab="compare" aria-pressed="false">同情境对比</button><button data-tab="cross" aria-pressed="false">同人物跨世界</button><button data-tab="logs" aria-pressed="false">测试日志</button><button data-tab="candidates" aria-pressed="false">候选事件</button></nav>
+    <button data-tab="behavior-lab" class="button" style="margin-top:12px">行为权重实验室</button>
     <div class="statusline"><p id="status" role="status" aria-live="polite">准备就绪</p><button id="stop" hidden>本次完成后暂停</button></div>
+    <section id="behavior-lab" class="panel" hidden>
+      <h2>行为权重实验室</h2>
+      <p>STATIC MOCK MODE · 只观察，不调参。实验设置独立于主模拟器，不修改人物或存档。</p>
+      <div class="card">
+        <div class="attribute-grid">
+          <label>实验世界<select id="lab-world"><option value="modern">现代</option><option value="ancient">古代</option></select></label>
+          <label>固定事件<select id="lab-event"></select></label>
+          <label>人物模板<select id="lab-template"><option value="neutral">中性：全部属性50，无人生目标</option><option value="outgoing">偏外向：外向80，其余50，职业成就</option><option value="reserved">偏内向：外向20，其余50，家庭生活</option></select></label>
+          <label>观察属性<select id="lab-attribute"></select></label>
+          <label>扫描间隔<select id="lab-step"><option value="10">每10点</option><option value="5">精细：每5点</option></select></label>
+          <label>兴趣领域<select id="lab-interest"><option value="related">本事件相关兴趣（若没有则无匹配）</option><option value="音乐">音乐（可测试无关事件）</option></select></label>
+        </div>
+        <p id="lab-event-description"></p><details><summary>固定人物与现实条件</summary><pre id="lab-context" class="json"></pre></details>
+        <h3>一键实验</h3><div id="lab-presets" class="buttonrow"></div>
+      </div>
+      <div class="card"><h3>自动健康检查</h3><p class="muted">诊断阈值只用于报告，不改变权重。弱影响警告对无关属性可能是预期结果。</p><ul id="lab-health"></ul></div>
+      <div class="card"><h3>概率曲线</h3><p class="muted">随机扰动为0；保留正式引擎的事件温度。类别目标使用分类横轴，不表示连续关系。</p><div id="lab-chart"></div><div id="lab-legend"></div></div>
+      <div class="card"><h3>概率表</h3><div id="lab-table" class="lab-scroll" tabindex="0" aria-label="概率表，可横向滚动"></div></div>
+      <div class="card">
+        <h3>单点调试</h3><label for="lab-value" id="lab-value-label">属性值：50</label><input type="range" id="lab-value" min="0" max="100" value="50">
+        <label id="lab-goal-label" hidden>当前人生目标<select id="lab-goal"></select></label>
+        <p id="lab-explanation"></p><div id="lab-point"></div>
+        <details><summary>详细计算</summary><p class="muted">修正值是对数权重，不是百分点。feasibility 在计算前过滤；被排除行为为0%。</p><pre id="lab-debug" class="json"></pre></details>
+        <button id="lab-noise">开启随机扰动预览</button><div id="lab-noise-result" hidden></div>
+      </div>
+      <div class="card"><h3>重复抽样测试</h3><p>按当前单点的无扰动理论分布重复抽样，不重新生成事件或概率。更改设置后旧结果自动清除。</p>
+        <label>重复次数<select id="lab-count"><option>100</option><option selected>1000</option><option>10000</option></select></label>
+        <button id="lab-sample">开始重复抽样</button><p id="lab-progress" role="status" aria-live="polite"></p><div id="lab-samples" class="lab-scroll"></div>
+      </div>
+    </section>
     <details class="card"><summary>现实条件测试假设</summary><label for="test-condition">用于当前世界的后续月度与对比判断</label><select id="test-condition" data-mutate><option value="normal">正常条件</option><option value="severe_illness">本人重病，无法外出</option><option value="family_care">必须照护重病家人，无人替班</option><option value="short_time">仅有少量空闲时间</option></select><p class="muted">只是一项测试条件，不创建疾病或家庭系统。若已知长期契约条件尚未确认，直接承诺会先被排除。</p></details>
 
     <section id="single" class="panel">
