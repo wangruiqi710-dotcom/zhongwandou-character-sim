@@ -13,7 +13,7 @@ const WORLD_CONFIGS = {
       '交流':['演讲',['社交','抗压']], '烹饪':['烹饪',['智力']], '商业':['销售',['社交','抗压']],
       '自然':['自然观察',['好奇心']]
     },
-    behavior_constraints:{description:'沿用现代 Mock 评分；机会信息较易获取，可自主选择小规模体验。', travel_cost:0, education_barrier:0, family_duty:0},
+    behavior_constraints:{description:'现代机会信息较易获取，可自主选择小规模体验。', travel_cost:0, education_barrier:0, family_duty:0},
     goal_interests:{'职业成就':['技术','阅读','语言'],'家庭生活':['烹饪','交流'],'声望地位':['交流','音乐','运动'],'财富积累':['商业']},
     goal_meanings:{'职业成就':'专业学习与职业发展','家庭生活':'陪伴家人与家庭稳定','声望地位':'社会认可与影响力','财富积累':'有经济收益的发展机会'}
   },
@@ -121,19 +121,9 @@ const GOAL_TEXT_TAGS = [
 
 function goalEventTags(event, worldId) {
   const tags = [...(event.goal_tags || []), ...(GOAL_EVENT_TAGS[worldId]?.[event.category] || [])];
-  const text = `${event.title || ''} ${event.description || ''} ${event.abstract_scenario || ''}`;
+  const text = `${eventText(event)} ${event.abstract_scenario || ''}`;
   for (const [pattern,matched] of GOAL_TEXT_TAGS) if (pattern.test(text)) tags.push(...matched);
   return [...new Set(tags)];
-}
-function actionTags(event, worldId, index) {
-  const eventTags=goalEventTags(event,worldId), longFamily=eventTags.some(tag=>GOAL_RELEVANCE_RULES['家庭生活'].direct.includes(tag));
-  const domain = event.category==='治安问题' ? ['safety'] : /病|医治/.test(event.category) ? ['health'] : /社交|人情|邻里/.test(event.category) ? ['social'] : /学习|学徒|读书|学校/.test(event.category) ? ['learning'] : /商贸|借贷/.test(event.category) ? ['finance'] : [];
-  const common = [
-    ['participate','pursue_opportunity'], ['verify'],
-    ['decline','preserve_stability',...(domain.includes('learning')?['skill_practice']:[]),...(eventTags.includes('long_absence')||eventTags.includes('long_relocation')?['decline_long_absence']:[])],
-    ['limited_participation',...(longFamily?['family','family_priority']:[]),...(eventTags.some(tag=>GOAL_RELEVANCE_RULES['声望地位'].direct.includes(tag))?['public_participation']:[])]
-  ];
-  return [...new Set([...domain,...common[index]])];
 }
 function goalInfluence(goal,event,tags,worldId) {
   if (!goal) return {relevance:'unrelated',multiplier:0,base_adjustment:0,adjustment:0,event_tags:goalEventTags(event,worldId)};
@@ -142,22 +132,6 @@ function goalInfluence(goal,event,tags,worldId) {
   const base=Math.max(0,...tags.map(tag=>GOAL_ACTION_ADJUSTMENTS[goal][tag]||0));
   return {relevance,multiplier:GOAL_RELEVANCE_MULTIPLIER[relevance],base_adjustment:base,adjustment:round(base*GOAL_RELEVANCE_MULTIPLIER[relevance],1),event_tags:eventTags};
 }
-function scoreActions(labels,baseScores,reasonTexts,event,goal,worldId,noise) {
-  const actions=labels.map((action,index)=>{
-    const tags=actionTags(event,worldId,index), influence=goalInfluence(goal,event,tags,worldId);
-    const score=round(Math.max(0,Math.min(100,baseScores[index]+influence.adjustment+noise[index])),1);
-    const sign=influence.adjustment>0?'+':'';
-    return {action,score,action_tags:tags,goal_relevance:influence.relevance,goal_relevance_multiplier:influence.multiplier,goal_base_adjustment:influence.base_adjustment,goal_adjustment:influence.adjustment,
-      reasons:[reasonTexts[index],`人生目标：${goal||'无'}；相关性：${GOAL_RELEVANCE_LABELS[influence.relevance]}；本次目标修正：${sign}${influence.adjustment}。`]};
-  });
-  const chosenIndex=actions.findIndex(item=>item.score===Math.max(...actions.map(item=>item.score)));
-  return {actions,chosenIndex,chosen:labels[chosenIndex],chosenInfluence:actions[chosenIndex]};
-}
-function goalDecisionReason(goal, scored) {
-  const item=scored.chosenInfluence, sign=item.goal_adjustment>0?'+':'';
-  return goal ? `人生目标：${goal}；相关性：${GOAL_RELEVANCE_LABELS[item.goal_relevance]}；本次目标修正：${sign}${item.goal_adjustment}（倍率 ${item.goal_relevance_multiplier}）。` : '人生目标：无；相关性：无关；本次目标修正：0。';
-}
-
 function worldConfig(id = activeWorld) {
   if (!Object.hasOwn(WORLD_CONFIGS,id)) throw new Error('未知世界卡。');
   return WORLD_CONFIGS[id];
@@ -165,12 +139,6 @@ function worldConfig(id = activeWorld) {
 function assertWorldText(text, worldId) {
   const hit = worldConfig(worldId).forbidden_contexts.find(word => text.toLowerCase().includes(word.toLowerCase()));
   if (hit) throw new Error(`古代情境包含时代错位内容“${hit}”，请改用抽象或前工业情境。`);
-}
-function contextualInterest(c, worldId) {
-  const raw = [...c.interests].sort((a,b)=>b.intensity-a.intensity)[0] || {name:'观察',intensity:50};
-  const config = worldConfig(worldId);
-  const name = worldId === 'ancient' ? (config.interest_aliases[raw.name] || (Object.hasOwn(config.interest_examples,raw.name) ? raw.name : '手工')) : raw.name;
-  return {...raw,name}; // 仅解释活动方向，不改人物存档中的兴趣或强度。
 }
 function worldIdentity(c, worldId) {
   if (worldId === 'modern') return ['幼儿','学生','工作','无业'].includes(c.simple_identity) ? c.simple_identity : simpleIdentity(c.age, null, worldId);
@@ -197,42 +165,7 @@ function concreteEvent(c, scenario, worldId) {
   if (c.age >= 6) {
     const social = /朋友|聚会|社交/.test(scenario), family = /家庭|亲属|婚|子女/.test(scenario);
     event = {...event,title:social?'朋友的小型聚会':family?'家人共同安排时间':'新的发展体验',category:social?'社交':family?'家庭':'学习',
-      description:social?'朋友邀请参加一个陌生的小型聚会，可以自主报名或先了解。':family?'家人希望共同安排一段时间，你也有自己的兴趣活动。':`获得一次适龄的${contextualInterest(c,worldId).name}体验机会，可在线了解内容、选择时间并就近试学。`};
+      description:social?'朋友邀请参加一个陌生的小型聚会，可以自主报名或先了解。':family?'家人希望共同安排一段时间，你也有自己的兴趣活动。':`获得一次适龄的${choice(['手工','音乐','阅读'])}体验机会，可在线了解内容、选择时间并就近试学。`};
   }
   return {...event,abstract_scenario:scenario,world_id:worldId};
-}
-function ancientDecision(c,event,noise) {
-  const config = worldConfig('ancient'), w = config.behavior_constraints, p = c.personality;
-  const [e,n,t,j] = PERSONALITY.map(key=>p[key]), interest = contextualInterest(c,'ancient'), identity = worldIdentity(c,'ancient');
-  if (c.age < 6) {
-    const labels=['向照护者表达兴趣','安静观察后接触','留在熟悉的陪伴中'];
-    const scored=scoreActions(labels,[20+.6*e+.1*n,20+.3*j+.3*(100-e),20+.6*(100-e)],labels.map(()=> '只在照护者陪伴下接触日常活动。'),event,c.life_goal,'ancient',noise);
-    return {event,candidate_actions:scored.actions,chosen_action:scored.chosen,decision_reasons:[{factor:'性格',reason:`外向${e}、直觉${n}、思考${t}、计划${j}用于陪伴方式倾向。`},{factor:'人生目标',reason:goalDecisionReason(c.life_goal,scored)},{factor:'世界约束',reason:'幼儿只参与家中适龄陪伴，无独立劳作或出行。'}],suggested_effects:[],new_skill_suggestion:null};
-  }
-  const tags = event.tags || Object.entries(w.context_keywords).filter(([,words])=>words.some(word=>event.description.includes(word))).map(([tag])=>tag);
-  const travel = tags.includes('travel'), education = tags.includes('education'), family = tags.includes('family');
-  const access = ['读书人','官员','商户家庭成员','工匠 / 学徒'].includes(identity);
-  // TODO: 假设部分公共学习/远行机会有性别差异；只影响机会成本，不限制能力、不判定普遍历史事实。
-  const genderBarrier = c.gender==='女' && (travel||education) ? w.gender_access : 0;
-  const cost = (travel?w.travel_cost:0)+(education&&!access?w.education_barrier:0)+genderBarrier;
-  const labels = ['主动争取本次机会，承担协调成本',travel?'先核实资格与路费，再请熟人引介':'先核实条件与时间，再请熟人引介',`暂缓外部机会，留在近处练习${interest.name}基础`,'先协调家中劳动与照护，再有限参与'];
-  const scores = [18+.25*e+.2*n+.15*interest.intensity-cost+(access?w.background_access:0),18+.3*j+.25*t+cost*.5,14+.25*(100-e)+.15*interest.intensity+cost*.45,16+.25*(100-t)+.15*j+(family?w.family_duty:0)+w.local_support];
-  const detail = [`外向${e}、直觉${n}与兴趣${interest.intensity}推动尝试，机会成本扣${cost}。`,`计划${j}、思考${t}及信息不明成本推动先核实。`,`内向倾向${100-e}及出行/教育成本支持就近安排。`,`情感倾向${100-t}、家计责任和就近协调支持有限参与。`];
-  const scored=scoreActions(labels,scores,detail,event,c.life_goal,'ancient',noise), index=scored.chosenIndex, chosen=scored.chosen;
-  const reasons=[
-    {factor:'性格',reason:`原始四维：外向${e}、直觉${n}、思考${t}、计划${j}；只用于选择倾向。`},
-    {factor:'兴趣',reason:`在本世界以${interest.name}活动解释兴趣，强度${interest.intensity}；原始属性不变，不直接增加技能。`},
-    {factor:'人生目标',reason:`${goalDecisionReason(c.life_goal,scored)}${c.life_goal?` 时代解释：${config.goal_meanings[c.life_goal]}。`:''}`},
-    {factor:'当前情况',reason:`${c.age}岁；临时机会身份：${identity}。只讨论事件，不自动改变财产、婚育、健康或身份。`},
-    {factor:'世界约束',reason:`消息需核实；出行成本${travel?w.travel_cost:0}，教育门槛${education&&!access?w.education_barrier:0}，临时性别机会成本${genderBarrier}；${access?'身份提供引介渠道':'需要寻找引介与资助'}。家庭与宗族协商参与评分。`}
-  ];
-  let effects=[],suggestion=null;
-  if (index===2) {
-    const [skill,talents]=config.interest_examples[interest.name];
-    const reason=`在近处做${skill}基础练习，相关天赋为${talents.join('、')}；师资不足时仅轻量练习。`;
-    effects=[{type:'skill_practice',action:chosen,skill_name:skill,effort:'轻量',relevant_talents:talents,reason}];
-    if (!c.skills.some(s=>s.name===skill)) suggestion={name:skill,source:'ai_generated',reason:'Mock临时内容：首次基础练习，由程序设初值。'};
-    reasons.push({factor:'天赋',reason});
-  }
-  return {event,candidate_actions:scored.actions,chosen_action:chosen,decision_reasons:reasons,suggested_effects:effects,new_skill_suggestion:suggestion};
 }

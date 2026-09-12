@@ -7,6 +7,7 @@
   <title>种豌豆 · 人物模拟实验室 · Static Mock</title>
   <link rel="stylesheet" href="./styles.css">
   <script src="./worlds.js" defer></script>
+  <script src="./decisions.js" defer></script>
   <script src="./app.js" defer></script>
 </head>
 <body>
@@ -21,6 +22,7 @@
     <p class="notice">纯静态 Mock 测试版 · 不调用 Python、真实 AI 或任何远程接口 · 数据只保存在当前浏览器</p>
     <nav aria-label="实验区域"><button data-tab="single" class="selected" aria-pressed="true">单人物模拟</button><button data-tab="compare" aria-pressed="false">同情境对比</button><button data-tab="cross" aria-pressed="false">同人物跨世界</button><button data-tab="logs" aria-pressed="false">测试日志</button><button data-tab="candidates" aria-pressed="false">候选事件</button></nav>
     <div class="statusline"><p id="status" role="status" aria-live="polite">准备就绪</p><button id="stop" hidden>本次完成后暂停</button></div>
+    <details class="card"><summary>现实条件测试假设</summary><label for="test-condition">用于当前世界的后续月度与对比判断</label><select id="test-condition" data-mutate><option value="normal">正常条件</option><option value="severe_illness">本人重病，无法外出</option><option value="family_care">必须照护重病家人，无人替班</option><option value="short_time">仅有少量空闲时间</option></select><p class="muted">只是一项测试条件，不创建疾病或家庭系统。若已知长期契约条件尚未确认，直接承诺会先被排除。</p></details>
 
     <section id="single" class="panel">
       <div class="section-heading"><h2>观察一个人的选择</h2><span class="muted">月度模拟 / localStorage 自动保存</span></div>
@@ -37,13 +39,13 @@
     <section id="compare" class="panel" hidden>
       <h2>同情境人物对比测试</h2>
       <p class="muted">所有人物收到完全相同的情境。只判断选择，不推进时间、不执行技能增长。</p>
-      <div class="card"><label for="scenario">共同情境</label><textarea id="scenario" rows="4" maxlength="2000">朋友邀请周末参加一个完全陌生的社交聚会。</textarea><div class="buttonrow"><label for="count">人物数量</label><input id="count" type="number" min="5" max="20" value="5"><button id="compare-start" class="primary" data-mutate>生成并开始对比</button><button id="compare-resume" data-mutate hidden>继续未完成对比</button></div><p class="muted">差异来自临时 Mock 评分规则，不能据此证明正式人物模型已成立。</p></div>
+      <div class="card"><label for="scenario">共同情境</label><textarea id="scenario" rows="4" maxlength="2000">朋友邀请周末参加一个完全陌生的社交聚会。</textarea><div class="buttonrow"><label for="count">人物数量</label><input id="count" type="number" min="5" max="20" value="5"><button id="compare-start" class="primary" data-mutate>生成并开始对比</button><button id="compare-resume" data-mutate hidden>继续未完成对比</button></div><p class="muted">差异来自临时 Mock 概率规则，不能据此证明正式人物模型已成立。</p></div>
       <label for="batch">已保存的对比</label><select id="batch"></select><div id="comparison-results" class="comparison-grid"></div>
     </section>
 
     <section id="cross" class="panel" hidden>
       <h2>同人物跨世界对比</h2>
-      <p class="muted">使用当前人物的同一份完整属性快照和相同随机扰动，两边均不推进时间或修改人物。现代专有兴趣只在古代活动中作临时类比；无法沿用的身份以普通农户 / 对应年龄标签解释。历史保存在发起对比的世界内，不写入另一世界存档。</p>
+      <p class="muted">两边使用同一份人物属性快照，共用随机种子和抽样分位，扰动幅度由各自事件决定。不推进时间或修改人物。候选行为来自各自事件；无法沿用的身份按年龄作临时解释。历史保存在发起世界内。</p>
       <div class="card"><label for="cross-scenario">共同抽象情境</label><textarea id="cross-scenario" rows="3" maxlength="2000">获得一个可能改变未来的发展机会</textarea><button id="cross-start" class="primary" data-mutate>使用当前人物开始跨世界对比</button></div>
       <label for="cross-batch">已保存的跨世界对比</label><select id="cross-batch"></select><div id="cross-person"></div><div id="cross-results" class="comparison-grid"></div>
     </section>
@@ -63,7 +65,7 @@
       <p class="muted">导入与清空只作用于当前世界。现代和古代分别导出、分别保存；旧版存档归入现代。不同设备不共享数据。</p>
     </section>
 
-    <footer><details><summary>静态模式与临时规则</summary><p><strong>STATIC MOCK MODE</strong> 永久固定：本页面没有真实 AI、API Key、Python 后端或云端同步。</p><p>人物随机范围、人生目标权重、Mock行为评分、兴趣样例和技能成长公式均为临时测试逻辑。技能增量 = 投入档位 × (0.5 + 相关天赋均值 / 100)。</p><p>浏览器隐私模式、清理网站数据或更换域名都可能清除/隔离 localStorage，请使用完整存档导出迁移。</p></details></footer>
+    <footer><details><summary>静态模式与临时规则</summary><p><strong>STATIC MOCK MODE</strong> 永久固定：本页面没有真实 AI、API Key、Python 后端或云端同步。</p><p>人物随机范围、人生目标权重、Mock行为概率、兴趣样例和技能成长公式均为临时测试逻辑。技能增量 = 投入档位 × (0.5 + 相关天赋均值 / 100)。</p><p>浏览器隐私模式、清理网站数据或更换域名都可能清除/隔离 localStorage，请使用完整存档导出迁移。</p></details></footer>
   </main>
 
   <dialog id="review-dialog"><form id="review-form"><h2 id="dialog-title">评价事件</h2><label for="review-note">原因或备注</label><textarea id="review-note" rows="4" maxlength="1000"></textarea><div class="buttonrow"><button type="button" id="dialog-cancel">取消</button><button class="primary" type="submit">保存</button></div></form></dialog>

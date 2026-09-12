@@ -4,7 +4,7 @@ const STORAGE_KEY = 'pea_character_sim_static_v1';
 let activeWorld = 'modern';
 const storageKey = (worldId = activeWorld) => `${worldId}_${STORAGE_KEY}`;
 const FORMAT = 'pea-character-sim-static';
-const RULES_VERSION = 'prototype-3-goal-relevance';
+const RULES_VERSION = 'prototype-4-probabilistic';
 const TALENTS = ['智力', '社交', '运动', '抗压', '好奇心'];
 const PERSONALITY = ['外向性', '直觉性', '思考性', '计划性'];
 const GOALS = ['职业成就', '家庭生活', '声望地位', '财富积累'];
@@ -74,7 +74,7 @@ function weightedChoice(values, weights) {
 }
 function newState() {
   return {version:1, world_id:activeWorld, mode:'STATIC MOCK MODE', game_date:'2026-01-01', anchor_day:1,
-    current_character:null, sim_logs:[], event_candidates:[], comparisons:[], cross_world_comparisons:[]};
+    test_condition:'normal', current_character:null, sim_logs:[], event_candidates:[], comparisons:[], cross_world_comparisons:[]};
 }
 function isObject(value) { return value !== null && typeof value === 'object' && !Array.isArray(value); }
 function validateCharacter(c) {
@@ -89,6 +89,8 @@ function validateState(candidate) {
   if (!isObject(candidate) || candidate.version !== 1 || candidate.mode !== 'STATIC MOCK MODE') throw new Error('这不是可识别的静态 Mock 存档。');
   if ((candidate.world_id || 'modern') !== activeWorld) throw new Error('存档所属世界与当前世界不同，请先切换对应世界再导入。');
   candidate.world_id ||= 'modern';
+  candidate.test_condition ||= 'normal';
+  if(!Object.hasOwn(DECISION_RULES.constraints,candidate.test_condition))throw new Error('现实条件测试标签不合法。');
   candidate.cross_world_comparisons ||= [];
   if (!Array.isArray(candidate.cross_world_comparisons) || !candidate.cross_world_comparisons.every(b=>isObject(b)&&typeof b.comparison_id==='string'&&isObject(b.results)&&['modern','ancient'].every(w=>isObject(b.results[w])&&b.results[w].world_id===w&&typeof b.results[w].log_id==='string'))) throw new Error('跨世界对比记录不合法。');
   for (const batch of candidate.cross_world_comparisons) {
@@ -196,7 +198,7 @@ function createCharacter(baby) {
 }
 function mockEvent(c, worldId = activeWorld) {
   if (worldId === 'ancient') return ancientEvent(c);
-  const age = c.age, interest = contextualInterest(c,worldId);
+  const age = c.age, interest = {name:choice(Object.keys(worldConfig(worldId).interest_examples))};
   let title, description, category;
   if (age < 3) [title,description,category] = ['照护中的新声音','照护者带来一个安全的发声玩具，观察孩子愿意独自听还是互动。','日常'];
   else if (age < 6) [title,description,category] = ['一起玩一会儿','在照护者陪同下，有机会加入一个小型游戏，也可以先在旁边观察。','日常'];
@@ -215,55 +217,22 @@ function mockEvent(c, worldId = activeWorld) {
   }
   return {title,description,category,world_id:worldId,is_temporary_ai_event:true,minimum_age:age<6?0:6,maximum_age:120};
 }
-function mockDecision(c,event,worldId = activeWorld,noise = Array.from({length:4},()=>Math.random()*18-9)) {
-  if (worldId === 'ancient') return ancientDecision(c,event,noise);
-  const p=c.personality, goal=c.life_goal, interest=contextualInterest(c,worldId);
-  const [e,n,t,j]=['外向性','直觉性','思考性','计划性'].map(key=>p[key]);
-  const social=event.category==='社交'||['聚会','朋友','社交'].some(word=>event.description.includes(word));
-  const family=event.category==='家庭'||event.description.includes('家人');
-  let labels,scores;
-  if(c.age<3){labels=['主动向照护者表达兴趣','先安静观察，再短暂接触','偏好熟悉的安静陪伴'];scores=[20+.65*e+.15*n,25+.4*j+.2*(100-e),20+.7*(100-e)];}
-  else{
-    labels=['主动参与，尝试新体验','先询问细节，再按计划有限参与','婉拒本次活动，保留原有安排','选择小范围参与，兼顾熟悉的人'];
-    scores=[12+.5*e+.2*n+.1*(100-j),15+.45*j+.2*t,10+.4*(100-e)+.3*interest.intensity,15+.35*(100-t)+.2*(100-e)];
-    if(!social&&!family){labels[0]=`投入本次体验，练习${interest.name}相关能力`;scores[0]+=.2*interest.intensity-.15*e;}
-    if(family)labels[3]='优先陪伴家人，调整自己的活动安排';
-    if(c.age>=6)labels[2]=`婉拒本次活动，自己练习${interest.name}相关能力`;
-  }
-  const actionReasons=[`外向 ${e} 与直觉 ${n} 支持主动尝试；兴趣 ${interest.intensity} 在相关体验中参与评分。`,`计划 ${j} 与思考 ${t} 影响先核实再参与的倾向。`,`内向倾向 ${100-e} 与兴趣 ${interest.name} ${interest.intensity} 影响保留个人安排。`,`情感倾向 ${100-t}、内向倾向 ${100-e} 影响小范围参与。`];
-  const scored=scoreActions(labels,scores,actionReasons,event,goal,worldId,noise), chosenIndex=scored.chosenIndex, chosen=scored.chosen;
-  const reasons=[
-    {factor:'性格',reason:`原始四维：外向 ${e}、直觉 ${n}、思考 ${t}、计划 ${j}；分别影响参与、尝试、权衡和安排方式。`},
-    {factor:'兴趣',reason:`${interest.name}强度 ${interest.intensity}，影响愿意投入的方向，不直接增加技能。`},
-    {factor:'人生目标',reason:goalDecisionReason(goal,scored)},
-    {factor:'当前情况',reason:`${c.age}岁，测试身份${worldIdentity(c,worldId)}；已记录${c.experiences.length}次月度经历。本次仅处理给定小情境。`}
-  ];
-  let suggestedEffects=[],newSkillSuggestion=null;
-  if(c.age>=6&&(chosenIndex===2||(chosenIndex===0&&!social&&!family))){
-    const [skill,talents]=worldConfig(worldId).interest_examples[interest.name]||['基础观察',['好奇心']];
-    const explanation=`Mock 临时判断：${skill}练习涉及${talents.join('、')}。${talents.includes('抗压')?'接受反馈有练习压力，因此考虑抗压。':''}`;
-    suggestedEffects=[{type:'skill_practice',action:chosen,skill_name:skill,effort:'常规',relevant_talents:talents,reason:explanation}];
-    if(!c.skills.some(item=>item.name===skill))newSkillSuggestion={name:skill,source:'ai_generated',reason:'Mock AI临时内容：本月首次实际练习该技能。'};
-    reasons.push({factor:'天赋',reason:explanation+'程序按投入和相关天赋计算增长，不设天赋硬上限。'});
-  }
-  reasons.push({factor:'世界约束',reason:worldConfig(worldId).behavior_constraints.description});
-  return {event,candidate_actions:scored.actions,chosen_action:chosen,decision_reasons:reasons,suggested_effects:suggestedEffects,new_skill_suggestion:newSkillSuggestion};
-}
 function skillGrowth(talents,relevant,effort){return round(EFFORT[effort]*(.5+relevant.reduce((sum,key)=>sum+talents[key],0)/relevant.length/100));}
 function validateDecision(output,c,worldId) {
   if (!isObject(output) || !isObject(output.event) || output.event.world_id!==worldId || output.event.is_temporary_ai_event!==true || c.age<output.event.minimum_age || c.age>output.event.maximum_age) throw new Error('Mock事件世界或年龄范围不合法。');
-  if (!Array.isArray(output.candidate_actions) || !output.candidate_actions.length || !output.candidate_actions.every(a=>typeof a.action==='string'&&Number.isFinite(a.score)&&a.score>=0&&a.score<=100&&Array.isArray(a.reasons)) || !output.candidate_actions.some(a=>a.action===output.chosen_action)) throw new Error('Mock候选行为不合法。');
+  if (!Array.isArray(output.candidate_actions) || !output.candidate_actions.length || !output.candidate_actions.every(a=>typeof a.action==='string'&&(output.decision_version ? Number.isFinite(a.probability)&&a.probability>=0&&a.probability<=100 : Number.isFinite(a.score)&&a.score>=0&&a.score<=100)&&Array.isArray(a.reasons)) || !output.candidate_actions.some(a=>a.action===output.chosen_action)) throw new Error('Mock候选行为不合法。');
   if (!Array.isArray(output.decision_reasons) || !Array.isArray(output.suggested_effects)) throw new Error('Mock判断字段不完整。');
+  if(output.decision_version)validateProbabilityDecision(output);
   assertWorldText(JSON.stringify(output),worldId);
   for (const e of output.suggested_effects) {
     if (e.type!=='skill_practice'||e.action!==output.chosen_action||typeof e.skill_name!=='string'||!Object.hasOwn(EFFORT,e.effort)||!Array.isArray(e.relevant_talents)||!e.relevant_talents.length||!e.relevant_talents.every(t=>TALENTS.includes(t))||c.age<6) throw new Error('Mock技能建议不合法。');
     if (!c.skills.some(s=>s.name===e.skill_name) && output.new_skill_suggestion?.name!==e.skill_name) throw new Error('新技能缺少生成依据。');
   }
 }
-function decide(character,today,record,event=null,applyEffects=true,worldId=activeWorld,noise){
+function decide(character,today,record,event=null,applyEffects=true,worldId=activeWorld,options={}){
   const snap=snapshot(character,today);record.ai_input_snapshot=snap;
   if(!event){event=mockEvent(snap,worldId);audit(record,'event',{character:snap},event);}
-  const output=mockDecision(snap,event,worldId,noise);audit(record,'decision',{character:snap,shared_event:event},output);
+  const output=mockDecision(snap,event,worldId,{assumption:state.test_condition||'normal',...options});audit(record,'decision',{character:snap,shared_event:event,context:output.decision_context},output);
   validateDecision(output,snap,worldId);
   record.ai_output=clone(output);record.candidate_actions=clone(output.candidate_actions);record.chosen_action=output.chosen_action;record.decision_reasons=clone(output.decision_reasons);
   if(applyEffects){
@@ -292,11 +261,11 @@ function advance(){
 function startComparison(scenario,count){
   return commit(()=>{if(!Number.isInteger(count)||count<5||count>20)throw new Error('对比人数必须为5～20。');if(!scenario.trim()||scenario.length>2000)throw new Error('请输入1～2000字情境。');
     assertWorldText(scenario,activeWorld);
-    const batch={comparison_id:uid(),world_id:activeWorld,created_at:now(),game_date:state.game_date,count,log_ids:[],event:{title:'同情境人物对比',description:scenario.trim(),category:'日常',world_id:activeWorld,is_temporary_ai_event:true,minimum_age:0,maximum_age:120}};state.comparisons.push(batch);return batch;});
+    const batch={comparison_id:uid(),world_id:activeWorld,test_condition:state.test_condition||'normal',created_at:now(),game_date:state.game_date,count,log_ids:[],event:{title:'同情境人物对比',description:scenario.trim(),category:'日常',world_id:activeWorld,is_temporary_ai_event:true,minimum_age:0,maximum_age:120}};state.comparisons.push(batch);return batch;});
 }
 function comparisonNext(batchId){
   return commit(()=>{const batch=state.comparisons.find(item=>item.comparison_id===batchId);if(!batch||batch.log_ids.length>=batch.count)throw new Error('对比不存在或已经完成。');
-    const record=makeLog('comparison',null,batch.game_date);record.comparison_id=batchId;const character=generateCharacter(batch.game_date,false);record.ai_input_snapshot=snapshot({...character,interests:[],life_goal:null,goal_generation:null},batch.game_date);audit(record,'interests',{character:record.ai_input_snapshot},{interests:character.interests});record.character_before=snapshot(character,batch.game_date);decide(character,batch.game_date,record,{...clone(batch.event),world_id:activeWorld},false);batch.log_ids.push(record.log_id);state.sim_logs.push(record);return record;});
+    const record=makeLog('comparison',null,batch.game_date);record.comparison_id=batchId;const character=generateCharacter(batch.game_date,false);record.ai_input_snapshot=snapshot({...character,interests:[],life_goal:null,goal_generation:null},batch.game_date);audit(record,'interests',{character:record.ai_input_snapshot},{interests:character.interests});record.character_before=snapshot(character,batch.game_date);decide(character,batch.game_date,record,{...clone(batch.event),world_id:activeWorld},false,activeWorld,{assumption:batch.test_condition||'normal'});batch.log_ids.push(record.log_id);state.sim_logs.push(record);return record;});
 }
 function crossWorldComparison(scenario) {
   return commit(()=>{
@@ -304,12 +273,12 @@ function crossWorldComparison(scenario) {
     if (!scenario.trim() || scenario.length>2000) throw new Error('请输入1～2000字抽象情境。');
     assertWorldText(scenario,'ancient');
     const character = snapshot(state.current_character,state.game_date);
-    const batch = {comparison_id:uid(),source_world:activeWorld,created_at:now(),game_date:state.game_date,abstract_scenario:scenario.trim(),character:clone(character),noise:Array.from({length:4},()=>Math.random()*18-9),results:{}};
+    const batch = {comparison_id:uid(),source_world:activeWorld,test_condition:state.test_condition||'normal',created_at:now(),game_date:state.game_date,abstract_scenario:scenario.trim(),character:clone(character),seed:decisionSeed(),results:{}};
     for (const worldId of ['modern','ancient']) {
       const record = makeLog('cross_world',clone(character),state.game_date,worldId);
       const event = concreteEvent(character,batch.abstract_scenario,worldId);
       audit(record,'event',{character,abstract_scenario:batch.abstract_scenario},event);
-      decide(clone(state.current_character),state.game_date,record,event,false,worldId,batch.noise);
+      decide(clone(state.current_character),state.game_date,record,event,false,worldId,{seed:batch.seed,assumption:batch.test_condition});
       batch.results[worldId] = record;
     }
     state.cross_world_comparisons.push(batch);
@@ -339,6 +308,7 @@ function importSave(envelope) {
 function clearWorld() { commit(()=>{state=newState();}); selectedBatch='';selectedCrossBatch='';logLimit=20; }
 function renderWorld() {
   const config=worldConfig();document.body.dataset.world=activeWorld;
+  $('test-condition').value=state.test_condition||'normal';
   $('world-select').value=activeWorld;$('world-name').textContent=config.name;
   $('world-description').textContent=config.description;
   $('world-rules').innerHTML=`<p>${esc(config.behavior_constraints.description)}</p><p>测试日历沿用统一年月标尺，不表示具体历史年代。</p>${GOALS.map(g=>`<p>${esc(g)}：${esc(config.goal_meanings[g])}</p>`).join('')}<details><summary>结构化世界卡</summary>${pretty(config)}</details>`;
@@ -365,7 +335,24 @@ function metrics(values){return Object.entries(values).map(([name,value])=>`<div
 function characterCard(c,compact=false){if(!c)return '<p class="muted">先生成一个人物，开始观察。</p>';return `<div class="identity"><div><h3 class="name">${esc(c.surname+c.given_name)}</h3><p>${esc(c.gender)} · ${c.age}岁 · ${esc(c.simple_identity)} <span class="badge temp">临时测试身份</span></p></div><span class="badge">${esc(c.mbti)} · 仅显示标签</span></div><p class="muted">出生 ${esc(c.birth_date)} · ${c.alive?'存活':'已故'}</p><div class="attribute-grid">${compact?'':`<div><h4>天赋 · 永久固定</h4>${metrics(c.talents)}</div>`}<div><h4>性格 · 永久固定</h4>${metrics(c.personality)}</div></div><h4>兴趣 <span class="badge temp">Mock临时内容</span></h4><div class="tags">${c.interests.map(i=>`<span class="tag">${esc(i.name)} ${i.intensity}</span>`).join('')}</div><h4>人生目标</h4><p>${esc(c.life_goal||'未满12岁，尚未生成')} ${c.life_goal?'<span class="badge">已固定</span>':''}</p>${compact?'':`<h4>技能 · 实际已掌握能力</h4><div class="tags">${c.skills.length?c.skills.map(s=>`<span class="tag">${esc(s.name)} ${s.level} <small>Mock临时技能</small></span>`).join(''):'<span class="muted">暂无技能，兴趣和天赋不会自动变成技能。</span>'}</div><details><summary>人物完整数据与目标生成依据</summary>${pretty(c)}</details>`}`;}
 function reviewControls(r){const rating=r.user_review?`${r.user_review.verdict}${r.user_review.note?'：'+r.user_review.note:''}`:'尚未评价';return `<p class="muted">评价：${esc(rating)}${r.in_event_candidates?' · 已加入候选事件库':''}</p><div class="review-row"><button data-review="合理" data-id="${r.log_id}" data-mutate>合理</button><button data-review="不合理" data-id="${r.log_id}" data-mutate>不合理</button><button data-candidate="${r.log_id}" data-mutate data-locked="${r.in_event_candidates}" ${r.in_event_candidates?'disabled':''}>${r.in_event_candidates?'已加入候选库':'加入候选事件库'}</button></div>`;}
 function executed(results){return results.map(r=>{if(r.type==='skill_growth')return `<li>${esc(r.skill)}：${r.before} → ${r.after}（+${r.delta}）<div class="reason">${esc(r.talent_reason)}<br>${esc(r.formula)}</div></li>`;if(r.type==='life_goal_generated')return `<li>人生目标生成：${esc(r.goal)}（此后固定；临时加权随机规则）</li>`;if(r.type==='new_skill_created')return `<li>新建 Mock 临时技能：${esc(r.name)}，初始等级由程序设为0。</li>`;if(r.type==='date_advanced')return `<li>日期：${esc(r.before)} → ${esc(r.after)}</li>`;if(r.type==='interests_generated')return '<li>保存2～4项Mock临时兴趣。</li>';if(r.type==='temporary_identity_changed')return `<li>临时身份标签：${esc(r.before)} → ${esc(r.after)}</li>`;return `<li>${esc(r.description||r.reason||r.type)}</li>`;}).join('');}
-function eventCard(r,compact=false){const out=r.ai_output;let html='';if(out){html+=`<h3>${esc(out.event.title)}</h3><span class="badge temp">Mock临时内容 · ${esc(out.event.category)} · ${esc(worldConfig(r.world_id||'modern').name)}</span><p>${esc(out.event.description)}</p>${compact?'':`<h4>候选行为 <small class="muted">评分不是概率</small></h4>${out.candidate_actions.map(a=>`<div class="action"><div class="action-head"><strong>${esc(a.action)}</strong><span>${a.score}</span></div><p class="reason">${a.reasons.map(esc).join('；')}</p></div>`).join('')}`}<h4>Mock 最终判断</h4><p class="chosen">${esc(out.chosen_action)}</p><h4>判断依据</h4>${out.decision_reasons.map(item=>`<p class="reason"><strong>${esc(item.factor)}</strong> · ${esc(item.reason)}</p>`).join('')}`;}html+=`<h4>程序实际执行</h4><ul>${executed(r.executed_results)}</ul>`;if(out)html+=reviewControls(r);html+=`<details><summary>完整审计 JSON（输入 / Mock输出 / 快照）</summary>${pretty(r)}</details>`;return html;}
+function eventCard(r,compact=false){
+  const out=r.ai_output;let html='';
+  if(out){
+    html+=`<h3>${esc(out.event.title)}</h3><span class="badge temp">Mock临时内容 · ${esc(out.event.category)} · ${esc(worldConfig(r.world_id||'modern').name)}</span><p>${esc(out.event.description)}</p>`;
+    if(out.decision_version){
+      html+=`<h4>候选行为概率 <small class="muted">合计100% · 按分布抽取</small></h4>${out.candidate_actions.map(probabilityActionCard).join('')}`;
+      if(out.excluded_actions.length)html+=`<details><summary>现实条件排除的行为（${out.excluded_actions.length}项）</summary>${out.excluded_actions.map(a=>`<p><strong>${esc(a.action)}</strong> · 0%<br>${esc(a.exclusion_reason)}</p>`).join('')}</details>`;
+    }else html+='<p class="muted">旧版历史评分记录：仅供回看，不转换为概率。原始数值保留在审计JSON。</p>';
+    html+=`<h4>${out.decision_version?'本次抽样结果':'历史选择'}</h4><p class="chosen">${esc(out.chosen_action)}</p><h4>判断依据</h4>${out.decision_reasons.map(item=>`<p class="reason"><strong>${esc(item.factor)}</strong> · ${esc(item.reason)}</p>`).join('')}`;
+  }
+  html+=`<h4>程序实际执行</h4><ul>${executed(r.executed_results)}</ul>`;
+  if(out)html+=reviewControls(r);
+  return html+`<details><summary>完整审计 JSON（输入 / 概率 / 抽样 / 快照）</summary>${pretty(r)}</details>`;
+}
+function probabilityActionCard(a){
+  const m=a.modifiers;
+  return `<div class="action"><div class="action-head"><strong>${esc(a.action)}</strong><span class="probability">${a.probability.toFixed(1)}%</span></div><p class="reason">基础倾向：${a.base_weight>1?'较高':'中等'} · 现实条件：${influenceLabel(m.situational)} · 性格：${influenceLabel(m.personality)} · 兴趣：${influenceLabel(m.interest)} · 人生目标：${influenceLabel(m.life_goal)} · 天赋：${influenceLabel(m.talent)} · 随机扰动：${influenceLabel(m.random)}</p>${a.situation_reasons.length?`<p class="reason">${a.situation_reasons.map(esc).join('；')}。</p>`:''}<details><summary>行为特征与概率计算明细</summary>${pretty(a)}</details></div>`;
+}
 function logSummary(r){const c=r.character_after||{},title=r.ai_output?.event?.title||(r.kind==='generation'?'人物生成':'Mock记录');return `<details class="card log-item" data-log="${r.log_id}"><summary><span class="log-meta">${esc(r.game_date)} · ${esc((c.surname||'')+(c.given_name||''))} · ${{generation:'生成',monthly:'月度',comparison:'对比'}[r.kind]}</span><span>${esc(title)}${r.user_review?' · '+esc(r.user_review.verdict):''}${r.in_event_candidates?' · 候选':''}</span></summary><div class="log-content">${eventCard(r)}</div></details>`;}
 function renderComparison(){const batch=state.comparisons.find(item=>item.comparison_id===selectedBatch);$('compare-resume').hidden=!batch||batch.log_ids.length>=batch.count;if(!batch){$('batch').value='';$('comparison-results').innerHTML='<p class="muted">输入情境，生成第一组人物。</p>';return;}$('scenario').value=batch.event.description;$('comparison-results').innerHTML=batch.log_ids.map((id,index)=>{const r=getLog(id);return `<article class="card"><p class="eyebrow">人物 ${index+1} / ${batch.count}</p>${characterCard(r.character_after,true)}${eventCard(r,true)}</article>`;}).join('');}
 function refresh(){renderWorld();const current=snapshot(state.current_character,state.game_date);$('date').textContent='游戏日期 · '+state.game_date;$('character').innerHTML=characterCard(current);const ordered=[...state.sim_logs].reverse();$('recent').innerHTML=ordered.slice(0,5).map(logSummary).join('')||'<p class="muted">尚无记录。</p>';$('log-list').innerHTML=ordered.slice(0,logLimit).map(logSummary).join('')||'<p class="muted">尚无记录。</p>';$('more').hidden=ordered.length<=logLimit;const latest=ordered.find(r=>r.kind==='monthly'&&r.character_after?.character_id===current?.character_id);$('latest').innerHTML=latest?eventCard(latest):'<p class="muted">推进一个月后，这里显示当前人物的情境、选择与实际结果。</p>';$('candidate-list').innerHTML=[...state.event_candidates].reverse().map(c=>`<article class="card"><span class="badge temp">candidate · Mock临时内容</span><h3>${esc(c.original_event.title)}</h3><p>${esc(c.original_event.description)}</p><p>备注：${esc(c.user_note||'无')}</p><p class="muted">加入时间：${esc(new Date(c.added_at).toLocaleString())}</p><details><summary>原始事件、人物状态与Mock判断</summary>${pretty(c)}</details></article>`).join('')||'<p class="muted">尚未加入候选事件。</p>';if(!selectedBatch&&state.comparisons.length)selectedBatch=state.comparisons.at(-1).comparison_id;$('batch').innerHTML=[...state.comparisons].reverse().map(b=>`<option value="${b.comparison_id}" ${b.comparison_id===selectedBatch?'selected':''}>${esc(b.game_date)} · ${b.log_ids.length}/${b.count}人 · ${esc(b.event.description.slice(0,35))}</option>`).join('');renderComparison();saveState();updateButtons();}
@@ -385,6 +372,7 @@ $('export-logs').onclick=()=>{download(`character-sim-${activeWorld}-logs-${date
 $('export-candidates').onclick=()=>{download(`character-sim-${activeWorld}-candidates-${dateStamp()}.json`,{format:`${FORMAT}-candidates`,version:1,mode:'STATIC MOCK MODE',exported_at:now(),world_id:activeWorld,event_candidates:clone(state.event_candidates)});status('候选事件已导出。');};
 $('import-file').onchange=event=>{const file=event.target.files[0];event.target.value='';if(!file)return;run(async()=>{try{if(file.size>5*1024*1024)throw new Error('导入文件不能超过5 MB。');const envelope=JSON.parse(await file.text());importSave(envelope);refresh();status('当前世界存档已导入，另一世界不变。');}catch(error){status(`导入失败，当前数据未改变：${error.message}`,true);}});};
 $('clear-data').onclick=()=>run(async()=>{if(!confirm(`确定清空${worldConfig().name}的人物、日志、候选事件和两类对比历史吗？另一世界不受影响。建议先导出。`))return;clearWorld();refresh();status('当前世界测试数据已清空。');});
+$('test-condition').onchange=()=>run(async()=>{commit(()=>{state.test_condition=$('test-condition').value;});refresh();status('现实条件已保存为当前世界的测试假设。');});
 $('world-select').onchange=()=>{try{switchWorld($('world-select').value);}catch(error){status(error.message,true);}};
 $('cross-start').onclick=()=>run(async()=>{const batch=crossWorldComparison($('cross-scenario').value);selectedCrossBatch=batch.comparison_id;refresh();status('跨世界对比已保存，两边人物属性和时间均未改变。');});
 $('cross-batch').onchange=()=>{selectedCrossBatch=$('cross-batch').value;renderCross();};
