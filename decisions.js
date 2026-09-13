@@ -76,6 +76,7 @@ function generateCandidateActions(event,context) {
   const defaults=Object.fromEntries(DECISION_RULES.trait_names.map(t=>[t,0]));
   const make=(id,action,traits={},tags=[],extra={})=>({action_id:id,action,traits:{...defaults,...traits},action_tags:tags,base_weight:1,...extra});
   let actions;
+  if(event.mock_actions) return event.mock_actions.map(a=>({...make(a.id,a.name,a.traits,a.tags,a.conditions),interest_domains:p.domains}));
   if(context.age<6) actions=[
     make('child_join','在照护者陪伴下接触眼前事物',{novelty:.5,social_exposure:.5},['participate']),
     make('child_watch','靠在照护者身边观察',{planning_need:.1},['observe']),
@@ -182,10 +183,11 @@ function matchingInterest(character,action) {
   return matches.sort((a,b)=>b.intensity-a.intensity)[0]||null;
 }
 function calculateActionProbabilities(character,event,actions,context,rng=Math.random) {
-  const p=describeDecisionEvent(event,context.world_id), caps=DECISION_RULES.caps;
+  const rules={...DECISION_RULES,...context.mock_rules};
+  const p=describeDecisionEvent(event,context.world_id), caps=rules.caps;
   const centered=key=>(character.personality[key]-50)/50;
-  const temperature=1+DECISION_RULES.temperature_scale*(1-p.event_decision_stability);
-  const amplitude=DECISION_RULES.jitter_scale*(1-p.event_decision_stability);
+  const temperature=1+rules.temperature_scale*(1-p.event_decision_stability);
+  const amplitude=rules.jitter_scale*(1-p.event_decision_stability);
   const output=actions.map(action=>{
     const t=action.traits;
     const planningRelevance=p.emergency?0:p.long_term?1:(t.uncertainty*.4+t.long_term_commitment*.4+.15);
@@ -213,6 +215,11 @@ function calculateActionProbabilities(character,event,actions,context,rng=Math.r
     if(context.mandatory_family_care&&t.time_cost>.2){situational-=t.time_cost;situationReasons.push('照护责任压缩其他活动时间');}
     if(context.time_available<.5){situational-=t.time_cost;situationReasons.push('可用时间很少');}
     if(p.emergency){situational+=action.urgent_safe?1:0;situationReasons.push('紧急事件优先安全处置');}
+    if(context.v2) {
+      situational-=clamp(context.stress/100)*t.uncertainty*context.v2.stress_cap;
+      situational+=clamp(context.relationship_attitude/100,-1,1)*t.relationship_care*context.v2.relationship_cap;
+      if(context.preferred_action===action.action_id) situational+=context.v2.ordinary_push;
+    }
     const random=(rng()+rng()-1)*amplitude;
     const base=Math.log(action.base_weight), total=base+situational+personality+interest+lifeGoal+talent+random;
     return {...action,goal_relevance:goal.relevance,goal_relevance_multiplier:goal.multiplier,goal_adjustment:goal.adjustment,
@@ -228,6 +235,9 @@ function calculateActionProbabilities(character,event,actions,context,rng=Math.r
   for(let i=0;i<remain;i++)units[order[i].i]++;
   return output.map((a,i)=>({...a,probability_units:units[i],probability:units[i]/10}));
 }
+
+// Same engine for the V2 simulation and lab; the legacy page keeps its defaults.
+globalThis.PeaDecision={calculateActionProbabilities,sampleAction,generateCandidateActions,filterFeasibleActions,describeDecisionEvent,decisionContext,DECISION_RULES,WORLD_CONFIGS};
 function sampleAction(actions,draw=Math.random()) {
   if(!Number.isFinite(draw)||draw<0||draw>=1)throw new Error('抽样值必须在[0,1)内。');
   const target=draw*DECISION_RULES.probability_units;let cumulative=0;

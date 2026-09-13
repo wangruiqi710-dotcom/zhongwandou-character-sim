@@ -1,0 +1,17 @@
+const fs=require('node:fs');const {chromium}=require('playwright');const assert=require('node:assert/strict');
+(async()=>{const browser=await chromium.launch({channel:'msedge',headless:true});const context=await browser.newContext({viewport:{width:390,height:844},acceptDownloads:true});const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(process.env.TEST_URL||'http://127.0.0.1:8877/');await page.getByText('已读取 0个运行').waitFor();
+ await page.locator('#new-life').click();await page.locator('#summary h3').waitFor();await page.locator('[data-months="1"]').click();await page.getByText('已逐月运行 1个月',{exact:true}).waitFor();
+ await page.locator('[data-rate="合理"]').last().click();await page.getByText('已保存“合理”及完整现场').waitFor();
+ await page.locator('[data-rate="问题"]').last().click();await page.locator('#issue-type').selectOption({label:'现实条件判断有问题'});await page.locator('#save-issue').click();
+ await page.reload();await page.getByText('已读取 1个运行 / 2条反馈').waitFor();
+ for(const width of [375,390,430]){await page.setViewportSize({width,height:844});for(const nav of ['simulation','tests','behavior','genetics','feedback','settings']){await page.locator('nav [data-page="'+nav+'"]').click();if(nav==='genetics')await page.locator('#gen-run').click();await page.waitForTimeout(50);assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'overflow '+width+'/'+nav);}console.log('mobile width '+width+' passed');}
+ await page.locator('nav [data-page="behavior"]').click();await page.locator('#lab-count').selectOption('10000');await page.locator('#lab-sample').click();await page.locator('#lab-samples table').waitFor();
+ await page.locator('nav [data-page="feedback"]').click();await page.locator('[data-replay]').first().click();await page.getByText('重放结果与保存现场一致').waitFor();
+ const dl=page.waitForEvent('download');await page.locator('#export-all').click();const download=await dl;assert.equal(download.suggestedFilename(),'mock-v2-all.json');
+ const bytes=fs.readFileSync(await download.path());await page.locator('#import').setInputFiles({name:'saved.json',mimeType:'application/json',buffer:bytes});await page.getByText('导入完成，相同ID已去重').waitFor();assert.equal(await page.locator('[data-replay]').count(),2);
+
+ await page.locator('nav [data-page="tests"]').click();await page.locator('#case').selectOption('TC-SUCCESSION-01');await page.locator('#run-case').click();await page.locator('#choice-dialog[open]').waitFor();assert.equal(await page.locator('#choice-dialog [data-successor]').count(),2);await page.locator('#choice-dialog [data-successor]').first().click();await page.locator('#summary h3').waitFor();await page.locator('#pending [data-heir]').last().click();await page.locator('#pending [data-heir]').first().waitFor({state:'detached'});
+ await page.locator('nav [data-page="tests"]').click();await page.locator('#seed').fill('0');await page.locator('#case').selectOption('TC-FORCED-24M');await page.locator('#run-case').click();await page.getByText('已逐月运行 24个月',{exact:true}).waitFor({timeout:60000});
+ await page.screenshot({path:process.env.TEMP+'/pea-v2-mobile.png',fullPage:false});
+ assert.deepEqual(errors,[]);console.log('PASS: mobile navigation, month, feedback, reload, replay, download, lab10000, genetics, player succession/estate and forced24; no console errors');await browser.close();
+})().catch(e=>{console.error(e);process.exitCode=1;});

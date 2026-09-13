@@ -1,105 +1,16 @@
 <!doctype html>
-<html lang="zh-CN">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#536e5b">
-  <title>种豌豆 · 人物模拟实验室 · Static Mock</title>
-  <link rel="stylesheet" href="./styles.css">
-  <script src="./worlds.js" defer></script>
-  <script src="./decisions.js" defer></script>
-  <script src="./app.js" defer></script>
-  <script src="./behavior_lab.js" defer></script>
-</head>
-<body>
-  <header class="top"><div class="wrap">
-    <p class="eyebrow">PEA / CHARACTER LAB · GITHUB PAGES</p>
-    <h1>种豌豆 · 人物模拟实验室</h1>
-    <div class="topline"><span id="date">正在读取浏览器存档…</span><strong class="static-mode">STATIC MOCK MODE</strong></div>
-    <div class="world-picker"><label for="world-select">当前世界：</label><select id="world-select" data-mutate><option value="modern">现代</option><option value="ancient">古代</option></select><strong id="world-name">现代</strong></div>
-    <p id="world-description"></p><details><summary>世界卡与目标解释 · Mock临时规则</summary><div id="world-rules"></div></details>
-  </div></header>
-  <main class="wrap">
-    <p class="notice">纯静态 Mock 测试版 · 不调用 Python、真实 AI 或任何远程接口 · 数据只保存在当前浏览器</p>
-    <nav aria-label="实验区域"><button data-tab="single" class="selected" aria-pressed="true">单人物模拟</button><button data-tab="compare" aria-pressed="false">同情境对比</button><button data-tab="cross" aria-pressed="false">同人物跨世界</button><button data-tab="logs" aria-pressed="false">测试日志</button><button data-tab="candidates" aria-pressed="false">候选事件</button></nav>
-    <button data-tab="behavior-lab" class="button" style="margin-top:12px">行为权重实验室</button>
-    <div class="statusline"><p id="status" role="status" aria-live="polite">准备就绪</p><button id="stop" hidden>本次完成后暂停</button></div>
-    <section id="behavior-lab" class="panel" hidden>
-      <h2>行为权重实验室</h2>
-      <p>STATIC MOCK MODE · 只观察，不调参。实验设置独立于主模拟器，不修改人物或存档。</p>
-      <div class="card">
-        <div class="attribute-grid">
-          <label>实验世界<select id="lab-world"><option value="modern">现代</option><option value="ancient">古代</option></select></label>
-          <label>固定事件<select id="lab-event"></select></label>
-          <label>人物模板<select id="lab-template"><option value="neutral">中性：全部属性50，无人生目标</option><option value="outgoing">偏外向：外向80，其余50，职业成就</option><option value="reserved">偏内向：外向20，其余50，家庭生活</option></select></label>
-          <label>观察属性<select id="lab-attribute"></select></label>
-          <label>扫描间隔<select id="lab-step"><option value="10">每10点</option><option value="5">精细：每5点</option></select></label>
-          <label>兴趣领域<select id="lab-interest"><option value="related">本事件相关兴趣（若没有则无匹配）</option><option value="音乐">音乐（可测试无关事件）</option></select></label>
-        </div>
-        <p id="lab-event-description"></p><details><summary>固定人物与现实条件</summary><pre id="lab-context" class="json"></pre></details>
-        <h3>一键实验</h3><div id="lab-presets" class="buttonrow"></div>
-      </div>
-      <div class="card"><h3>自动健康检查</h3><p class="muted">诊断阈值只用于报告，不改变权重。弱影响警告对无关属性可能是预期结果。</p><ul id="lab-health"></ul></div>
-      <div class="card"><h3>概率曲线</h3><p class="muted">随机扰动为0；保留正式引擎的事件温度。类别目标使用分类横轴，不表示连续关系。</p><div id="lab-chart"></div><div id="lab-legend"></div></div>
-      <div class="card"><h3>概率表</h3><div id="lab-table" class="lab-scroll" tabindex="0" aria-label="概率表，可横向滚动"></div></div>
-      <div class="card">
-        <h3>单点调试</h3><label for="lab-value" id="lab-value-label">属性值：50</label><input type="range" id="lab-value" min="0" max="100" value="50">
-        <label id="lab-goal-label" hidden>当前人生目标<select id="lab-goal"></select></label>
-        <p id="lab-explanation"></p><div id="lab-point"></div>
-        <details><summary>详细计算</summary><p class="muted">修正值是对数权重，不是百分点。feasibility 在计算前过滤；被排除行为为0%。</p><pre id="lab-debug" class="json"></pre></details>
-        <button id="lab-noise">开启随机扰动预览</button><div id="lab-noise-result" hidden></div>
-      </div>
-      <div class="card"><h3>重复抽样测试</h3><p>按当前单点的无扰动理论分布重复抽样，不重新生成事件或概率。更改设置后旧结果自动清除。</p>
-        <label>重复次数<select id="lab-count"><option>100</option><option selected>1000</option><option>10000</option></select></label>
-        <button id="lab-sample">开始重复抽样</button><p id="lab-progress" role="status" aria-live="polite"></p><div id="lab-samples" class="lab-scroll"></div>
-      </div>
-    </section>
-    <details class="card"><summary>现实条件测试假设</summary><label for="test-condition">用于当前世界的后续月度与对比判断</label><select id="test-condition" data-mutate><option value="normal">正常条件</option><option value="severe_illness">本人重病，无法外出</option><option value="family_care">必须照护重病家人，无人替班</option><option value="short_time">仅有少量空闲时间</option></select><p class="muted">只是一项测试条件，不创建疾病或家庭系统。若已知长期契约条件尚未确认，直接承诺会先被排除。</p></details>
-
-    <section id="single" class="panel">
-      <div class="section-heading"><h2>观察一个人的选择</h2><span class="muted">月度模拟 / localStorage 自动保存</span></div>
-      <div id="character" class="card empty">先生成一个人物，开始观察。</div>
-      <div class="actions card">
-        <div class="buttonrow"><button id="generate" data-mutate>生成新人物（12～45岁）</button><button id="baby" data-mutate>生成婴儿</button></div>
-        <div class="buttonrow"><button class="primary" data-months="1" data-mutate>推进1个月</button><button data-months="3" data-mutate>推进3个月</button><button data-months="12" data-mutate>推进12个月</button></div>
-        <p class="muted">新人物沿用当前日期，旧人物日志保留。连续模拟逐月保存。</p>
-      </div>
-      <h2>本月 Mock 事件</h2><div id="latest" class="card empty">推进一个月后，这里显示情境、选择与实际结果。</div>
-      <h2>最近记录</h2><div id="recent"></div>
-    </section>
-
-    <section id="compare" class="panel" hidden>
-      <h2>同情境人物对比测试</h2>
-      <p class="muted">所有人物收到完全相同的情境。只判断选择，不推进时间、不执行技能增长。</p>
-      <div class="card"><label for="scenario">共同情境</label><textarea id="scenario" rows="4" maxlength="2000">朋友邀请周末参加一个完全陌生的社交聚会。</textarea><div class="buttonrow"><label for="count">人物数量</label><input id="count" type="number" min="5" max="20" value="5"><button id="compare-start" class="primary" data-mutate>生成并开始对比</button><button id="compare-resume" data-mutate hidden>继续未完成对比</button></div><p class="muted">差异来自临时 Mock 概率规则，不能据此证明正式人物模型已成立。</p></div>
-      <label for="batch">已保存的对比</label><select id="batch"></select><div id="comparison-results" class="comparison-grid"></div>
-    </section>
-
-    <section id="cross" class="panel" hidden>
-      <h2>同人物跨世界对比</h2>
-      <p class="muted">两边使用同一份人物属性快照，共用随机种子和抽样分位，扰动幅度由各自事件决定。不推进时间或修改人物。候选行为来自各自事件；无法沿用的身份按年龄作临时解释。历史保存在发起世界内。</p>
-      <div class="card"><label for="cross-scenario">共同抽象情境</label><textarea id="cross-scenario" rows="3" maxlength="2000">获得一个可能改变未来的发展机会</textarea><button id="cross-start" class="primary" data-mutate>使用当前人物开始跨世界对比</button></div>
-      <label for="cross-batch">已保存的跨世界对比</label><select id="cross-batch"></select><div id="cross-person"></div><div id="cross-results" class="comparison-grid"></div>
-    </section>
-
-    <section id="logs" class="panel" hidden>
-      <div class="section-heading"><h2>测试日志</h2><div class="buttonrow"><button id="export-all">导出完整测试存档</button><button id="export-logs">导出测试日志 JSON</button></div></div>
-      <p class="muted">导出当前世界的完整存档，包含跨世界对比历史；可在另一台设备的同一世界导入。日志导出只用于分析。</p><div id="log-list"></div><button id="more">显示更多记录</button>
-    </section>
-
-    <section id="candidates" class="panel" hidden>
-      <div class="section-heading"><h2>候选事件</h2><button id="export-candidates">导出候选事件 JSON</button></div>
-      <p class="muted">状态始终为 candidate，尚未抽象成正式事件模板。</p><div id="candidate-list"></div>
-    </section>
-
-    <section class="storage card" aria-labelledby="storage-title">
-      <div class="section-heading"><div><h2 id="storage-title">浏览器数据</h2><p class="muted" id="storage-info">当前设备独立保存</p></div><div class="buttonrow"><label class="button" for="import-file">导入完整测试存档</label><input id="import-file" class="visually-hidden" type="file" accept="application/json,.json"><button id="clear-data" class="danger">清空本地测试数据</button></div></div>
-      <p class="muted">导入与清空只作用于当前世界。现代和古代分别导出、分别保存；旧版存档归入现代。不同设备不共享数据。</p>
-    </section>
-
-    <footer><details><summary>静态模式与临时规则</summary><p><strong>STATIC MOCK MODE</strong> 永久固定：本页面没有真实 AI、API Key、Python 后端或云端同步。</p><p>人物随机范围、人生目标权重、Mock行为概率、兴趣样例和技能成长公式均为临时测试逻辑。技能增量 = 投入档位 × (0.5 + 相关天赋均值 / 100)。</p><p>浏览器隐私模式、清理网站数据或更换域名都可能清除/隔离 localStorage，请使用完整存档导出迁移。</p></details></footer>
-  </main>
-
-  <dialog id="review-dialog"><form id="review-form"><h2 id="dialog-title">评价事件</h2><label for="review-note">原因或备注</label><textarea id="review-note" rows="4" maxlength="1000"></textarea><div class="buttonrow"><button type="button" id="dialog-cancel">取消</button><button class="primary" type="submit">保存</button></div></form></dialog>
-</body>
-</html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>种豌豆 · Mock V2 人生实验台</title><link rel="stylesheet" href="./v2.css"><script src="./worlds.js" defer></script><script src="./src/core/legacy_bridge.js" defer></script><script src="./decisions.js" defer></script><script type="module" src="./src/ui/app.js"></script></head>
+<body><header><span class="badge">STATIC MOCK MODE</span><h1>种豌豆 · 人生模拟实验台</h1><p id="version"></p><details><summary>冻结基线与数据边界</summary><p id="hash" class="hash"></p><p>工资、概率和公式为 MOCK_TUNABLE。测试数据保存在当前浏览器，请定期导出。</p><a href="./legacy.html">旧版测试器与原 Behavior Lab</a></details></header><main>
+<nav><button data-page="simulation" aria-current="true">模拟</button><button data-page="tests">测试中心</button><button data-page="behavior">Behavior Lab</button><button data-page="genetics">Genetics Lab</button><button data-page="feedback">反馈记录</button><button data-page="settings">设置</button></nav><p id="status" role="status">正在读取本地存档…</p>
+<section id="simulation"><div class="card"><h2>连续人生</h2><label>已保存运行<select id="run-select"></select></label><button data-page="tests">创建 / 选择测试人物</button><div id="summary"></div><div class="row"><button data-months="12">运行1年</button><button data-months="60">运行5年</button><button data-months="120">运行10年</button><button id="until-death">运行到死亡</button><button id="next-generation">继续下一代</button></div></div><div id="pending"></div>
+<details class="card"><summary>主动安排 / 家庭婚配</summary><label>当前安排<select id="intent-event"><option value="career">长期职业机会</option><option value="learning">短期学习机会</option><option value="relocation">离乡三年</option><option value="birth">生育安排</option></select></label><label>干预方式<select id="intent-mode"><option value="ordinary">普通推动</option><option value="force">强制当前安排</option></select></label><button id="intent-run">推动当前安排</button><button id="wish">完成一个主动愿望（测试输入）</button><p id="credits"></p><h3>家庭安排婚配</h3><p>指定重点对象后，分别记录本人、对方和对方家庭的反应。强制不能覆盖对方不参与或硬条件不足。</p><label>现实可行候选<select id="marriage-target"></select></label><div class="row"><button id="ordinary-marriage">普通推动议亲</button><button id="force-marriage">强制推动婚配</button><button id="observe24">继续观察24个月</button></div><h3>生命阶段测试</h3><div class="row"><button id="enroll">进入学习状态</button><button id="employ">进入工作状态</button><button id="test-death">触发当前人物死亡</button></div></details>
+<h2>人生时间线</h2><p>正常月份按年折叠；点击查看原因，再记录反馈。</p><div id="timeline"></div><button id="older">显示更早月份</button><div class="fixed-controls row"><button data-months="1">推进1月</button><button data-months="3">推进3月</button><button data-months="12">推进1年</button><button id="auto">自动运行</button><button id="pause">暂停</button></div></section>
+<section id="tests" hidden><h2>测试中心</h2><div class="card grid"><label>世界<select id="world"><option value="ancient">古代 · 前工业社会</option><option value="modern">现代</option></select></label><label>人物模板<select id="template"><option value="neutral">中性人物</option><option value="outgoing">外向人物</option><option value="reserved">内向人物</option><option value="random">随机人物</option></select></label><label>Random seed<input id="seed" type="number" value="12345"></label><label>初始家庭资源<input id="initial-resources" type="number" value="1000"></label><label>健康<input id="initial-health" type="number" value="90" min="1" max="100"></label><label>压力<input id="initial-stress" type="number" value="10" min="0" max="100"></label><label>关系态度<input id="initial-attitude" type="number" value="20" min="-100" max="100"></label></div>
+<p>每次创建独立运行，固定场景可覆盖相关参数，完整初始状态保存到运行记录。</p><div class="card"><h3>A · 固定场景测试</h3><label>案例<select id="case"></select></label><button id="run-case" class="primary">创建并运行案例</button></div><div class="card"><h3>B · 组合系统测试</h3><label>系统组合<select id="combination"></select></label><button id="run-combination">运行组合测试</button></div><div class="card"><h3>C · 连续人生模拟</h3><button id="new-life" class="primary">创建人物与家庭，开始人生</button><p>接班和遗产主继承人分别由玩家选择。</p></div></section>
+<section id="behavior" hidden><h2>Behavior Lab</h2><p>读取当前人物快照，复用主模拟概率核心。理论扫描关闭随机扰动。</p><div class="card"><label>事件<select id="lab-event"><option value="music">音乐活动</option><option value="learning">短期试学</option><option value="career">长期职业</option><option value="relocation">离乡三年</option><option value="safety">道路治安</option><option value="strain">共同生活冲突</option></select></label><label>属性<select id="lab-attribute"></select></label><button id="lab-scan">扫描0 → 100</button><div id="lab-health"></div><div id="lab-chart"></div><div id="lab-table" class="scroll"></div><label>单点 <output id="lab-value-text">50</output><input id="lab-value" type="range" min="0" max="100" value="50"></label><label>人生目标<select id="lab-goal"></select></label><div id="lab-point" class="scroll"></div><details><summary>详细计算与被过滤行为</summary><pre id="lab-debug"></pre></details><label>抽样次数<select id="lab-count"><option>100</option><option selected>1000</option><option>10000</option></select></label><button id="lab-sample">重复抽样</button><div id="lab-samples" class="scroll"></div></div></section>
+<section id="genetics" hidden><h2>Genetics Lab</h2><p>独立实验不添加人物到家庭；真实出生调用相同遗传函数。三代实验每代使用新无亲缘配偶。</p><div class="card grid"><label>父亲<select id="gen-father"></select></label><label>母亲<select id="gen-mother"></select></label><label>每代子代<select id="gen-count"><option>1</option><option>10</option><option selected>20</option><option>100</option></select></label><label>代数<select id="gen-depth"><option value="1">一代</option><option value="3">三代</option></select></label></div><button id="gen-run">运行遗传实验</button><div id="gen-result"></div></section>
+<section id="feedback" hidden><h2>反馈记录</h2><div class="row"><button id="export-feedback">导出反馈 JSON</button><button id="export-all">导出全部测试数据 JSON</button><label>导入反馈 / 全部数据<input id="import" type="file" accept=".json,application/json"></label></div><div class="grid card"><label>问题类型<select id="filter-type"></select></label><label>测试案例<select id="filter-case"></select></label><label>人物<input id="filter-character" placeholder="人物 ID"></label><label>严重程度<select id="filter-severity"><option value="">全部</option><option>轻微奇怪</option><option>明显不合理</option><option>规则错误</option></select></label></div><div id="feedback-list"></div><button id="clear-feedback">清空全部反馈</button></section>
+<section id="settings" hidden><h2>Mock 参数</h2><p>以下全部为 MOCK_TUNABLE，不属于正式设计规则。修改仅应用于新运行，已有运行保留原配置。</p><div id="config" class="grid"></div><div class="row"><button id="save-config">保存新运行参数</button><button id="reset-config">恢复默认</button><button id="export-config">导出 Mock config</button></div><details class="card"><summary>临时实现边界</summary><p>教育职业样例、关系维度、婚配年龄和成本、家庭意见代表、生育时长、健康及寿命公式、婚后家庭安置均为 Mock 参数。两代旁系目前解释为兄弟姐妹及其子女。五官为 MOCK_ONLY 特征池。</p></details></section>
+<dialog id="feedback-dialog"><h2>记录问题</h2><label>问题类型<select id="issue-type"></select></label><label>严重程度<select id="issue-severity"><option>轻微奇怪</option><option selected>明显不合理</option><option>规则错误</option></select></label><label>备注（可选）<textarea id="issue-note" rows="3"></textarea></label><button id="save-issue" class="primary">保存现场</button><button id="cancel-issue">取消</button></dialog>
+<dialog id="choice-dialog"><h2>需要玩家选择</h2><div id="choice-content"></div><button id="close-choice">稍后选择</button></dialog>
+</main></body></html>

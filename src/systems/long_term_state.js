@@ -1,0 +1,3 @@
+import {id} from '../core/rng.js';
+export function addLongTerm(s,cid,type,source,expected_duration,priority=50,effects=[]){const key=id(s,'long');s.long_term_states[key]={id:key,character_id:cid,type,source,start_month:s.current_world_month,expected_duration,status:'active',priority,default_behavior_effects:effects,end_conditions:['source_ended','duration_elapsed','death']};return key;}
+export function updateLongTerms(s){for(const t of Object.values(s.long_term_states)){if(t.status!=='active')continue;const c=s.characters[t.character_id],src=t.source;const ended=src&&s[src.system]?.[src.id]?.status!=='active';if(!c?.alive||ended||t.expected_duration!==null&&s.current_world_month-t.start_month>=t.expected_duration)t.status='ended';}}

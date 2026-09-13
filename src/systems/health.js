@@ -1,0 +1,3 @@
+import {age} from '../core/state.js';
+import {random,bound} from '../core/rng.js';
+export function updateHealth(s,c){const h=s.health[c.character_id],v=h.value;const cfg=s.config;const illness=random(s)<cfg.illness_frequency;h.value=bound(h.value+cfg.health_recovery-(c.dynamic.stress>60?(c.dynamic.stress-60)*cfg.health_stress_damage:0)-Math.max(0,age(s,c)-cfg.aging_start)/cfg.aging_step_years*cfg.aging_loss-(illness?cfg.illness_loss:0));h.condition=h.value<30?'severe':h.value<65?'recovering':'normal';if(illness||h.condition==='severe')h.history.push({month:s.current_world_month,before:v,after:h.value,type:illness?'illness':'health'});return h.value<=0;}
