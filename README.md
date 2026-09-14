@@ -1,4 +1,4 @@
-# 种豌豆 · Mock V2.1.0-alpha
+# 种豌豆 · Mock V2.1.1-alpha
 
 首页是统一人生实验台，保持 GitHub Pages `main /根目录` 发布方式。完全静态，无真实 AI 或后端。
 

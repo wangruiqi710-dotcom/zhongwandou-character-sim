@@ -14,6 +14,7 @@ export function pendingDecision(s){
  return (s.player_decision_events||[]).find(e=>e.status==='pending'&&s.characters[e.character_id]?.alive)||null;
 }
 export function needsPlayer(s,cid,event){
+ if(event.type==='marriage'&&!inPlayerFamily(s,cid)&&inPlayerFamily(s,event.target_id)){const initiator=cid;cid=event.target_id;event={...event,target_id:initiator,incoming_initiator_id:initiator};}
  if(!inPlayerFamily(s,cid))return false;
  const major=['education','career','relocation','marriage','health','conflict','away_review'].includes(event.type);
  if(!major)return false;if(!cooled(s,cid,'player:'+event.type,s.config.player_event_cooldown))return 'cooldown';
@@ -35,7 +36,7 @@ export function playerChoices(s,e){
  if(e.type==='succession')return e.payload.candidates.map(p=>choice(p.character_id,names(s,p.character_id),'直接切换下一位控制角色；不决定财产分配'));
  if(e.type==='inheritance')return e.payload.eligible.map(cid=>choice(cid,names(s,cid),'指定主财产继承人；多子女60/40，单子女100%'));
  if(e.type==='force')return [choice('force','使用一次强制干预','只覆盖本人对当前安排的拒绝；消耗一次机会，可能增加压力和关系损伤',{feasible:s.player.force_credits>0,reason:'强制机会不足'}),choice('respect','尊重此次拒绝','本次不执行安排；保留之后的自主生活')];
- if(e.type==='marriage')return marriageCandidates(s,e.character_id).filter(x=>!x.reason).slice(0,s.config.marriage_candidate_count).map(x=>choice(x.character_id,'重点推动与'+names(s,x.character_id)+'议亲','提供具体婚配机会；本人、对象及家庭继续独立回应',{target_id:x.character_id})).concat(choice('skip','暂不推动婚配','保留人物与关系，暂不支付婚配费用'));
+ if(e.type==='marriage')return marriageCandidates(s,e.character_id).filter(x=>!x.reason&&s.characters[x.character_id].sex!==c.sex).sort((a,b)=>Number(b.character_id===e.payload.event?.target_id)-Number(a.character_id===e.payload.event?.target_id)).slice(0,s.config.marriage_candidate_count).map(x=>choice(x.character_id,'重点推动与'+names(s,x.character_id)+'议亲','提供具体婚配机会；本人、对象及家庭继续独立回应',{target_id:x.character_id})).concat(choice('skip','暂不推动婚配','保留人物与关系，暂不支付婚配费用'));
  if(e.type==='resource')return Object.values(s.characters).filter(x=>x.alive&&x.current_household_id===hid&&age(s,x)>=6).map(x=>choice(x.character_id,'优先支持'+names(s,x.character_id)+'学习','投入 '+cost+' 家庭资源；其他成员降低额外教育投入，为此人提供教育机会',{feasible:funds>=cost,reason:'家庭资源不足',target_id:x.character_id})).concat([choice('share','所有人降低额外投入','降低现有教育时间和费用，保留基础学习'),choice('skip','暂停额外教育投入','现有额外教育暂停，资源留在家庭')]);
  if(e.type==='care'||e.type==='conflict')return [choice('redistribute','重新分配家庭照护','优先寻找可承担责任的同住成年人；无接替者时减少工作时间'),choice('reduce','降低工作时间，优先照护','工作时间与收入下降，缓解职责冲突'),choice('work','优先稳定家庭收入','为适龄成员提供职业机会，随后由本人回应'),choice('skip','暂时保持安排','不改变职责，问题继续按实际状态发展')];
  if(e.type==='health')return [choice('treat','投入家庭资源医治','支付 '+s.config.major_treatment_cost+'；健康恢复 '+s.config.major_treatment_gain+'（Mock），不保证未来健康',{feasible:funds>=s.config.major_treatment_cost,reason:'家庭资金不足'}),choice('rest','承担照护，支持休养','减少当前工作与教育时间，家计收入可能下降')];
