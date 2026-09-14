@@ -1,3 +1,4 @@
+import {coResident} from './life_context.js';
 import {id} from '../core/rng.js';
 import {age} from '../core/state.js';
 import {createCharacter} from './character_generation.js';
@@ -5,6 +6,7 @@ import {currentMarriage} from './marriage.js';
 import {addLongTerm} from './long_term_state.js';
 export function reproductionConditions(s,a,b){
  if(!s.characters[a]?.alive||!s.characters[b]?.alive)return '父母未存活';
+ if(!coResident(s,a,b))return '当前分隔两地，不能开始共同生育安排';
  const mother=[a,b].find(id=>s.characters[id].sex==='女'),father=[a,b].find(id=>s.characters[id].sex==='男');if(!mother||!father)return 'Mock 生物学条件不满足';
  if([a,b].some(id=>age(s,s.characters[id])<s.config.birth_age_min)||age(s,s.characters[mother])>s.config.birth_age_max)return 'Mock 生育年龄条件不满足';
  if([a,b].some(id=>s.health[id].value<s.config.birth_health_min||s.characters[id].physiology.fertility_basis===0))return '健康或生育基础不满足';

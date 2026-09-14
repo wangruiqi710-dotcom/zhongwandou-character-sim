@@ -3,7 +3,7 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),asse
 const root=path.resolve(__dirname,'..');
 vm.runInThisContext(['worlds.js','src/core/legacy_bridge.js','decisions.js'].map(f=>fs.readFileSync(path.join(root,f),'utf8')).join('\n'));
 (async()=>{
- const {fixture,CASES}=await import('../src/testing/test_cases.js'),{month,command}=await import('../src/core/simulation.js'),{newRun,step,replay}=await import('../src/testing/run.js');
+ const {fixture,CASES}=await import('../src/testing/test_cases.js'),{month:rawMonth,command}=await import('../src/core/simulation.js'),{newRun,step,replay}=await import('../src/testing/run.js');
  const {inherit}=await import('../src/systems/genetics.js'),{FACE,COLORS,TALENTS}=await import('../src/config/mock_feature_pools.js');
  const {decide}=await import('../src/systems/behavior.js'),{eventFor}=await import('../src/systems/events.js'),{applyForce}=await import('../src/systems/player_intent.js');
  const {createCharacter}=await import('../src/systems/character_generation.js'),{createHousehold}=await import('../src/systems/household.js');
@@ -13,6 +13,10 @@ vm.runInThisContext(['worlds.js','src/core/legacy_bridge.js','decisions.js'].map
  const {feedbackFor,validateImport,exportEnvelope}=await import('../src/testing/feedback_store.js');
  const {scan,samples,healthChecks}=await import('../src/testing/behavior_lab.js');
  const {clone}=await import('../src/core/state.js');
+ const {pendingDecision,playerChoices}=await import('../src/systems/player_decisions.js');
+ // Explicit deterministic test-player input. Production must stop at these same gates.
+ function answer(s,apply=cmd=>command(s,cmd)){let guard=0;while(pendingDecision(s)){assert(++guard<100);const p=pendingDecision(s),options=playerChoices(s,p).filter(x=>x.feasible),o=options.find(x=>['skip','respect'].includes(x.id))||options[0];apply({type:'player_choice',event_id:p.id,option_id:o.id});}}
+ function month(s){answer(s);return rawMonth(s);}
  let checks=0;const ok=(v,label)=>{assert.ok(v,label);checks++;};
  const initial=fixture({seed:72}),a=initial.characters[initial.test.father_id],b=initial.characters[initial.test.mother_id];
  for(const k of TALENTS){a.talents[k]=25;b.talents[k]=75;}
@@ -21,7 +25,7 @@ vm.runInThisContext(['worlds.js','src/core/legacy_bridge.js','decisions.js'].map
  ok(outside>0&&outside<3000,'continuous outside rare');ok(nonMean>9000,'not parental mean');const s1=clone(initial),s2=clone(initial),a2=clone(a),b2=clone(b);a2.appearance.hairstyle_id='anything';b2.appearance.hairstyle_id='else';ok(inherit(s1,a,b).appearance.hairstyle_id===inherit(s2,a2,b2).appearance.hairstyle_id,'hairstyle independent');
  for(const world of ['modern','ancient']){const s=fixture({world}),cid=s.control.current_control_character_id;for(const type of ['music','safety','learning','career','birth','strain']){const result=decide(s,cid,eventFor(s,type,s.test.target_id));ok(result.candidate_actions.reduce((sum,a)=>sum+a.probability_units,0)===1000,'sum probability');ok(result.candidate_actions.every(a=>Number.isFinite(a.probability)&&a.probability>=0),'finite nonnegative');ok(Math.abs(result.candidate_actions.reduce((sum,a)=>sum+a.probability_fraction,0)-1)<1e-10,'normalized probability sum1');}
  for(const attr of ['planning','interest','extraversion','goal','resources','stress','relationship']){const rows=scan(s,cid,'music',attr);ok(rows.every(r=>r.candidate_actions.every(a=>a.modifiers.random===0)),'theory noise off');}
- const musicSafety=scan(s,cid,'safety','interest');ok(JSON.stringify(musicSafety[0].candidate_actions.map(a=>a.probability))===JSON.stringify(musicSafety.at(-1).candidate_actions.map(a=>a.probability)),'unrelated music no effect');for(let i=0;i<12;i++)month(s);ok(s.history.length===12,'world monthly');
+ const musicSafety=scan(s,cid,'safety','interest');ok(JSON.stringify(musicSafety[0].candidate_actions.map(a=>a.probability))===JSON.stringify(musicSafety.at(-1).candidate_actions.map(a=>a.probability)),'unrelated music no effect');for(let i=0;i<12;i++)month(s);ok(s.history.filter(h=>h.kind==='month').length===12,'world monthly');
  }
  const scarce=fixture({case_id:'TC-RESOURCE-01'}),cid=scarce.control.current_control_character_id,result=decide(scarce,cid,eventFor(scarce,'learning'));
  ok(result.excluded_actions.some(a=>a.resource_cost>0&&a.probability===0),'resource hard filter');ok(!applyForce(scarce,cid,result,'try_lesson').executed,'force cannot cross resources');
@@ -34,9 +38,9 @@ vm.runInThisContext(['worlds.js','src/core/legacy_bridge.js','decisions.js'].map
  const single=fixture({});delete single.characters[single.test.child_id].biological_parent_ids[1];single.characters[single.test.child_id].biological_parent_ids=[];single.resources.personal[single.test.father_id].personal_inheritable_estate=88;die(single,single.test.father_id);const one=single.inheritances[single.test.father_id];inheritEstate(single,single.test.father_id,one.eligible[0]);ok(single.resources.personal[one.eligible[0]].personal_inheritable_estate===88,'single child100');
  const baby=fixture({case_id:'TC-BIRTH-01'}),before=Object.keys(baby.characters).length;for(let i=0;i<9;i++)month(baby);ok(Object.keys(baby.characters).length>before,'true newborn created');const born=Object.values(baby.characters).find(c=>c.birth_month===baby.current_world_month);ok(born&&born.life_goal===null&&born.biological_parent_ids.length===2,'newborn fields');
  const goal=fixture({}),gc=goal.characters[goal.test.child_id];gc.birth_month=goal.current_world_month-143;gc.life_goal=null;month(goal);ok(gc.life_goal!==null,'goal at12');
- const run=newRun(fixture({seed:85}));for(let i=0;i<24;i++)step(run,{type:'month'});const replayed=replay(run);const normalized=clone(run.state);normalized.history.forEach(e=>delete e.command_index);assert.deepEqual(replayed,normalized);checks++;const feedback=feedbackFor(run,6,'很好的结果');ok(feedback.simulation_month===run.state.history[6].month&&feedback.replay.commands.length===7,'historical feedback checkpoint');validateImport(exportEnvelope({feedback:[feedback]}));assert.throws(()=>replay({...feedback.replay,mock_version:'old'}));checks++;
+ const run=newRun(fixture({seed:85}));for(let i=0;i<24;i++){answer(run.state,cmd=>step(run,cmd));step(run,{type:'month'});}const replayed=replay(run);const normalized=clone(run.state);normalized.history.forEach(e=>delete e.command_index);assert.deepEqual(replayed,normalized);checks++;const feedback=feedbackFor(run,6,'很好的结果');ok(feedback.simulation_month===run.state.history[6].month&&feedback.replay.commands.length===run.state.history[6].command_index+1,'historical feedback checkpoint');validateImport(exportEnvelope({feedback:[feedback]}));assert.throws(()=>replay({...feedback.replay,mock_version:'old'}));checks++;
  const noise=clone(initial);const tests=await samples(decide(noise,noise.test.child_id,eventFor(noise,'music'),{noise:false}).candidate_actions,10000,10);ok(tests.every(r=>Math.abs(r.error)<2),'sampling distribution');
- let marriageSeed=null,marriedState;for(let seed=0;seed<150;seed++){const s=fixture({seed,case_id:'TC-MARRIAGE-02'}),r=arrangeMarriage(s,s.test.child_id,s.test.target_id,'force');if(r.status==='married'){marriageSeed=seed;marriedState=s;break;}}ok(marriageSeed!==null,'force marriage real execution');for(let i=0;i<24;i++)month(marriedState);ok(marriedState.history.length===24,'forced24');
+ let marriageSeed=null,marriedState;for(let seed=0;seed<150;seed++){const s=fixture({seed,case_id:'TC-MARRIAGE-02'}),r=arrangeMarriage(s,s.test.child_id,s.test.target_id,'force');if(r.status==='married'){marriageSeed=seed;marriedState=s;break;}}ok(marriageSeed!==null,'force marriage real execution');for(let i=0;i<24;i++)month(marriedState);ok(marriedState.history.filter(h=>h.kind==='month').length===24,'forced24');
  console.log(JSON.stringify({checks,genetics:{children:10000,outside,nonMean,meanFaceMutations:mutations/10000,colors},forcedMarriageSeed:marriageSeed,sampling:tests},null,2));
 
  // Stronger color distribution and formal adoption / collateral boundaries.
@@ -70,7 +74,7 @@ vm.runInThisContext(['worlds.js','src/core/legacy_bridge.js','decisions.js'].map
  ok(br.excluded_actions.some(a=>a.action_id==='commit_terms'),'birth hard conditions');
  // Parameter isolation and fixed default months: no compulsory personality decisions.
  const stable=fixture({case_id:'TC-EDU-01'});stable.config.decision_event_frequency=0;stable.config.illness_frequency=0;stable.config.marriage_opportunity_frequency=0;stable.config.reproduction_frequency=0;
- for(let i=0;i<12;i++)month(stable);ok(stable.history.every(h=>h.reports.find(r=>r.character_id===stable.test.child_id).defaults.primary.type==='education'),'education default persists');ok(stable.history.every(h=>!h.reports.find(r=>r.character_id===stable.test.child_id).decision),'no monthly mandatory decision');
+ for(let i=0;i<12;i++)month(stable);ok(stable.history.filter(h=>h.kind==='month').every(h=>h.reports.find(r=>r.character_id===stable.test.child_id).defaults.primary.type==='education'),'education default persists');ok(stable.history.every(h=>!h.reports.find(r=>r.character_id===stable.test.child_id).decision),'no monthly mandatory decision');
  const longRun=fixture({seed:0});let lifeMonths=0;while(longRun.control.current_control_character_id&&lifeMonths<1500){month(longRun);lifeMonths++;}ok(longRun.control.pending!==null,'run to death reaches pause');console.log(JSON.stringify({additionalChecks:checks,unequalColorParentA:fromA,generationLog,continuousMonths:three.history.length,runToDeathMonths:lifeMonths}));
 
 })().catch(e=>{console.error(e);process.exitCode=1;});

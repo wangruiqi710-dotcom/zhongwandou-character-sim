@@ -1,3 +1,7 @@
+import {queuePlayerEvent} from '../systems/player_decisions.js';
+import {ensureMarriageCandidates} from '../systems/marriage.js';
+import {eventFor} from '../systems/events.js';
+import {resolveDecision} from '../systems/behavior.js';
 import {createState,clone} from '../core/state.js';
 import {createHousehold} from '../systems/household.js';
 import {createCharacter} from '../systems/character_generation.js';
@@ -7,6 +11,13 @@ import {relationship} from '../systems/relationships.js';
 import {startReproduction} from '../systems/reproduction.js';
 import {defaults} from '../config/mock_tunables.js';
 export const CASES={
+ 'PLAYER-RESOURCE-01':['家庭资源只能重点支持一人','player'],
+ 'PLAYER-EDU-01':['家庭是否支持重大教育机会','player'],
+ 'PLAYER-CAREER-01':['家庭是否支持离乡发展','player'],
+ 'PLAYER-MARRIAGE-01':['选择真实婚配候选','player'],
+ 'PLAYER-FORCE-01':['明确拒绝后是否强制','player'],
+ 'PLAYER-HEIR-01':['玩家指定主继承人','death'],
+ 'PLAYER-SUCCESSION-01':['玩家选择接班角色','death'],
  'TC-RESOURCE-01':['兴趣很高，但资源不足','event','learning'],
  'TC-GOAL-01':['短期试学与家庭目标','event','learning'],
  'TC-EDU-01':['学生正常教育生活','months',12],
@@ -41,6 +52,7 @@ export function fixture({seed=12345,world='ancient',case_id='life',config=defaul
  relationship(s,child.character_id,target.character_id).attitude=Number(attitude);relationship(s,child.character_id,father.character_id).attitude=20;
  // The preset parents already share a marriage; initialization is explicit scenario data.
  const parentMarriage='preset-parent-marriage';s.marriages[parentMarriage]={id:parentMarriage,people:[father.character_id,mother.character_id],status:'active',start_month:s.current_world_month-21*12,origin:'MOCK_ONLY fixture',history:[]};
+ father.marriage_id=parentMarriage;mother.marriage_id=parentMarriage;father.spouse_character_id=mother.character_id;mother.spouse_character_id=father.character_id;
  s.control.current_control_character_id=child.character_id;s.player.force_credits=s.config.force_initial_credit;
  s.test={case_id,child_id:child.character_id,target_id:target.character_id,father_id:father.character_id,mother_id:mother.character_id};
  if(case_id==='TC-RESOURCE-01'){s.resources.households[home].household_resources=0;child.interests=[{name:world==='ancient'?'手工':'音乐',intensity:99,source:'MOCK_ONLY'}];}
@@ -50,6 +62,11 @@ export function fixture({seed=12345,world='ancient',case_id='life',config=defaul
  if(case_id==='TC-HOUSEHOLD-01'){s.resources.households[home].household_resources=10;for(const cid of s.households[home].members)if(s.careers[cid])s.careers[cid].status='ended';enroll(s,child.character_id);}
  if(case_id==='health')s.health[child.character_id].value=15;
  if(case_id==='TC-BIRTH-01'){establishMarriage(s,child.character_id,target.character_id,'MOCK_ONLY initial fixture');startReproduction(s,child.character_id,target.character_id);}
- if(['TC-DEATH-01','TC-SUCCESSION-01','TC-INHERITANCE-01'].includes(case_id)){s.control.current_control_character_id=father.character_id;s.resources.personal[father.character_id].personal_inheritable_estate=1000;}
+ if(['TC-DEATH-01','TC-SUCCESSION-01','TC-INHERITANCE-01','PLAYER-HEIR-01','PLAYER-SUCCESSION-01'].includes(case_id)){s.control.current_control_character_id=father.character_id;s.resources.personal[father.character_id].personal_inheritable_estate=1000;}
+ if(case_id==='PLAYER-RESOURCE-01'){s.resources.households[home].household_resources=s.config.opportunity_cost;enroll(s,child.character_id);enroll(s,sibling.character_id);queuePlayerEvent(s,'resource',child.character_id);}
+ if(case_id==='PLAYER-EDU-01')queuePlayerEvent(s,'education',child.character_id,{event:eventFor(s,'education')});
+ if(case_id==='PLAYER-CAREER-01')queuePlayerEvent(s,'relocation',child.character_id,{event:eventFor(s,'relocation')});
+ if(case_id==='PLAYER-MARRIAGE-01'){ensureMarriageCandidates(s,child.character_id);queuePlayerEvent(s,'marriage',child.character_id);}
+ if(case_id==='PLAYER-FORCE-01'){const event=eventFor(s,'career'),previous=resolveDecision(s,child.character_id,event,{noise:false,draw:.999999});queuePlayerEvent(s,'force',child.character_id,{event,previous,fixture_note:'固定案例用指定抽样分位制造明确拒绝'});}
  return s;
 }

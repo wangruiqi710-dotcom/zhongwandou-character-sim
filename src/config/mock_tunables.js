@@ -1,7 +1,13 @@
-export const META={schema_version:2,mock_version:'2.0.0-alpha',design_version:'architecture_v014',design_sha256:'6654561CAF9BE64D01FD1118A8F84E84A693B0AAFAA80ACD7FAA62841DB82E76'};
+export const META={schema_version:3,mock_version:'2.1.0-alpha',design_version:'architecture_v014',design_sha256:'6654561CAF9BE64D01FD1118A8F84E84A693B0AAFAA80ACD7FAA62841DB82E76'};
 export const GOALS=['职业成就','家庭生活','声望地位','财富积累'];
 // Every value below is MOCK_TUNABLE, not a rule added to the frozen design.
 export const TUNABLES={
+ education_min_age:[6,3,12],safe_route_time:[.05,0,.2],
+ work_reduction_fraction:[.2,.05,.5],minimum_work_time:[.2,.1,.5],education_reduced_fraction:[.5,.1,1],mentor_age:[38,18,70],
+ event_cooldown:[6,1,24],background_cooldown:[3,1,24],recent_history_limit:[48,12,240],decision_stage_limit:[4,2,8],trial_months:[2,1,12],trial_time:[.15,.05,.5],
+ situation_worsening:[8,1,30],situation_recovery:[12,1,30],situation_notice_step:[20,5,50],situation_decision_threshold:[60,20,100],situation_decision_cooldown:[6,1,24],
+ away_income_multiplier:[1.3,.5,3],away_living_multiplier:[1.5,.5,3],marriage_candidate_count:[3,2,6],player_window_months:[3,3,12],player_event_cooldown:[12,3,36],family_support_months:[12,3,48],major_treatment_cost:[80,1,1000],major_treatment_gain:[30,1,60],
+
  continuous_genetics_in_range_weight:[.9,0,1],continuous_genetics_mutation_rate:[.1,0,1],continuous_genetics_mutation_range:[18,1,50],
  face_mutation_count_weights:[[.6,.3,.1]],body_parent_weight:[.85,0,1],
  background_event_frequency:[.22,0,1],decision_event_frequency:[.035,0,1],marriage_opportunity_frequency:[.035,0,1],
