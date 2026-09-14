@@ -13,7 +13,7 @@ export function choiceLayers(result){
  if(!result?.player_choice)return '';
  const arr=result.arrangement,decision=result.decision||arr?.child,character=Object.hasOwn(result,'character_choice')?result.character_choice:decision?.chosen_action;
  const final=result.final_outcome||decision?.content_result?.outcome||decision?.actual_changes?.join('；')||result.immediate_effect||'已执行安排';
- return '<div class="choice-layers"><p><strong>你的决定：</strong>'+esc(result.player_choice)+'</p><p><strong>人物反应：</strong>'+esc(character||'此项为家庭直接安排，没有额外的人物决定')+'</p><p><strong>最终结果：</strong>'+esc(final)+'</p></div>';
+ return '<div class="choice-layers"><p><strong>你的决定：</strong>'+esc(result.player_choice)+'</p><p><strong>人物反应：</strong>'+esc(character||'此项为家庭直接安排，没有额外的人物决定')+'</p><p><strong>最终结果：</strong>'+esc(final)+'</p>'+((result.arrangement?.responses||[]).map(r=>'<p><strong>'+esc(r.role+' · '+(r.actor_name||''))+'：</strong>'+esc(r.result.character_response||r.result.chosen_action)+'<br>'+r.decision_reasons.map(x=>esc(x.reason)).join('；')+'</p>').join(''))+(result.decision_reasons?.length?'<p><strong>为什么：</strong>'+result.decision_reasons.map(x=>esc(x.reason)).join('；')+'</p>':'')+'</div>';
 }
 const primary=e=>e.reports?.find(r=>r.character_id===e.control_character_id)||e.reports?.[0];
 export function featuredReport(e){const main=primary(e);return e.reports?.find(r=>r.death)||(main?.important?main:e.reports?.find(r=>r.important))||main;}

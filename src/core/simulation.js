@@ -10,7 +10,7 @@ import {defaultBehaviors,executeDefaults} from '../systems/default_behavior.js';
 import {settleResources,spend} from '../systems/resources.js';
 import {updateLongTerms,addLongTerm} from '../systems/long_term_state.js';
 import {backgroundCandidates,triggerBackground,decisionEvent,eventFor} from '../systems/events.js';
-import {resolveDecision,chosen} from '../systems/behavior.js';
+import {resolveDecision,chosen,preparePlayerDecision} from '../systems/behavior.js';
 import {enroll,employ} from '../systems/education_career.js';
 import {updateReproduction,startReproduction} from '../systems/reproduction.js';
 import {arrangeMarriage,ensureMarriageCandidates} from '../systems/marriage.js';
@@ -76,9 +76,15 @@ function autonomous(s,cid,event,options={}){
  if(chosen(result).outcome==='reject'&&inPlayerFamily(s,cid)&&['career','education','relocation','birth'].includes(event.type)&&options.intervention?.mode==='ordinary')queuePlayerEvent(s,'force',cid,{event,previous:result});
  return result;
 }
+function playerExecute(s,cid,event,action_id='commit_terms',force=false){
+ const result=preparePlayerDecision(s,cid,event,action_id);
+ if(result.player_conflict&&!force){queuePlayerEvent(s,'force',cid,{event,previous:result,action_id,reasons:result.decision_reasons});result.actual_changes=['等待玩家进一步决定：'+result.character_response];return result;}
+ if(force&&!event.force_recipient){result.force=applyForce(s,cid,result,action_id);if(!result.force.executed){result.actual_changes=['无法执行：'+result.force.reason];return result;}result.chosen_action_id=action_id;result.chosen_action=result.force.action.action;result.character_response='当前安排强制执行；人物之后仍保留自主反应';}
+ executeDecision(s,cid,result);const recipient=result.recipient_decision;if(recipient?.player_conflict&&!recipient.force?.executed){queuePlayerEvent(s,'force',cid,{event,previous:recipient,action_id,recipient_target:event.target_id,reasons:recipient.decision_reasons});result.actual_changes.push('人物存在明确强冲突，等待玩家进一步决定');}return result;
+}
 function marriage(s,cid,target,mode,previous=null){
  const r=arrangeMarriage(s,cid,target,mode,null,previous);
- if(r.status==='refused'&&inPlayerFamily(s,cid)&&mode!=='force')queuePlayerEvent(s,'force',cid,{marriage:true,target_id:target,previous:r});
+ if(r.status==='refused'&&inPlayerFamily(s,cid)&&mode!=='force')queuePlayerEvent(s,'force',cid,{marriage:true,target_id:target,previous:r,reasons:r.child.decision_reasons});
  return r;
 }
 export function month(s){
@@ -105,13 +111,13 @@ export function month(s){
 }
 function playerResolve(s,cmd){
  const e=pendingDecision(s);if(!e||cmd.event_id!==e.id)throw Error('该玩家决定已结束或不是当前等待项');
- const option=playerChoices(s,e).find(x=>x.id===cmd.option_id);if(!option||!option.feasible)throw Error(option?.reason||'无效的玩家选择');
+ const option=playerChoices(s,e).find(x=>x.id===cmd.option_id);if(!option||!option.feasible)throw Error('无法执行：'+(option?.reason||'无效的玩家选择'));
  const cid=e.character_id,c=s.characters[cid],h=c&&s.resources.households[c.current_household_id];
  let result={player_event_id:e.id,player_event_type:e.type,player_choice:option.label,immediate_effect:option.impact};
  if(e.type==='succession'){selectSuccessor(s,option.id);return {...result,selected:option.id};}
  if(e.type==='inheritance')return {...result,inheritance:inheritEstate(s,e.payload.deceased_id,option.id)};
  e.status='resolved';e.choice=option.id;e.resolved_month=s.current_world_month;recordEvent(s,cid,e.type,'player_decision');
- if(e.type==='content'){if(option.id==='skip')return {...result,content_declined:true};const offered=clone(e.payload.event);const allocation=offered.mock_actions.find(a=>a.id===option.id)?.conditions.content_effects?.some(e=>['fundeducation','reduceeducation','reassign','care'].includes(e.kind));offered.decision_owner=allocation?'player':'character';offered.mock_actions=offered.mock_actions.filter(a=>a.id===option.id||!allocation&&(a.id==='leave_current'||a.conditions.action_type==='transition_action'));result.decision=autonomous(s,cid,offered,{intervention:{mode:'ordinary',action_id:option.id}});return result;}
+ if(e.type==='content'){if(option.id==='skip')return {...result,content_declined:true};const offered=clone(e.payload.event);const allocation=offered.mock_actions.find(a=>a.id===option.id)?.conditions.content_effects?.some(e=>['fundeducation','reduceeducation','reassign','care'].includes(e.kind));offered.decision_owner=allocation?'player':'character';offered.mock_actions=offered.mock_actions.filter(a=>a.id===option.id||!allocation&&(a.id==='leave_current'||a.conditions.action_type==='transition_action'));offered.player_authority=true;result.decision=playerExecute(s,cid,offered,option.id);return result;}
  if((e.type==='marriage'||e.payload.marriage)&&['skip','defer','reject','respect'].includes(option.id)){const target=e.payload.target_id||e.payload.event?.target_id;for(const issue of Object.values(s.ongoing_situations).filter(x=>x.type==='marriage_negotiation'&&['active','paused'].includes(x.status)&&x.participants.includes(cid)&&(!target||x.participants.includes(target)))){issue.status=['reject','respect'].includes(option.id)?'ended':'paused';issue.end_month=s.current_world_month;issue.needs_decision=false;issue.development_history.push({month:s.current_world_month,kind:issue.status,action:option.label,severity:issue.severity});}}
  if(option.id==='skip'){
   if(e.type==='resource')for(const x of Object.values(s.characters).filter(x=>x.current_household_id===c.current_household_id&&s.education[x.character_id]?.status==='active'))s.education[x.character_id].status='paused';
@@ -121,7 +127,7 @@ function playerResolve(s,cmd){
  if(e.type==='force'){
   if(option.id==='persuade'){result.arrangement=marriage(s,cid,e.payload.target_id,'ordinary');return result;}
   if(option.id==='force'){if(e.payload.marriage)result.arrangement=marriage(s,cid,e.payload.target_id,'force',e.payload.previous);
-   else result.decision=autonomous(s,cid,e.payload.event,{intervention:{mode:'force',action_id:'commit_terms'},previous:e.payload.previous});}
+   else{result.decision=playerExecute(s,cid,{...e.payload.event,force_recipient:!!e.payload.recipient_target},e.payload.action_id||'commit_terms',true);result.decision.prior_refusal=clone(e.payload.previous);}}
   return result;
  }
  if(e.type==='marriage'){if(e.payload.event?.content_template){const event={...clone(e.payload.event),target_id:option.target_id,decision_owner:'player'},action=event.mock_actions.find(a=>a.conditions.content_effects?.some(x=>x.kind==='marriage'));result.decision={event,chosen_action_id:action.id,chosen_action:option.label,candidate_actions:[]};applyContent(s,cid,result.decision,marriage);result.arrangement=result.decision.content_arrangement;}else result.arrangement=marriage(s,cid,option.target_id,'ordinary');return result;}
@@ -133,10 +139,10 @@ function playerResolve(s,cmd){
  if(e.type==='care'||e.type==='conflict'){
   if(option.id==='redistribute')result.responsibility_change=reassignCare(s,cid);
   if(option.id==='reduce'&&s.careers[cid]){s.careers[cid].time=Math.max(s.config.minimum_work_time,s.careers[cid].time-s.config.work_reduction_fraction);s.careers[cid].wage*=1-s.config.work_reduction_fraction;}
-  if(option.id==='work')result.decision=autonomous(s,cid,{...eventFor(s,'career'),description:'寻找不需先交费用的基础工作机会。',cost:0,career_index:2},{intervention:{mode:'ordinary',action_id:'commit_terms'}});
+  if(option.id==='work')result.decision=playerExecute(s,cid,{...eventFor(s,'career'),description:'寻找不需先交费用的基础工作机会。',cost:0,career_index:2});
   return result;
  }
- if(e.type==='away_review'){const event=e.payload.event||eventFor(s,'away_review');result.decision=autonomous(s,cid,event,{intervention:option.id==='return_offer'?{mode:'ordinary',action_id:'return'}:null});return result;}
+ if(e.type==='away_review'){const event=e.payload.event||eventFor(s,'away_review');result.decision=option.id==='return_offer'?playerExecute(s,cid,event,'return'):autonomous(s,cid,event);return result;}
  let target=cid,type=e.type;
  if(e.type==='resource'){
   for(const x of Object.values(s.characters).filter(x=>x.current_household_id===c.current_household_id&&s.education[x.character_id]?.status==='active')){s.education[x.character_id].time*=s.config.education_reduced_fraction;s.education[x.character_id].funding_fraction=s.config.education_reduced_fraction;}
@@ -144,8 +150,8 @@ function playerResolve(s,cmd){
  }
  const before=h.household_resources;h.household_resources-=s.config.opportunity_cost;
  const key=addLongTerm(s,target,'family_support',null,s.config.family_support_months,60,['家庭支持的机会']);s.long_term_states[key].investment=s.config.opportunity_cost;
- const event={...(e.type==='resource'?eventFor(s,type):e.payload.event||eventFor(s,type)),cost:0};result.decision=autonomous(s,target,event,{intervention:{mode:'ordinary',action_id:'commit_terms'}});
- if(['reject','defer'].includes(chosen(result.decision).outcome)){
+ const event={...(e.type==='resource'?eventFor(s,type):e.payload.event||eventFor(s,type)),cost:0};result.decision=playerExecute(s,target,event);
+ if(result.decision.player_conflict){
   h.household_resources=before;s.long_term_states[key].status='ended';result.immediate_effect+='；本人未接受，预留投入已退回家庭';
   const force=s.player_decision_events.find(x=>x.type==='force'&&x.status==='pending'&&x.character_id===target);if(force)force.payload.event.cost=s.config.opportunity_cost;
  }else result.resource_change={before,after:h.household_resources};
@@ -170,6 +176,6 @@ export function command(s,cmd){
  case 'employ':employ(s,cid,cmd.index||0);result={type:'career_started'};break;
  default:throw Error('未知测试命令');
  }
- if(cmd.type==='player_choice'){const arrangement=result.arrangement,decision=arrangement?.child||result.decision?.recipient_decision||result.decision;result.character_choice=decision?.event?.decision_owner==='player'?null:decision?.chosen_action||waiting?.payload?.previous?.child?.chosen_action||waiting?.payload?.previous?.chosen_action||null;result.final_outcome=result.final_outcome||(arrangement?({married:'双方接受，婚姻已成立',refused:'本人拒绝，婚姻未成立',other_refused:'对方拒绝，婚姻未成立',delayed:'议亲继续，尚未建立婚姻',blocked:'现实条件不满足，婚姻未成立',force_failed:'强制未执行'}[arrangement.status]||arrangement.status):result.decision?.content_result?.outcome||decision?.actual_changes?.join('；')||result.immediate_effect);}
+ if(cmd.type==='player_choice'){const arrangement=result.arrangement,decision=arrangement?.child||result.decision?.recipient_decision||result.decision;result.decision_reasons=decision?.decision_reasons||waiting?.payload?.reasons||[];result.character_choice=decision?.event?.decision_owner==='player'?null:decision?.character_response||decision?.chosen_action||waiting?.payload?.previous?.child?.chosen_action||waiting?.payload?.previous?.chosen_action||null;result.final_outcome=result.final_outcome||(arrangement?arrangement.final_outcome||({married:'双方接受，婚姻已成立',refused:'本人拒绝，婚姻未成立',other_refused:'对方拒绝，婚姻未成立',delayed:'议亲继续，尚未建立婚姻',blocked:'现实条件不满足，婚姻未成立',force_failed:'强制未执行'}[arrangement.status]||arrangement.status):result.decision?.content_result?.outcome||decision?.actual_changes?.join('；')||result.immediate_effect);}
  const after=cid?snapshot(s,cid):null,entry={kind:cmd.type,month:s.current_world_month,character_id:cid,before,after,result:clone(result),diff:diff(before,after),important:true};s.history.push(entry);return entry;
 }

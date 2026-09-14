@@ -15,7 +15,7 @@ const assert=require('node:assert/strict'),{chromium}=require('playwright');
  for(const width of [375,390,430]){
   await page.setViewportSize({width,height:844});
   assert.equal(await page.locator('.full-person[open]').count(),0);assert.equal(await page.locator('#timeline pre:visible').count(),0);
-  assert.equal(await page.locator('.timeline-node[open]').count(),0);assert(await page.locator('.month-run').count()>0);
+  assert.equal(await page.locator('.timeline-node[open]').count(),0);assert(await page.locator('.timeline-node').count()>0);
   const years=await page.locator('.timeline-year').evaluateAll(es=>es.map(e=>({year:e.dataset.year,open:e.open})));assert(years.length>=6);assert.equal(years.filter(e=>e.open).length,1);assert.equal(years[0].open,true);
   const nav=(await page.locator('nav').boundingBox()).height,person=(await page.locator('.person-summary').boundingBox()).height;
   assert(nav<=60,'single row nav');assert(person<180,'short person card');assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'root overflow');

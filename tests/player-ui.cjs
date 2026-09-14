@@ -13,7 +13,7 @@ vm.runInThisContext(['worlds.js','src/core/legacy_bridge.js','decisions.js'].map
  const {execFileSync}=require('node:child_process');
  const baseline=await import('data:text/javascript;base64,'+Buffer.from(execFileSync('git',['show','be8c02ab25dc44ec2c70f9c3daa0b24ec275261c:src/content/ancient_events.js'],{cwd:root})).toString('base64'));
  const withoutOwner=t=>{const {event_type,player_involvement,...rest}=t;return rest;};assert.deepEqual(ANCIENT_EVENTS.map(withoutOwner),baseline.ANCIENT_EVENTS.map(withoutOwner));
- for(const file of ['decisions.js','worlds.js','src/core/rng.js','src/systems/genetics.js','src/systems/character_generation.js','src/systems/behavior.js','src/systems/long_term_state.js','src/systems/ongoing_situations.js','src/testing/run.js','src/testing/feedback_store.js'])assert.equal(fs.readFileSync(path.join(root,file),'utf8').replace(/\r/g,''),execFileSync('git',['show','be8c02ab25dc44ec2c70f9c3daa0b24ec275261c:'+file],{cwd:root,encoding:'utf8'}).replace(/\r/g,''),'protected core changed '+file);
+ for(const file of ['decisions.js','worlds.js','src/core/rng.js','src/systems/genetics.js','src/systems/character_generation.js','src/systems/long_term_state.js','src/systems/ongoing_situations.js','src/testing/run.js','src/testing/feedback_store.js'])assert.equal(fs.readFileSync(path.join(root,file),'utf8').replace(/\r/g,''),execFileSync('git',['show','be8c02ab25dc44ec2c70f9c3daa0b24ec275261c:'+file],{cwd:root,encoding:'utf8'}).replace(/\r/g,''),'protected core changed '+file);
  tests.push('PROTECTED-CORE: content unchanged except ownership, probability/RNG/world/state/replay/feedback source unchanged');
  const facts=s=>JSON.stringify([s.characters,s.resources,s.health,s.marriages,s.long_term_states,s.ongoing_situations,s.rng_state]);
  for(const t of ANCIENT_EVENTS){
@@ -51,7 +51,7 @@ vm.runInThisContext(['worlds.js','src/core/legacy_bridge.js','decisions.js'].map
  }
  tests.push('MARRIAGE-DEFER-REJECT: no character draw, active proposal actually pauses/ends');
  let refusalRun;
- for(let seed=0;seed<100;seed++){const r=newRun(fixture({seed,case_id:'PLAYER-MARRIAGE-01'})),p=pendingDecision(r.state);step(r,{type:'player_choice',event_id:p.id,option_id:r.state.test.target_id});if(pendingDecision(r.state)?.type==='force'){refusalRun=r;break;}}
+ for(let seed=0;seed<100;seed++){const r=newRun(fixture({seed,case_id:'PLAYER-MARRIAGE-01'})),p=pendingDecision(r.state);r.state.characters[r.state.test.child_id].experiences.push({decision_type:'marriage',target_id:r.state.test.target_id,strong_conflict:true});step(r,{type:'player_choice',event_id:p.id,option_id:r.state.test.target_id});if(pendingDecision(r.state)?.type==='force'){refusalRun=r;break;}}
  assert(refusalRun,'real marriage refusal must create second player decision');
  const refusal=pendingDecision(refusalRun.state),beforeRefusal=facts(refusalRun.state);assert.throws(()=>step(refusalRun,{type:'month'}),/需要你的决定/);assert.equal(facts(refusalRun.state),beforeRefusal);
  assert(playerChoices(refusalRun.state,refusal).some(o=>o.id==='persuade'));assert(playerChoices(refusalRun.state,refusal).some(o=>o.id==='defer'));

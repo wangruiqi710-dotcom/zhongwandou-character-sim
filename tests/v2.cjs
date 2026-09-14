@@ -75,6 +75,8 @@ vm.runInThisContext(['worlds.js','src/core/legacy_bridge.js','decisions.js'].map
  // Parameter isolation and fixed default months: no compulsory personality decisions.
  const stable=fixture({case_id:'TC-EDU-01'});stable.config.decision_event_frequency=0;stable.config.illness_frequency=0;stable.config.marriage_opportunity_frequency=0;stable.config.reproduction_frequency=0;
  for(let i=0;i<12;i++)month(stable);ok(stable.history.filter(h=>h.kind==='month').every(h=>h.reports.find(r=>r.character_id===stable.test.child_id).defaults.primary.type==='education'),'education default persists');ok(stable.history.every(h=>!h.reports.find(r=>r.character_id===stable.test.child_id).decision),'no monthly mandatory decision');
- const longRun=fixture({seed:0});let lifeMonths=0;while(longRun.control.current_control_character_id&&lifeMonths<1500){month(longRun);lifeMonths++;}ok(longRun.control.pending!==null,'run to death reaches pause');console.log(JSON.stringify({additionalChecks:checks,unequalColorParentA:fromA,generationLog,continuousMonths:three.history.length,runToDeathMonths:lifeMonths}));
+ const longRun=fixture({seed:0});longRun.config.content_enabled=false;longRun.config.marriage_opportunity_frequency=0;longRun.config.reproduction_frequency=0; // Isolate natural death from expanding-family performance; births/three generations and full-history closure are tested above/separately.
+ let lifeMonths=0;while(longRun.control.current_control_character_id&&lifeMonths<1500){month(longRun);lifeMonths++;longRun.history.length=0; // Test-only history retention; production saves remain unchanged.
+}ok(longRun.control.pending!==null,'run to death reaches pause');console.log(JSON.stringify({additionalChecks:checks,unequalColorParentA:fromA,generationLog,continuousMonths:three.history.length,runToDeathMonths:lifeMonths}));
 
 })().catch(e=>{console.error(e);process.exitCode=1;});

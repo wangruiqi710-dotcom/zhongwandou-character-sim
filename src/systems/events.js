@@ -5,7 +5,7 @@ import {random,pick,bound,integer} from '../core/rng.js';
 import {age} from '../core/state.js';
 import {changeRelationship} from './relationships.js';
 import {currentMarriage,marriageCandidates,ensureMarriageCandidates} from './marriage.js';
-import {reproductionConditions} from './reproduction.js';
+import {reproductionConditions,reproductionPriority} from './reproduction.js';
 import {createCharacter} from './character_generation.js';
 import {createHousehold} from './household.js';
 import {employ} from './education_career.js';
@@ -35,6 +35,6 @@ export function decisionEvent(s,cid,defaults){const c=s.characters[cid],lc=lifeC
  if(s.health[cid].value<30&&cooled(s,cid,'health'))return eventFor(s,'health');
  const issue=lc.situations.find(x=>x.needs_decision);if(issue){issue.last_decision_month=s.current_world_month;issue.needs_decision=false;return {...eventFor(s,issue.type==='relationship_strain'?'strain':'conflict',issue.participants.find(p=>p!==cid)),situation_id:issue.id};}
  const m=currentMarriage(s,cid);if(!m&&age(s,c)>=s.config.marriage_min_age&&cooled(s,cid,'marriage')&&random(s)<s.config.marriage_opportunity_frequency){const targets=ensureMarriageCandidates(s,cid);if(targets.length)return eventFor(s,'marriage',pick(s,targets).character_id);}
- if(m){const other=m.people.find(id=>id!==cid);if(coResident(s,cid,other)&&!reproductionConditions(s,cid,other)&&cooled(s,cid,'birth')&&random(s)<s.config.reproduction_frequency)return eventFor(s,'birth',other);}
+ if(m){const other=m.people.find(id=>id!==cid);m.reproduction_priority=reproductionPriority(s,cid,other);if(c.sex==='女'&&cooled(s,cid,'birth')&&random(s)<m.reproduction_priority.value)return {...eventFor(s,'birth',other),reproduction_priority:m.reproduction_priority};}
  if(random(s)>=s.config.decision_event_frequency)return null;if(s.world_id==='ancient'&&s.config.content_enabled!==false){const content=pickContent(s,cid,false);if(content)return content;}const types=age(s,c)<18?['learning','education']:lc.away?['career','safety','learning']:['learning','career','music','safety','relocation'];const pool=types.filter(t=>cooled(s,cid,t));return pool.length?eventFor(s,pick(s,pool)):null;
 }

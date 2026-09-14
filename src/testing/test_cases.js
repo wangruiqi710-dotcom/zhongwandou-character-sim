@@ -67,6 +67,6 @@ export function fixture({seed=12345,world='ancient',case_id='life',config=defaul
  if(case_id==='PLAYER-EDU-01')queuePlayerEvent(s,'education',child.character_id,{event:eventFor(s,'education')});
  if(case_id==='PLAYER-CAREER-01')queuePlayerEvent(s,'relocation',child.character_id,{event:eventFor(s,'relocation')});
  if(case_id==='PLAYER-MARRIAGE-01'){ensureMarriageCandidates(s,child.character_id);queuePlayerEvent(s,'marriage',child.character_id);}
- if(case_id==='PLAYER-FORCE-01'){const event=eventFor(s,'career'),previous=resolveDecision(s,child.character_id,event,{noise:false,draw:.999999});queuePlayerEvent(s,'force',child.character_id,{event,previous,fixture_note:'固定案例用指定抽样分位制造明确拒绝'});}
+ if(case_id==='PLAYER-FORCE-01'){child.experiences.push({type:'recorded_refusal',decision_type:'career',target_id:null,strong_conflict:true,month:s.current_world_month-1,source:'MOCK_ONLY fixed test input',event:'此前明确反对同一职业安排'});const event=eventFor(s,'career'),previous=resolveDecision(s,child.character_id,event,{noise:false,draw:.999999});queuePlayerEvent(s,'force',child.character_id,{event,previous,fixture_note:'固定案例用指定抽样分位制造明确拒绝'});}
  return s;
 }

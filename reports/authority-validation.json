@@ -1,0 +1,80 @@
+{
+  "version": "2.2.2-alpha",
+  "tests": [
+    "TEST-PLAYER-OBEY-01",
+    "TEST-PLAYER-BLOCKED-01",
+    "TEST-PLAYER-CONFLICT-01",
+    "TEST-FORCED-EXECUTE-01",
+    "TEST-AUTONOMOUS-REASON-01",
+    "TEST-AUTONOMOUS-REASON-02",
+    "TEST-MARRIAGE-ATTRIBUTION-01",
+    "TEST-REPRODUCTION-PRIORITY-01",
+    "TEST-REPRODUCTION-PRIORITY-02"
+  ],
+  "statistics": {
+    "autonomous_education": {
+      "n": 10000,
+      "first_stage": {
+        "accept": 7879,
+        "inquire": 1507,
+        "defer": 487,
+        "reject": 127
+      },
+      "terminal": {
+        "accept": 9273,
+        "defer": 587,
+        "reject": 140
+      }
+    },
+    "conflict_education": {
+      "n": 10000,
+      "first_stage": {
+        "accept": 2471,
+        "inquire": 2541,
+        "defer": 2452,
+        "reject": 2536
+      },
+      "terminal": {
+        "accept": 3322,
+        "defer": 3302,
+        "reject": 3376
+      }
+    },
+    "player_education": {
+      "n": 10000,
+      "executed": 10000,
+      "randomly_denied": 0,
+      "no_draw": 10000
+    },
+    "reproduction": [
+      {
+        "label": "古代新婚",
+        "priority": 0.2432,
+        "n": 2000,
+        "offered": 503,
+        "entered": 476
+      },
+      {
+        "label": "古代1子女",
+        "priority": 0.09229601518026566,
+        "n": 2000,
+        "offered": 195,
+        "entered": 96
+      },
+      {
+        "label": "古代3子女资源紧张",
+        "priority": 0.0037766907368584506,
+        "n": 2000,
+        "offered": 10,
+        "entered": 2
+      },
+      {
+        "label": "现代新婚",
+        "priority": 0.1216,
+        "n": 2000,
+        "offered": 252,
+        "entered": 235
+      }
+    ]
+  }
+}

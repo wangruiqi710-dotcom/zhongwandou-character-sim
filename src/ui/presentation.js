@@ -36,12 +36,13 @@ export function characterCard(s,cid,controlled){
 }
 function decisionText(d){
  if(!d?.candidate_actions||d.event?.decision_owner==='player')return '';
+ if(d.player_direct)return p('执行方式','玩家权限范围内直接执行，不进行普通接受或拒绝抽样')+p('人物反应',esc(d.character_response))+p('为什么',(d.decision_reasons||[]).map(r=>esc(r.reason)).join('；'));
  const stages=d.stages||[d];
  return p('这次要决定什么',esc(d.event?.decision_goal||d.event?.description||'处理当前机会'))+
  stages.map((stage,i)=>'<div class="decision-stage"><h4>第'+(i+1)+'阶段</h4>'+p('人物考虑过',stage.candidate_actions.map(a=>esc(a.action)+'：'+a.probability+'%').join('<br>'))+
  p('哪些选择不可行',stage.excluded_actions.map(a=>esc(a.action)+'：'+esc(a.exclusion_reason)).join('<br>')||'无')+
  p('人物更倾向哪些选择',stage.candidate_actions.slice().sort((a,b)=>b.probability-a.probability).slice(0,2).map(a=>esc(a.action)+'（'+a.probability+'%）').join('、'))+
- p('倾向依据',stage.candidate_actions.map(a=>esc(a.action)+'：'+Object.entries({personality:'性格',interest:'兴趣',life_goal:'人生目标',talent:'天赋',situational:'现实处境'}).map(([key,label])=>label+(Math.abs(a.modifiers?.[key]||0)<.0001?'未修正':a.modifiers[key]>0?'提高倾向':'降低倾向')).join('，')).join('<br>'))+p('本阶段抽取',esc(stage.chosen_action))+(stage.candidate_actions.find(a=>a.action_id===stage.chosen_action_id)?.action_type==='transition_action'?p('取得的事实','已核实费用 '+d.facts?.cost+'，预计 '+d.facts?.duration+'个月，时间占用 '+Math.round((d.facts?.time||0)*100)+'%'):'')+'</div>').join('')+
+ p('支持这个选择的原因',(stage.candidate_actions.find(a=>a.action_id===stage.chosen_action_id)?.supporting_reasons||[]).map(r=>esc(r.reason)).join('；')||'没有明显支持理由')+p('阻碍这个选择的原因',(stage.candidate_actions.find(a=>a.action_id===stage.chosen_action_id)?.opposing_reasons||[]).map(r=>esc(r.reason)).join('；')||'没有明显阻碍因素')+p('本阶段抽取',esc(stage.chosen_action))+(stage.candidate_actions.find(a=>a.action_id===stage.chosen_action_id)?.action_type==='transition_action'?p('取得的事实','已核实费用 '+d.facts?.cost+'，预计 '+d.facts?.duration+'个月，时间占用 '+Math.round((d.facts?.time||0)*100)+'%'):'')+'</div>').join('')+
  (d.force?.executed?p('强制当前安排','本次由玩家覆盖当前安排；压力 '+Number(d.force.before.stress).toFixed(1)+' → '+Number(d.force.after.stress).toFixed(1)+'。之后仍继续自主生活。'):'')+p('人物最终决定',esc(d.force&&!d.force.executed?'强制未执行：'+d.force.reason:d.chosen_action))+p('这件事真正改变了什么',(d.actual_changes||['具体系统结果见下方安排记录']).map(esc).join('；'));
 }
 export function explainEntry(s,e){
@@ -51,8 +52,8 @@ export function explainEntry(s,e){
  p('为什么会发生',r?.player_opportunity?'当前机会需要家庭决定资源或长期安排':r?.developments?.some(x=>x.needs_decision)?'持续问题达到重新安排的条件':decision?esc(decision.event.description):'根据已保存的月度状态或玩家操作执行')+
  (r?.defaults?p('人物原本在做什么',esc(r.defaults.primary?.name||'无')):'')+
  (result.player_choice?p('你的决定',esc(result.player_choice))+p('预计立即影响',esc(result.immediate_effect)):'')+
- decisionText(decision)+
- (arr?p('具体婚配双方',link(s,arr.initiator_character_id)+' 与 '+link(s,arr.candidate_character_id))+p('婚配结果',statusName(arr.status)+(arr.reason?'：'+esc(arr.reason):''))+p('本人回应',esc(arr.child?.chosen_action||'无'))+p('候选本人回应',esc(arr.other?.chosen_action||'无'))+p('候选家庭回应',esc(arr.family?.chosen_action||'无')):'')+
+ decisionText(decision)+(arr?.responses?arr.responses.map(r=>p(r.role+' · '+esc(personName(s,r.actor_id)),esc(r.result.character_response||r.result.chosen_action))+p('为什么',r.decision_reasons.map(x=>esc(x.reason)).join('；')||'没有明显阻碍因素')).join(''):'')+
+ (arr?p('具体婚配双方',link(s,arr.initiator_character_id)+' 与 '+link(s,arr.candidate_character_id))+p('婚配结果',esc(arr.final_outcome||statusName(arr.status))+(arr.reason?'：'+esc(arr.reason):''))+p('本人回应',esc(arr.child?.chosen_action||'无'))+p('候选本人回应',esc(arr.other?.chosen_action||'无'))+p('候选家庭回应',esc(arr.family?.chosen_action||'无')):'')+
  (e.kind==='death'||r?.death?p('死亡事实',esc(r?.death?.reason||result.reason||'已确认死亡；停止活动并处理接班和继承')):'')+(result.inheritance?p('实际遗产分配',Object.entries(result.inheritance.distribution||{}).map(([id,v])=>link(s,id)+'：'+v).join('、')):'')+(result.selected?p('新的控制角色',link(s,result.selected)):'')+(result.resource_change?p('实际资源变化',result.resource_change.before+' → '+result.resource_change.after):'')+
  (r?.developments||[]).map(x=>p(ISSUE_NAMES[x.type]||'持续处境',statusName(x.kind)+'；严重程度 '+x.severity)).join('')+
  (e.births||[]).map(b=>p('新人物出生',link(s,b.child_id)+'；父母 '+link(s,b.father_id)+'、'+link(s,b.mother_id))).join('')+

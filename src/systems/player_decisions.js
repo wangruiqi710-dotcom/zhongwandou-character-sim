@@ -1,3 +1,5 @@
+import {preparePlayerDecision} from './behavior.js';
+import {eventFor} from './events.js';
 import {playerDecisionType} from '../config/player_event_routes.js';
 export {playerDecisionType} from '../config/player_event_routes.js';
 import {contentFeasibility,contentImpact} from '../content/event_runtime.js';
@@ -34,7 +36,7 @@ export function openPlayerWindow(s,direction,cid){
  return queuePlayerEvent(s,direction,cid,{proactive:true});
 }
 const names=(s,cid)=>s.characters[cid].surname+s.characters[cid].given_name;
-export function playerChoices(s,e){
+function rawChoices(s,e){
  const c=s.characters[e.character_id],hid=c?.current_household_id,funds=s.resources.households[hid]?.household_resources||0,cost=s.config.opportunity_cost;
  const choice=(id,label,impact,extra={})=>({id,label,impact,feasible:true,...extra});
  if(e.type==='content')return e.payload.event.mock_actions.filter(a=>a.conditions.action_type==='terminal_action'&&a.id!=='leave_current').map(a=>choice(a.id,'支持：'+a.name,contentImpact(a),{feasible:!contentFeasibility(s,e.character_id,e.payload.event,{action_id:a.id}),reason:contentFeasibility(s,e.character_id,e.payload.event,{action_id:a.id})})).concat(choice('skip','保留现有安排','不投入本次资源；不启动该机会'));
@@ -45,6 +47,17 @@ export function playerChoices(s,e){
  if(e.type==='resource')return Object.values(s.characters).filter(x=>x.alive&&x.current_household_id===hid&&age(s,x)>=6).map(x=>choice(x.character_id,'优先支持'+names(s,x.character_id)+'学习','投入 '+cost+' 家庭资源；其他成员降低额外教育投入，为此人提供教育机会',{feasible:funds>=cost,reason:'家庭资源不足',target_id:x.character_id})).concat([choice('share','所有人降低额外投入','降低现有教育时间和费用，保留基础学习'),choice('skip','暂停额外教育投入','现有额外教育暂停，资源留在家庭')]);
  if(e.type==='care'||e.type==='conflict')return [choice('redistribute','重新分配家庭照护','优先寻找可承担责任的同住成年人；无接替者时减少工作时间'),choice('reduce','降低工作时间，优先照护','工作时间与收入下降，缓解职责冲突'),choice('work','优先稳定家庭收入','为适龄成员提供职业机会，随后由本人回应'),choice('skip','暂时保持安排','不改变职责，问题继续按实际状态发展')];
  if(e.type==='health')return [choice('treat','投入家庭资源医治','支付 '+s.config.major_treatment_cost+'；健康恢复 '+s.config.major_treatment_gain+'（Mock），不保证未来健康',{feasible:funds>=s.config.major_treatment_cost,reason:'家庭资金不足'}),choice('rest','承担照护，支持休养','减少当前工作与教育时间，家计收入可能下降')];
- if(e.type==='away_review')return [choice('support','支持本人重新选择去留','提供返回、续期、定居、转换道路的可行机会；人物自主决定'),choice('return_offer','重点支持返回家庭','提供回乡支持；普通推动不会覆盖拒绝')];
- return [choice('support','投入家庭资源支持'+names(s,e.character_id),'支付 '+cost+'；提供'+(e.type==='education'?'长期教育':e.type==='relocation'?'离乡发展':'职业发展')+'机会，人物随后仍可拒绝',{feasible:funds>=cost,reason:'家庭资金不足'}),choice('skip','不提供本次额外支持','不支付资源、不启动该机会；保留现有生活')];
+ if(e.type==='away_review')return [choice('support','支持本人重新选择去留','提供返回、续期、定居、转换道路的可行机会；人物自主决定'),choice('return_offer','重点支持返回家庭','现实允许且没有明确强冲突时执行回乡安排')];
+ return [choice('support','投入家庭资源支持'+names(s,e.character_id),'支付 '+cost+'；提供'+(e.type==='education'?'长期教育':e.type==='relocation'?'离乡发展':'职业发展')+'安排；无硬条件阻碍或明确强冲突时直接执行',{feasible:funds>=cost,reason:'家庭资金不足'}),choice('skip','不提供本次额外支持','不支付资源、不启动该机会；保留现有生活')];
 }
+
+export function playerChoices(s,e){return rawChoices(s,e).map(o=>{
+ if(!o.feasible)return o;let event=null,cid=e.character_id,action=o.id;
+ if(e.type==='content'&&o.id!=='skip')event=e.payload.event;
+ if(['education','career','relocation'].includes(e.type)&&o.id==='support'){event={...(e.payload.event||eventFor(s,e.type)),cost:0};action='commit_terms';}
+ if(e.type==='resource'&&o.target_id){cid=o.target_id;event={...eventFor(s,'education'),cost:0};action='commit_terms';}
+ if(e.type==='force'&&!e.payload.marriage&&o.id==='force'){event=e.payload.event;action=e.payload.action_id||'commit_terms';}
+ if(['care','conflict'].includes(e.type)&&o.id==='work'){event={...eventFor(s,'career'),cost:0,career_index:2};action='commit_terms';}
+ if(event){try{preparePlayerDecision(s,cid,event,action);if(event.content_template){const effects=event.mock_actions.find(a=>a.id===action)?.conditions.content_effects||[],target=effects.find(x=>['targeteducation','targetcareer'].includes(x.kind));if(target)preparePlayerDecision(s,event.target_id,{...eventFor(s,target.kind==='targeteducation'?'education':'career'),cost:0});}}catch(error){return {...o,feasible:false,reason:error.message.replace(/^无法执行：/,'')};}}
+ return o;
+});}
