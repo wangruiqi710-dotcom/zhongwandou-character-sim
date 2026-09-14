@@ -1,4 +1,4 @@
-export const META={schema_version:3,mock_version:'2.2.0-alpha',design_version:'architecture_v014',design_sha256:'6654561CAF9BE64D01FD1118A8F84E84A693B0AAFAA80ACD7FAA62841DB82E76'};
+export const META={schema_version:3,mock_version:'2.2.1-alpha',design_version:'architecture_v014',design_sha256:'6654561CAF9BE64D01FD1118A8F84E84A693B0AAFAA80ACD7FAA62841DB82E76'};
 export const GOALS=['职业成就','家庭生活','声望地位','财富积累'];
 // Every value below is MOCK_TUNABLE, not a rule added to the frozen design.
 export const TUNABLES={

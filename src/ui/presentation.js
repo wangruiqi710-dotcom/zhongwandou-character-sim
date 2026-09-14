@@ -35,18 +35,18 @@ export function characterCard(s,cid,controlled){
  section('高级调试信息','<pre>'+esc(JSON.stringify(c,null,2))+'</pre>');
 }
 function decisionText(d){
- if(!d?.candidate_actions)return '';
+ if(!d?.candidate_actions||d.event?.decision_owner==='player')return '';
  const stages=d.stages||[d];
  return p('这次要决定什么',esc(d.event?.decision_goal||d.event?.description||'处理当前机会'))+
- stages.map((stage,i)=>'<div class="decision-stage"><h4>第'+(i+1)+'阶段</h4>'+p('这次有哪些选择',stage.candidate_actions.map(a=>esc(a.action)+'：'+a.probability+'%').join('<br>'))+
+ stages.map((stage,i)=>'<div class="decision-stage"><h4>第'+(i+1)+'阶段</h4>'+p('人物考虑过',stage.candidate_actions.map(a=>esc(a.action)+'：'+a.probability+'%').join('<br>'))+
  p('哪些选择不可行',stage.excluded_actions.map(a=>esc(a.action)+'：'+esc(a.exclusion_reason)).join('<br>')||'无')+
  p('人物更倾向哪些选择',stage.candidate_actions.slice().sort((a,b)=>b.probability-a.probability).slice(0,2).map(a=>esc(a.action)+'（'+a.probability+'%）').join('、'))+
  p('倾向依据',stage.candidate_actions.map(a=>esc(a.action)+'：'+Object.entries({personality:'性格',interest:'兴趣',life_goal:'人生目标',talent:'天赋',situational:'现实处境'}).map(([key,label])=>label+(Math.abs(a.modifiers?.[key]||0)<.0001?'未修正':a.modifiers[key]>0?'提高倾向':'降低倾向')).join('，')).join('<br>'))+p('本阶段抽取',esc(stage.chosen_action))+(stage.candidate_actions.find(a=>a.action_id===stage.chosen_action_id)?.action_type==='transition_action'?p('取得的事实','已核实费用 '+d.facts?.cost+'，预计 '+d.facts?.duration+'个月，时间占用 '+Math.round((d.facts?.time||0)*100)+'%'):'')+'</div>').join('')+
- (d.force?.executed?p('强制当前安排','本次由玩家覆盖当前安排；压力 '+Number(d.force.before.stress).toFixed(1)+' → '+Number(d.force.after.stress).toFixed(1)+'。之后仍继续自主生活。'):'')+p('最终发生了什么',esc(d.force&&!d.force.executed?'强制未执行：'+d.force.reason:d.chosen_action))+p('这件事真正改变了什么',(d.actual_changes||['具体系统结果见下方安排记录']).map(esc).join('；'));
+ (d.force?.executed?p('强制当前安排','本次由玩家覆盖当前安排；压力 '+Number(d.force.before.stress).toFixed(1)+' → '+Number(d.force.after.stress).toFixed(1)+'。之后仍继续自主生活。'):'')+p('人物最终决定',esc(d.force&&!d.force.executed?'强制未执行：'+d.force.reason:d.chosen_action))+p('这件事真正改变了什么',(d.actual_changes||['具体系统结果见下方安排记录']).map(esc).join('；'));
 }
 export function explainEntry(s,e){
  const reports=e.reports||[],r=reports.find(x=>x.character_id===e.control_character_id)||reports[0],result=e.result||{},arr=result.arrangement||r?.arrangement||(result.kind==='marriage_arrangement'?result:null);
- const decision=result.decision||r?.decision||result.child||(result.event?result:null);
+ const decision=arr?.child||result.decision||r?.decision||result.child||(result.event?result:null);
  return p('这个月发生了什么',esc(decision?.event?.title||r?.player_opportunity?.event?.title||result.player_choice||r?.defaults?.primary?.name||'处理家庭与人生状态'))+
  p('为什么会发生',r?.player_opportunity?'当前机会需要家庭决定资源或长期安排':r?.developments?.some(x=>x.needs_decision)?'持续问题达到重新安排的条件':decision?esc(decision.event.description):'根据已保存的月度状态或玩家操作执行')+
  (r?.defaults?p('人物原本在做什么',esc(r.defaults.primary?.name||'无')):'')+

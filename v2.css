@@ -5,3 +5,20 @@
 .fixed-controls[hidden]{display:none}
 
 .life-result{border-left:3px solid #6e8e6c;padding:8px 14px;margin:12px 0;background:#f6f7f1}.fact-changes{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:4px 12px}.fact-changes p{margin:3px 0}.life-result h4{margin-bottom:4px}#library-results summary{overflow-wrap:anywhere}#continue-life{min-height:48px}#focus-badge{color:#8a5720;font-weight:bold}
+
+/* Presentation density only; all saved details remain available. */
+.person-summary h3,.person-summary p{margin:4px 0}.full-person{border-top:1px solid #e0e5da;margin-top:6px}
+.timeline-year{margin:8px 0}.timeline-year>summary{font-weight:600;border-bottom:1px solid #ccd8c7}
+.timeline-node,.month-run{border-bottom:1px solid #d7ded1;padding:4px 10px;background:white;overflow-wrap:anywhere}
+.important-node{border-left:3px solid #779781}.ordinary-node{font-size:14px}
+.node-result,.node-changes{display:block;font-size:14px;line-height:1.45}.node-result{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.node-changes{color:#53664f}.node-changes:empty,.node-result:empty{display:none}
+.expand-label{font-size:12px;color:#526b52;margin-left:6px}.timeline-node>summary strong{font-size:15px}.feedback-tools{border-top:1px solid #e1e6dd}.feedback-tools>summary{font-size:14px}
+.player-option{padding:8px 0;border-top:1px solid #ded2b9}.player-option>button[data-player-option]{display:block;width:100%;min-height:48px;text-align:left;font-weight:600}.player-option p{font-size:14px;margin:4px 0}.player-option>button[data-person]{font-size:14px;margin:0 0 4px}.player-decision h3{font-size:20px;margin:4px 0}
+#choice-dialog>h2{display:none}#choice-dialog .player-decision{border:0;margin:0;padding:4px}#choice-dialog{padding:12px}
+.fixed-controls{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,1100px);flex-wrap:nowrap;gap:5px;padding:8px max(8px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom));box-shadow:0 -2px 8px #26372d15}.fixed-controls button{flex:1;min-width:0;padding:8px 4px}.simulation-running .fixed-controls button:not(#pause){display:none}
+body:has(#simulation[hidden]) .fixed-controls{display:none}
+[data-density=compact] header,[data-density=compact] main{padding:8px 12px}[data-density=compact] header h1{font-size:22px;margin:4px 0}[data-density=compact] header p{font-size:12px;margin:2px 0}[data-density=compact] header .badge{font-size:11px;padding:2px 6px}[data-density=compact] header details{font-size:13px}
+[data-density=compact] nav{flex-wrap:nowrap;overflow-x:auto;gap:4px;padding:4px 0;scrollbar-width:thin}[data-density=compact] nav button{flex:0 0 auto;font-size:14px;padding:8px 10px}
+[data-density=compact] .card{padding:9px;margin:7px 0;border-radius:9px}[data-density=compact] h2{font-size:18px;margin:10px 0 4px}[data-density=compact] h3{font-size:16px;margin:6px 0}[data-density=compact] p{margin:5px 0}[data-density=compact] #status{font-size:12px;min-height:18px;margin:2px 0;line-height:1.4}
+[data-density=compact] #summary .badge{font-size:12px;margin:3px 0;padding:2px 6px}[data-density=compact] .person-summary{font-size:13px;line-height:1.5}[data-density=compact] #continue-life{width:100%;min-height:44px}[data-density=compact] #player-window{padding:0 9px}[data-density=compact] .timeline-node{padding:2px 8px}[data-density=compact] .timeline-node>summary{padding:6px 0}[data-density=compact] .life-result{padding:6px 10px;margin:8px 0}
+@media(max-width:700px){nav{flex-wrap:nowrap;overflow-x:auto;padding:4px 0;gap:4px}nav button{flex:0 0 auto;font-size:14px}#simulation{padding-bottom:90px}.fixed-controls button{font-size:14px}dialog{scroll-padding-bottom:12px}.person-summary h3{font-size:16px}}

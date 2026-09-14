@@ -1,3 +1,4 @@
+import {playerDecisionType} from '../config/player_event_routes.js';
 // MOCK_EVENT_CONTENT. Authored situations, not a formal game event database.
 // Rows: title | eligibility | participant | primary response | alternative | effects | alternative effects.
 // Numeric amounts and thresholds are MOCK_TUNABLE; no probability-engine weights are changed.
@@ -162,7 +163,7 @@ function effects(text){return text.split(',').map(x=>{const [kind,a,b]=x.split('
 function compile(theme,domain,interest,line,index,major){
  const [title,condition,role,accept,alternative,yes,no]=line.split('|'),importance=index<2&&!(index===1&&['hardship','duty','competition','illness'].includes(theme))?'daily':major&&index===3?'major':'medium';
  const effectList=effects(yes),other=effects(no),id=theme+'-'+(index+1);
- return {event_id:id,theme,domain,importance,event_type:importance==='major'?'PLAYER_DECISION_EVENT':'CHARACTER_DECISION_EVENT',source:'MOCK_EVENT_CONTENT',developmental:!theme.startsWith('daily'),
+ const template={event_id:id,theme,domain,importance,event_type:importance==='major'?'PLAYER_DECISION_EVENT':'CHARACTER_DECISION_EVENT',source:'MOCK_EVENT_CONTENT',developmental:!theme.startsWith('daily'),
   trigger_conditions:{world:'ancient',condition,min_age:condition==='any'?6:condition==='youth'?6:condition==='parent'?18:12,history_or_state:index>=2?theme:null},participant_requirements:{role,real_person:role!=='none'},
   decision_goal:title+'：怎样回应这次具体处境',terminal_outcomes:[{id:'respond',label:accept,effects:effectList},{id:'alternative',label:alternative,effects:other}],
   transition_actions:importance==='daily'?[]:[{id:'ask_terms',label:'核实这件事的费用、时间和当事人要求',information:['cost','time','participants']}],
@@ -170,6 +171,8 @@ function compile(theme,domain,interest,line,index,major){
   immediate_effect_types:[...new Set([...effectList,...other].map(e=>e.kind))],possible_long_term_states:theme.startsWith('daily')?[]:[theme,...effectList.filter(e=>['career','education','relocation','care','trial','distance'].includes(e.kind)).map(e=>e.kind)],possible_ongoing_situations:index===1?[theme]:[],
   followup_tags:[theme],history_requirements:index>=2?[theme+' 的实际经历或对应生活状态']:[],cooldown:importance==='daily'?18:30,repeat_rules:{maximum:importance==='major'?2:6,per_person:true},
   player_involvement:importance==='major'?'家庭资源或长期安排；人物仍有自主回应':'人物自主',interest_examples:[interest],display_templates:{title,description:'{person}遇到：'+title+'。{context}'} };
+ if(playerDecisionType({...template,content_template:true})){template.event_type='PLAYER_DECISION_EVENT';template.player_involvement='家庭资源或长期安排；人物仍有自主回应';}
+ return template;
 }
 export const ANCIENT_EVENTS=groups.flatMap(([theme,domain,interest,rows])=>rows.map((r,i)=>compile(theme,domain,interest,r,i,majorGroups.has(theme)))).concat(extras.map(([domain,...r],i)=>compile('daily'+i,domain,'',r.join('|'),0,false)));
 export const CONTENT_DOMAINS=[...new Set(ANCIENT_EVENTS.map(e=>e.domain))];

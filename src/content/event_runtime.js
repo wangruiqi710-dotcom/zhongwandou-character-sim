@@ -66,7 +66,7 @@ export function contentFeasibility(s,cid,event,action){
  for(const e of effects){if(s.health[cid].value<30&&(['career','relocation','education','trial'].includes(e.kind)||e.kind==='fatigue'&&e.value>0))return '本人严重不适，不能开始这项额外劳动或长期投入';if(['targetcareer','targeteducation'].includes(e.kind)&&s.health[target]?.value<30)return '相关人物需要先处理严重健康问题';if(e.kind.startsWith('target')&&!s.characters[target]?.alive)return '需要真实存活的相关人物';if(['relocation','distance','reassign'].includes(e.kind)&&lc.care_time&&!replacement)return '当前照护没有可接替的同住成年人';if(['career','relocation'].includes(e.kind)&&age(s,c)<18)return '尚未达到本次长期工作年龄';if(e.kind==='birth'&&reproductionConditions(s,cid,target))return '目前不满足双方生育条件';if(e.kind==='marriage'&&!marriageCandidates(s,cid).some(x=>x.character_id===target&&!x.reason))return '目前不满足双方婚配条件';if(e.kind==='targetcareer'&&age(s,s.characters[target])<18)return '相关人物尚未成年';}
  return null;
 }
-export function applyContent(s,cid,result){
+export function applyContent(s,cid,result,marriageHandler=arrangeMarriage){
  const event=result.event,t=ANCIENT_EVENTS.find(t=>t.event_id===event.event_id),selected=event.mock_actions.find(a=>a.id===result.chosen_action_id),effects=selected?.conditions.content_effects||[],c=s.characters[cid],target=event.target_id,hh=s.households[c.current_household_id],fund=s.resources.households[c.current_household_id],before=auditSnapshot(snapshot(s,cid),s.current_world_month),relatedBefore=target?auditSnapshot(snapshot(s,target),s.current_world_month):null;
  if(!selected)throw Error('内容终局选项不存在');
  let targetAccepted=true;
@@ -93,7 +93,7 @@ export function applyContent(s,cid,result){
  case 'stoptrial':for(const x of lifeContext(s,cid).terms.filter(x=>x.type==='short_trial'))x.status='ended';break;
  case 'fundeducation':for(const id of hh.members)if(active(s.education[id])){s.education[id].funding_fraction=id===cid?1:.5;s.education[id].time=id===cid?.65:.325;}break;
  case 'reduceeducation':for(const id of hh.members)if(active(s.education[id])){s.education[id].funding_fraction=.5;s.education[id].time=.325;}break;
- case 'marriage':result.content_arrangement=arrangeMarriage(s,cid,target,'ordinary');break;case 'birth':result.content_birth=startReproduction(s,cid,target);break;
+ case 'marriage':result.content_arrangement=marriageHandler(s,cid,target,'ordinary');break;case 'birth':result.content_birth=startReproduction(s,cid,target);break;
  default:throw Error('未定义内容效果 '+e.kind);
  }}
  const meaningful=effects.length>0;
