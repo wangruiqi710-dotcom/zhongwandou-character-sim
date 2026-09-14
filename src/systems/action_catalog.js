@@ -1,6 +1,7 @@
 // MOCK_ONLY semantic outcomes. Character preferences never create options.
 const option=(id,outcome,label,traits={},conditions={},effect=null)=>({id,name:label,traits,tags:outcome==='accept'||effect?['participate']:outcome==='reject'?['decline']:outcome==='defer'?['postpone']:['verify'],conditions:{...conditions,action_type:outcome==='inquire'?'transition_action':'terminal_action',outcome,information_required:outcome==='inquire'?['duration','cost','time']:[],effects:effect?[effect]:[]}});
 export function completeEvent(s,event){
+ if(event.content_template){const e=structuredClone(event);e.stage=e.stage||1;if(e.context_facts?.information_acquired)e.mock_actions=e.mock_actions.filter(a=>a.conditions.action_type!=='transition_action');return e;}
  const e={...event,context_facts:{...(event.context_facts||{})}},t=e.type,c=s.config;
  const accept=(id,label,traits={},conditions={},effect=t)=>option(id,'accept',label,{interest_match:1,...traits},conditions,effect);
  const inquire=(id,label)=>option(id,'inquire',label,{planning_need:.8,time_cost:.02});

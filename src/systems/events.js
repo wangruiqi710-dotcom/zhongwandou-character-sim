@@ -1,3 +1,4 @@
+import {pickContent} from '../content/event_runtime.js';
 import {completeEvent} from './action_catalog.js';
 import {lifeContext,coResident,cooled,recordEvent} from './life_context.js';
 import {random,pick,bound,integer} from '../core/rng.js';
@@ -9,7 +10,9 @@ import {createCharacter} from './character_generation.js';
 import {createHousehold} from './household.js';
 import {employ} from './education_career.js';
 export function backgroundCandidates(s,cid){const c=s.characters[cid],lc=lifeContext(s,cid),h=s.households[c.current_household_id],out=[];if(s.education[cid]?.status==='active'||lc.terms.some(t=>t.type==='short_trial'))out.push({id:'education',title:'学习中掌握了一个小窍门',tags:['education'],system:'education'});if(s.careers[cid]?.status==='active')out.push({id:lc.away?'away_work':'work',title:lc.away?'逐渐熟悉外地的工作安排':'日常工作得到一点肯定',tags:['career'],system:'careers'});if(lc.away)out.push({id:'away_life',title:'逐渐熟悉外地生活的作息与开销',tags:['location'],system:'long_term_states'});if(lc.co_resident&&h.members.some(id=>id!==cid&&s.characters[id].alive&&coResident(s,cid,id)))out.push({id:'family',title:'共同生活中的一次分担',tags:['family'],system:'households'});const r=Object.values(s.relationships).find(r=>r.people.includes(cid)&&r.people.every(id=>s.characters[id].alive));if(r){const target=r.people.find(id=>id!==cid);out.push({id:coResident(s,cid,target)?'relationship':'remote_contact',title:coResident(s,cid,target)?'与熟人有了一次简短交流':'通过传信了解远方亲友近况',tags:['social'],system:'relationships',target_id:target});}return out.filter(e=>cooled(s,cid,'background:'+e.id,s.config.background_cooldown));}
-export function triggerBackground(s,cid,candidates){const roll=random(s);if(!candidates.length||roll>=s.config.background_event_frequency)return {roll,event:null};const e=pick(s,candidates),delta=(random(s)<.7?1:-1)*s.config.background_delta;const c=s.characters[cid];c.dynamic.mood=bound(c.dynamic.mood+delta);if(e.target_id)changeRelationship(s,cid,e.target_id,delta,e.title);recordEvent(s,cid,'background:'+e.id);return {roll,event:e,delta};}
+export function triggerBackground(s,cid,candidates){
+ if(s.world_id==='ancient'&&s.config.content_enabled!==false){const roll=random(s);if(roll>=s.config.background_event_frequency)return {roll,event:null};const event=pickContent(s,cid,true);if(!event)return {roll,event:null};return {roll,event,content_pending:true};}
+ const roll=random(s);if(!candidates.length||roll>=s.config.background_event_frequency)return {roll,event:null};const e=pick(s,candidates),delta=(random(s)<.7?1:-1)*s.config.background_delta;const c=s.characters[cid];c.dynamic.mood=bound(c.dynamic.mood+delta);if(e.target_id)changeRelationship(s,cid,e.target_id,delta,e.title);recordEvent(s,cid,'background:'+e.id);return {roll,event:e,delta};}
 export function eventFor(s,type,target_id=null){const ancient=s.world_id==='ancient',table={
  music:['音乐邀请',ancient?'朋友邀请参加听曲与演奏活动。':'朋友邀请参加音乐活动。','社交',[],0],
  safety:['道路治安消息','听说某条道路近期不太安全，需要核实路线。','治安问题',[],0],
@@ -33,5 +36,5 @@ export function decisionEvent(s,cid,defaults){const c=s.characters[cid],lc=lifeC
  const issue=lc.situations.find(x=>x.needs_decision);if(issue){issue.last_decision_month=s.current_world_month;issue.needs_decision=false;return {...eventFor(s,issue.type==='relationship_strain'?'strain':'conflict',issue.participants.find(p=>p!==cid)),situation_id:issue.id};}
  const m=currentMarriage(s,cid);if(!m&&age(s,c)>=s.config.marriage_min_age&&cooled(s,cid,'marriage')&&random(s)<s.config.marriage_opportunity_frequency){const targets=ensureMarriageCandidates(s,cid);if(targets.length)return eventFor(s,'marriage',pick(s,targets).character_id);}
  if(m){const other=m.people.find(id=>id!==cid);if(coResident(s,cid,other)&&!reproductionConditions(s,cid,other)&&cooled(s,cid,'birth')&&random(s)<s.config.reproduction_frequency)return eventFor(s,'birth',other);}
- if(random(s)>=s.config.decision_event_frequency)return null;const types=age(s,c)<18?['learning','education']:lc.away?['career','safety','learning']:['learning','career','music','safety','relocation'];const pool=types.filter(t=>cooled(s,cid,t));return pool.length?eventFor(s,pick(s,pool)):null;
+ if(random(s)>=s.config.decision_event_frequency)return null;if(s.world_id==='ancient'&&s.config.content_enabled!==false){const content=pickContent(s,cid,false);if(content)return content;}const types=age(s,c)<18?['learning','education']:lc.away?['career','safety','learning']:['learning','career','music','safety','relocation'];const pool=types.filter(t=>cooled(s,cid,t));return pool.length?eventFor(s,pick(s,pool)):null;
 }

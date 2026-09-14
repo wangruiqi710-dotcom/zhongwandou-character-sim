@@ -1,0 +1,5983 @@
+{
+  "version": "2.2.0-alpha",
+  "audit": {
+    "count": 104,
+    "domains": {
+      "学徒 / 师承": 4,
+      "教育与学习": 4,
+      "职业与谋生": 4,
+      "职业成长": 4,
+      "失败与挫折": 4,
+      "离乡 / 迁移": 4,
+      "家庭资源": 4,
+      "个人财富": 4,
+      "家庭责任": 4,
+      "父母与子女": 4,
+      "兄弟姐妹": 4,
+      "家庭内部资源竞争": 4,
+      "朋友 / 熟人": 4,
+      "师徒关系": 4,
+      "婚配": 4,
+      "婚后生活": 4,
+      "夫妻关系": 4,
+      "生育和育儿": 4,
+      "子女成长": 4,
+      "疾病与恢复": 4,
+      "长期照护": 4,
+      "家庭事业": 4,
+      "技能成长": 4,
+      "社交网络积累": 4,
+      "日常变化": 1,
+      "工作环境": 1,
+      "邻里": 1,
+      "疲劳 / 压力": 1,
+      "健康": 1,
+      "家庭日常": 1,
+      "人生阶段变化": 1,
+      "NPC 主动行为": 1
+    },
+    "sizes": {
+      "daily": 52,
+      "medium": 34,
+      "major": 18
+    },
+    "reachable": 104,
+    "executed": 104,
+    "issues": [],
+    "player": 18,
+    "multistage": 52,
+    "real_npc": 101,
+    "long_term": 96,
+    "ongoing": 24,
+    "developmental": 96,
+    "causal_checks": [
+      "same opportunity: rich admission / poor hard exclusion",
+      "poor student fee-relief route",
+      "care coordination route",
+      "same event: interest changes probability",
+      "old-age education excluded",
+      "player pause and selected opportunity only"
+    ]
+  },
+  "cohorts": [
+    {
+      "seed": 110,
+      "months": 240,
+      "initial_age": 18,
+      "domains": [
+        "工作环境",
+        "日常变化",
+        "教育与学习",
+        "兄弟姐妹",
+        "技能成长",
+        "社交网络积累",
+        "个人财富",
+        "家庭事业",
+        "家庭日常",
+        "离乡 / 迁移",
+        "失败与挫折",
+        "职业与谋生"
+      ],
+      "unique_templates": 23,
+      "career_path": [
+        "农事劳动",
+        "商铺帮工"
+      ],
+      "education_path": [],
+      "marriages": 0,
+      "children": 0,
+      "resources": {
+        "before": 60,
+        "after": 9280
+      },
+      "migration": 1,
+      "relationships": [
+        {
+          "people": [
+            "character-7",
+            "character-9"
+          ],
+          "attitude": 43,
+          "interactions": 10
+        },
+        {
+          "people": [
+            "character-7",
+            "character-3"
+          ],
+          "attitude": 28,
+          "interactions": 2
+        },
+        {
+          "people": [
+            "character-8",
+            "character-7"
+          ],
+          "attitude": 11,
+          "interactions": 4
+        },
+        {
+          "people": [
+            "character-7",
+            "character-35"
+          ],
+          "attitude": 30,
+          "interactions": 12
+        },
+        {
+          "people": [
+            "character-74",
+            "character-7"
+          ],
+          "attitude": 13,
+          "interactions": 5
+        },
+        {
+          "people": [
+            "character-7",
+            "character-5"
+          ],
+          "attitude": 7,
+          "interactions": 4
+        },
+        {
+          "people": [
+            "character-25",
+            "character-7"
+          ],
+          "attitude": 6,
+          "interactions": 3
+        },
+        {
+          "people": [
+            "character-120",
+            "character-7"
+          ],
+          "attitude": 5,
+          "interactions": 2
+        },
+        {
+          "people": [
+            "character-7",
+            "character-195"
+          ],
+          "attitude": 5,
+          "interactions": 3
+        },
+        {
+          "people": [
+            "character-31",
+            "character-7"
+          ],
+          "attitude": 2,
+          "interactions": 2
+        }
+      ],
+      "long_states": [
+        "career",
+        "education",
+        "improve",
+        "enterprise",
+        "network",
+        "away_from_home_assignment",
+        "away",
+        "setback",
+        "firstwork",
+        "skill"
+      ],
+      "problems": 23,
+      "player_decisions": 27,
+      "paused_months": 26,
+      "failed": 0,
+      "alive": true,
+      "summary_count": 4
+    },
+    {
+      "seed": 111,
+      "months": 240,
+      "initial_age": 14,
+      "domains": [
+        "兄弟姐妹",
+        "师徒关系",
+        "技能成长",
+        "父母与子女",
+        "个人财富",
+        "教育与学习",
+        "社交网络积累",
+        "朋友 / 熟人",
+        "邻里",
+        "婚配",
+        "家庭事业",
+        "离乡 / 迁移",
+        "婚后生活",
+        "家庭日常",
+        "长期照护",
+        "NPC 主动行为",
+        "家庭内部资源竞争",
+        "子女成长"
+      ],
+      "unique_templates": 28,
+      "career_path": [
+        "农事劳动"
+      ],
+      "education_path": [
+        "识字学习",
+        "作坊学艺"
+      ],
+      "marriages": 1,
+      "children": 2,
+      "resources": {
+        "before": 4000,
+        "after": 27243
+      },
+      "migration": 0,
+      "relationships": [
+        {
+          "people": [
+            "character-7",
+            "character-9"
+          ],
+          "attitude": 22,
+          "interactions": 1
+        },
+        {
+          "people": [
+            "character-7",
+            "character-3"
+          ],
+          "attitude": 37,
+          "interactions": 7
+        },
+        {
+          "people": [
+            "character-7",
+            "character-8"
+          ],
+          "attitude": 25,
+          "interactions": 15
+        },
+        {
+          "people": [
+            "character-5",
+            "character-7"
+          ],
+          "attitude": 6,
+          "interactions": 4
+        },
+        {
+          "people": [
+            "character-7",
+            "character-108"
+          ],
+          "attitude": 18,
+          "interactions": 5
+        },
+        {
+          "people": [
+            "character-7",
+            "character-83"
+          ],
+          "attitude": 20,
+          "interactions": 7
+        },
+        {
+          "people": [
+            "character-7",
+            "character-21"
+          ],
+          "attitude": 7,
+          "interactions": 2
+        },
+        {
+          "people": [
+            "character-7",
+            "character-226"
+          ],
+          "attitude": 4,
+          "interactions": 1
+        },
+        {
+          "people": [
+            "character-7",
+            "character-230"
+          ],
+          "attitude": 3,
+          "interactions": 1
+        },
+        {
+          "people": [
+            "character-7",
+            "character-198"
+          ],
+          "attitude": 4,
+          "interactions": 1
+        },
+        {
+          "people": [
+            "character-7",
+            "character-187"
+          ],
+          "attitude": 5,
+          "interactions": 2
+        },
+        {
+          "people": [
+            "character-130",
+            "character-7"
+          ],
+          "attitude": 4,
+          "interactions": 1
+        },
+        {
+          "people": [
+            "character-7",
+            "character-238"
+          ],
+          "attitude": 3,
+          "interactions": 2
+        },
+        {
+          "people": [
+            "character-7",
+            "character-374"
+          ],
+          "attitude": 3,
+          "interactions": 2
+        }
+      ],
+      "long_states": [
+        "career",
+        "education",
+        "siblings",
+        "mentor",
+        "skill",
+        "parents",
+        "improve",
+        "network",
+        "friends",
+        "enterprise",
+        "match",
+        "marriage",
+        "married",
+        "pregnancy",
+        "away",
+        "infant_care",
+        "care",
+        "competition",
+        "children"
+      ],
+      "problems": 25,
+      "player_decisions": 23,
+      "paused_months": 22,
+      "failed": 0,
+      "alive": true,
+      "summary_count": 4
+    },
+    {
+      "seed": 112,
+      "months": 240,
+      "initial_age": 18,
+      "domains": [
+        "个人财富",
+        "疾病与恢复",
+        "长期照护",
+        "失败与挫折",
+        "兄弟姐妹",
+        "家庭日常",
+        "技能成长",
+        "工作环境",
+        "朋友 / 熟人",
+        "家庭责任",
+        "教育与学习",
+        "NPC 主动行为",
+        "社交网络积累",
+        "邻里",
+        "离乡 / 迁移",
+        "婚后生活",
+        "家庭事业",
+        "家庭内部资源竞争",
+        "夫妻关系",
+        "子女成长",
+        "职业与谋生",
+        "日常变化"
+      ],
+      "unique_templates": 32,
+      "career_path": [
+        "农事劳动"
+      ],
+      "education_path": [],
+      "marriages": 1,
+      "children": 1,
+      "resources": {
+        "before": 300,
+        "after": 319
+      },
+      "migration": 0,
+      "relationships": [
+        {
+          "people": [
+            "character-7",
+            "character-9"
+          ],
+          "attitude": 40,
+          "interactions": 9
+        },
+        {
+          "people": [
+            "character-7",
+            "character-3"
+          ],
+          "attitude": 29,
+          "interactions": 5
+        },
+        {
+          "people": [
+            "character-8",
+            "character-7"
+          ],
+          "attitude": 71,
+          "interactions": 21
+        },
+        {
+          "people": [
+            "character-7",
+            "character-5"
+          ],
+          "attitude": 30,
+          "interactions": 10
+        },
+        {
+          "people": [
+            "character-47",
+            "character-7"
+          ],
+          "attitude": 13,
+          "interactions": 5
+        },
+        {
+          "people": [
+            "character-43",
+            "character-7"
+          ],
+          "attitude": 20,
+          "interactions": 5
+        },
+        {
+          "people": [
+            "character-85",
+            "character-7"
+          ],
+          "attitude": 11,
+          "interactions": 5
+        },
+        {
+          "people": [
+            "character-7",
+            "character-104"
+          ],
+          "attitude": 6,
+          "interactions": 4
+        },
+        {
+          "people": [
+            "character-7",
+            "character-108"
+          ],
+          "attitude": 7,
+          "interactions": 3
+        },
+        {
+          "people": [
+            "character-7",
+            "character-203"
+          ],
+          "attitude": 4,
+          "interactions": 2
+        }
+      ],
+      "long_states": [
+        "career",
+        "improve",
+        "setback",
+        "siblings",
+        "skill",
+        "friends",
+        "duty",
+        "education",
+        "marriage",
+        "care",
+        "network",
+        "pregnancy",
+        "enterprise",
+        "infant_care",
+        "illness",
+        "health_recovery",
+        "away",
+        "competition",
+        "children"
+      ],
+      "problems": 31,
+      "player_decisions": 18,
+      "paused_months": 16,
+      "failed": 2,
+      "alive": true,
+      "summary_count": 4
+    },
+    {
+      "seed": 113,
+      "months": 240,
+      "initial_age": 18,
+      "domains": [
+        "家庭事业",
+        "职业与谋生",
+        "离乡 / 迁移",
+        "失败与挫折",
+        "社交网络积累",
+        "个人财富",
+        "家庭日常",
+        "朋友 / 熟人",
+        "婚配",
+        "技能成长",
+        "兄弟姐妹",
+        "邻里",
+        "工作环境"
+      ],
+      "unique_templates": 24,
+      "career_path": [
+        "商铺帮工"
+      ],
+      "education_path": [],
+      "marriages": 0,
+      "children": 0,
+      "resources": {
+        "before": 900,
+        "after": 38190.9
+      },
+      "migration": 0,
+      "relationships": [
+        {
+          "people": [
+            "character-7",
+            "character-9"
+          ],
+          "attitude": 57,
+          "interactions": 11
+        },
+        {
+          "people": [
+            "character-7",
+            "character-3"
+          ],
+          "attitude": 30,
+          "interactions": 4
+        },
+        {
+          "people": [
+            "character-7",
+            "character-18"
+          ],
+          "attitude": 20,
+          "interactions": 6
+        },
+        {
+          "people": [
+            "character-7",
+            "character-43"
+          ],
+          "attitude": 9,
+          "interactions": 3
+        },
+        {
+          "people": [
+            "character-7",
+            "character-47"
+          ],
+          "attitude": 20,
+          "interactions": 12
+        },
+        {
+          "people": [
+            "character-7",
+            "character-5"
+          ],
+          "attitude": 6,
+          "interactions": 2
+        },
+        {
+          "people": [
+            "character-8",
+            "character-7"
+          ],
+          "attitude": 27,
+          "interactions": 9
+        },
+        {
+          "people": [
+            "character-7",
+            "character-22"
+          ],
+          "attitude": 3,
+          "interactions": 2
+        },
+        {
+          "people": [
+            "character-7",
+            "character-26"
+          ],
+          "attitude": 0,
+          "interactions": 2
+        },
+        {
+          "people": [
+            "character-7",
+            "character-258"
+          ],
+          "attitude": 2,
+          "interactions": 1
+        }
+      ],
+      "long_states": [
+        "career",
+        "enterprise",
+        "away",
+        "setback",
+        "firstwork",
+        "friends",
+        "match",
+        "skill",
+        "network",
+        "siblings",
+        "improve"
+      ],
+      "problems": 45,
+      "player_decisions": 25,
+      "paused_months": 23,
+      "failed": 1,
+      "alive": true,
+      "summary_count": 4
+    },
+    {
+      "seed": 114,
+      "months": 240,
+      "initial_age": 18,
+      "domains": [
+        "社交网络积累",
+        "兄弟姐妹",
+        "个人财富",
+        "学徒 / 师承",
+        "教育与学习",
+        "婚配",
+        "家庭日常",
+        "工作环境",
+        "家庭事业",
+        "职业成长",
+        "NPC 主动行为",
+        "朋友 / 熟人",
+        "技能成长",
+        "邻里",
+        "师徒关系",
+        "夫妻关系",
+        "长期照护",
+        "生育和育儿",
+        "婚后生活",
+        "职业与谋生",
+        "家庭内部资源竞争",
+        "离乡 / 迁移"
+      ],
+      "unique_templates": 34,
+      "career_path": [
+        "作坊工匠"
+      ],
+      "education_path": [],
+      "marriages": 1,
+      "children": 3,
+      "resources": {
+        "before": 250,
+        "after": 47468.87
+      },
+      "migration": 0,
+      "relationships": [
+        {
+          "people": [
+            "character-7",
+            "character-9"
+          ],
+          "attitude": 28,
+          "interactions": 4
+        },
+        {
+          "people": [
+            "character-7",
+            "character-3"
+          ],
+          "attitude": 20,
+          "interactions": 0
+        },
+        {
+          "people": [
+            "character-7",
+            "character-8"
+          ],
+          "attitude": 19,
+          "interactions": 11
+        },
+        {
+          "people": [
+            "character-7",
+            "character-44"
+          ],
+          "attitude": 7,
+          "interactions": 4
+        },
+        {
+          "people": [
+            "character-7",
+            "character-5"
+          ],
+          "attitude": 9,
+          "interactions": 4
+        },
+        {
+          "people": [
+            "character-7",
+            "character-184"
+          ],
+          "attitude": 9,
+          "interactions": 3
+        },
+        {
+          "people": [
+            "character-7",
+            "character-197"
+          ],
+          "attitude": 5,
+          "interactions": 3
+        },
+        {
+          "people": [
+            "character-7",
+            "character-293"
+          ],
+          "attitude": 13,
+          "interactions": 3
+        },
+        {
+          "people": [
+            "character-7",
+            "character-309"
+          ],
+          "attitude": 9,
+          "interactions": 5
+        },
+        {
+          "people": [
+            "character-86",
+            "character-7"
+          ],
+          "attitude": 18,
+          "interactions": 6
+        },
+        {
+          "people": [
+            "character-27",
+            "character-7"
+          ],
+          "attitude": -1,
+          "interactions": 2
+        },
+        {
+          "people": [
+            "character-7",
+            "character-362"
+          ],
+          "attitude": 8,
+          "interactions": 3
+        },
+        {
+          "people": [
+            "character-138",
+            "character-7"
+          ],
+          "attitude": 2,
+          "interactions": 1
+        },
+        {
+          "people": [
+            "character-7",
+            "character-48"
+          ],
+          "attitude": 2,
+          "interactions": 1
+        },
+        {
+          "people": [
+            "character-7",
+            "character-439"
+          ],
+          "attitude": 1,
+          "interactions": 1
+        }
+      ],
+      "long_states": [
+        "career",
+        "network",
+        "siblings",
+        "education",
+        "match",
+        "enterprise",
+        "growth",
+        "mentor",
+        "marriage",
+        "skill",
+        "pregnancy",
+        "friends",
+        "infant_care",
+        "care",
+        "parenting",
+        "competition",
+        "away",
+        "apprentice"
+      ],
+      "problems": 31,
+      "player_decisions": 25,
+      "paused_months": 24,
+      "failed": 3,
+      "alive": true,
+      "summary_count": 4
+    }
+  ],
+  "families": [
+    {
+      "family": "A",
+      "seed": 991,
+      "months": 240,
+      "initial_age": 18,
+      "domains": [
+        "兄弟姐妹",
+        "职业成长",
+        "师徒关系",
+        "父母与子女",
+        "学徒 / 师承",
+        "离乡 / 迁移",
+        "家庭日常",
+        "技能成长",
+        "NPC 主动行为",
+        "失败与挫折",
+        "婚配",
+        "社交网络积累",
+        "朋友 / 熟人",
+        "夫妻关系",
+        "工作环境",
+        "邻里",
+        "家庭内部资源竞争",
+        "个人财富",
+        "婚后生活"
+      ],
+      "unique_templates": 34,
+      "career_path": [
+        "作坊工匠"
+      ],
+      "education_path": [],
+      "marriages": 1,
+      "children": 3,
+      "resources": {
+        "before": 5000,
+        "after": 64024.16
+      },
+      "migration": 0,
+      "relationships": [
+        {
+          "people": [
+            "character-7",
+            "character-9"
+          ],
+          "attitude": 42,
+          "interactions": 9
+        },
+        {
+          "people": [
+            "character-7",
+            "character-3"
+          ],
+          "attitude": 37,
+          "interactions": 7
+        },
+        {
+          "people": [
+            "character-7",
+            "character-8"
+          ],
+          "attitude": 16,
+          "interactions": 9
+        },
+        {
+          "people": [
+            "character-21",
+            "character-7"
+          ],
+          "attitude": 11,
+          "interactions": 6
+        },
+        {
+          "people": [
+            "character-7",
+            "character-49"
+          ],
+          "attitude": 39,
+          "interactions": 17
+        },
+        {
+          "people": [
+            "character-7",
+            "character-53"
+          ],
+          "attitude": 16,
+          "interactions": 8
+        },
+        {
+          "people": [
+            "character-7",
+            "character-5"
+          ],
+          "attitude": 14,
+          "interactions": 4
+        },
+        {
+          "people": [
+            "character-7",
+            "character-102"
+          ],
+          "attitude": 6,
+          "interactions": 2
+        },
+        {
+          "people": [
+            "character-7",
+            "character-176"
+          ],
+          "attitude": 2,
+          "interactions": 1
+        },
+        {
+          "people": [
+            "character-25",
+            "character-7"
+          ],
+          "attitude": 9,
+          "interactions": 3
+        },
+        {
+          "people": [
+            "character-239",
+            "character-7"
+          ],
+          "attitude": 10,
+          "interactions": 3
+        },
+        {
+          "people": [
+            "character-7",
+            "character-234"
+          ],
+          "attitude": 7,
+          "interactions": 2
+        },
+        {
+          "people": [
+            "character-255",
+            "character-7"
+          ],
+          "attitude": 4,
+          "interactions": 2
+        },
+        {
+          "people": [
+            "character-7",
+            "character-140"
+          ],
+          "attitude": 4,
+          "interactions": 1
+        },
+        {
+          "people": [
+            "character-7",
+            "character-344"
+          ],
+          "attitude": 3,
+          "interactions": 1
+        }
+      ],
+      "long_states": [
+        "career",
+        "siblings",
+        "growth",
+        "mentor",
+        "parents",
+        "apprentice",
+        "away",
+        "match",
+        "network",
+        "skill",
+        "marriage",
+        "pregnancy",
+        "infant_care",
+        "friends",
+        "couple",
+        "improve",
+        "married"
+      ],
+      "problems": 44,
+      "player_decisions": 26,
+      "paused_months": 23,
+      "failed": 4,
+      "alive": true,
+      "summary_count": 4
+    },
+    {
+      "family": "B",
+      "seed": 991,
+      "months": 240,
+      "initial_age": 18,
+      "domains": [
+        "家庭责任",
+        "社交网络积累",
+        "兄弟姐妹",
+        "家庭日常",
+        "职业与谋生",
+        "家庭资源",
+        "技能成长",
+        "离乡 / 迁移",
+        "职业成长",
+        "教育与学习",
+        "个人财富",
+        "失败与挫折",
+        "朋友 / 熟人"
+      ],
+      "unique_templates": 26,
+      "career_path": [
+        "作坊工匠",
+        "商铺帮工"
+      ],
+      "education_path": [],
+      "marriages": 0,
+      "children": 0,
+      "resources": {
+        "before": 20,
+        "after": 18567.17
+      },
+      "migration": 1,
+      "relationships": [
+        {
+          "people": [
+            "character-7",
+            "character-9"
+          ],
+          "attitude": 34,
+          "interactions": 11
+        },
+        {
+          "people": [
+            "character-7",
+            "character-3"
+          ],
+          "attitude": 25,
+          "interactions": 3
+        },
+        {
+          "people": [
+            "character-7",
+            "character-8"
+          ],
+          "attitude": 34,
+          "interactions": 9
+        },
+        {
+          "people": [
+            "character-18",
+            "character-7"
+          ],
+          "attitude": 17,
+          "interactions": 9
+        },
+        {
+          "people": [
+            "character-43",
+            "character-7"
+          ],
+          "attitude": 4,
+          "interactions": 1
+        },
+        {
+          "people": [
+            "character-7",
+            "character-16"
+          ],
+          "attitude": 18,
+          "interactions": 7
+        },
+        {
+          "people": [
+            "character-7",
+            "character-54"
+          ],
+          "attitude": 26,
+          "interactions": 10
+        },
+        {
+          "people": [
+            "character-7",
+            "character-17"
+          ],
+          "attitude": 2,
+          "interactions": 3
+        },
+        {
+          "people": [
+            "character-47",
+            "character-7"
+          ],
+          "attitude": 8,
+          "interactions": 4
+        },
+        {
+          "people": [
+            "character-7",
+            "character-5"
+          ],
+          "attitude": 6,
+          "interactions": 2
+        },
+        {
+          "people": [
+            "character-7",
+            "character-237"
+          ],
+          "attitude": 1,
+          "interactions": 1
+        },
+        {
+          "people": [
+            "character-250",
+            "character-7"
+          ],
+          "attitude": 2,
+          "interactions": 2
+        },
+        {
+          "people": [
+            "character-7",
+            "character-329"
+          ],
+          "attitude": 2,
+          "interactions": 1
+        }
+      ],
+      "long_states": [
+        "career",
+        "siblings",
+        "hardship",
+        "skill",
+        "growth",
+        "education",
+        "improve",
+        "away",
+        "setback",
+        "friends",
+        "network",
+        "away_from_home_assignment",
+        "short_trial",
+        "local_settlement"
+      ],
+      "problems": 34,
+      "player_decisions": 58,
+      "paused_months": 52,
+      "failed": 2,
+      "alive": true,
+      "summary_count": 4
+    },
+    {
+      "family": "C",
+      "seed": 991,
+      "months": 240,
+      "initial_age": 18,
+      "domains": [
+        "兄弟姐妹",
+        "职业成长",
+        "师徒关系",
+        "父母与子女",
+        "学徒 / 师承",
+        "离乡 / 迁移",
+        "家庭日常",
+        "技能成长",
+        "NPC 主动行为",
+        "失败与挫折",
+        "婚配",
+        "社交网络积累",
+        "家庭事业",
+        "生育和育儿",
+        "职业与谋生",
+        "夫妻关系",
+        "个人财富",
+        "家庭内部资源竞争",
+        "婚后生活",
+        "家庭责任"
+      ],
+      "unique_templates": 36,
+      "career_path": [
+        "作坊工匠"
+      ],
+      "education_path": [],
+      "marriages": 1,
+      "children": 3,
+      "resources": {
+        "before": 700,
+        "after": 56076.83
+      },
+      "migration": 0,
+      "relationships": [
+        {
+          "people": [
+            "character-7",
+            "character-9"
+          ],
+          "attitude": -42,
+          "interactions": 9
+        },
+        {
+          "people": [
+            "character-7",
+            "character-3"
+          ],
+          "attitude": -45,
+          "interactions": 4
+        },
+        {
+          "people": [
+            "character-7",
+            "character-8"
+          ],
+          "attitude": 9,
+          "interactions": 8
+        },
+        {
+          "people": [
+            "character-21",
+            "character-7"
+          ],
+          "attitude": 14,
+          "interactions": 6
+        },
+        {
+          "people": [
+            "character-7",
+            "character-49"
+          ],
+          "attitude": 30,
+          "interactions": 11
+        },
+        {
+          "people": [
+            "character-7",
+            "character-53"
+          ],
+          "attitude": 21,
+          "interactions": 8
+        },
+        {
+          "people": [
+            "character-7",
+            "character-5"
+          ],
+          "attitude": 14,
+          "interactions": 4
+        },
+        {
+          "people": [
+            "character-7",
+            "character-102"
+          ],
+          "attitude": 3,
+          "interactions": 2
+        },
+        {
+          "people": [
+            "character-7",
+            "character-176"
+          ],
+          "attitude": 0,
+          "interactions": 0
+        },
+        {
+          "people": [
+            "character-25",
+            "character-7"
+          ],
+          "attitude": 2,
+          "interactions": 1
+        },
+        {
+          "people": [
+            "character-239",
+            "character-7"
+          ],
+          "attitude": 8,
+          "interactions": 3
+        },
+        {
+          "people": [
+            "character-7",
+            "character-258"
+          ],
+          "attitude": 1,
+          "interactions": 2
+        },
+        {
+          "people": [
+            "character-414",
+            "character-7"
+          ],
+          "attitude": 3,
+          "interactions": 1
+        },
+        {
+          "people": [
+            "character-255",
+            "character-7"
+          ],
+          "attitude": 3,
+          "interactions": 1
+        },
+        {
+          "people": [
+            "character-7",
+            "character-350"
+          ],
+          "attitude": 3,
+          "interactions": 1
+        }
+      ],
+      "long_states": [
+        "career",
+        "siblings",
+        "growth",
+        "mentor",
+        "parents",
+        "apprentice",
+        "away",
+        "match",
+        "network",
+        "skill",
+        "marriage",
+        "pregnancy",
+        "infant_care",
+        "enterprise",
+        "firstwork",
+        "couple",
+        "improve",
+        "competition",
+        "parenting",
+        "married",
+        "duty"
+      ],
+      "problems": 36,
+      "player_decisions": 21,
+      "paused_months": 20,
+      "failed": 3,
+      "alive": true,
+      "summary_count": 4
+    }
+  ],
+  "ten_years": [
+    {
+      "background": "贫困家庭青年",
+      "stats": {
+        "seed": 110,
+        "months": 120,
+        "initial_age": 18,
+        "domains": [
+          "工作环境",
+          "日常变化",
+          "社交网络积累",
+          "师徒关系",
+          "职业与谋生",
+          "失败与挫折",
+          "朋友 / 熟人",
+          "家庭日常",
+          "教育与学习",
+          "个人财富",
+          "家庭资源",
+          "技能成长"
+        ],
+        "unique_templates": 15,
+        "career_path": [
+          "农事劳动"
+        ],
+        "education_path": [],
+        "marriages": 0,
+        "children": 0,
+        "resources": {
+          "before": 60,
+          "after": -6825
+        },
+        "migration": 0,
+        "relationships": [
+          {
+            "people": [
+              "character-7",
+              "character-9"
+            ],
+            "attitude": 38,
+            "interactions": 10
+          },
+          {
+            "people": [
+              "character-7",
+              "character-3"
+            ],
+            "attitude": 23,
+            "interactions": 1
+          },
+          {
+            "people": [
+              "character-8",
+              "character-7"
+            ],
+            "attitude": 24,
+            "interactions": 9
+          },
+          {
+            "people": [
+              "character-7",
+              "character-35"
+            ],
+            "attitude": 9,
+            "interactions": 4
+          },
+          {
+            "people": [
+              "character-7",
+              "character-25"
+            ],
+            "attitude": 3,
+            "interactions": 2
+          },
+          {
+            "people": [
+              "character-31",
+              "character-7"
+            ],
+            "attitude": 5,
+            "interactions": 4
+          },
+          {
+            "people": [
+              "character-69",
+              "character-7"
+            ],
+            "attitude": 8,
+            "interactions": 2
+          }
+        ],
+        "long_states": [
+          "career",
+          "mentor",
+          "firstwork",
+          "friends",
+          "education",
+          "improve",
+          "network",
+          "hardship",
+          "skill"
+        ],
+        "problems": 11,
+        "player_decisions": 17,
+        "paused_months": 15,
+        "failed": 1,
+        "alive": true,
+        "summary_count": 2
+      },
+      "rows": [
+        {
+          "month": 24321,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林远〕暂时保持安排",
+          "result": "不改变职责，问题继续按实际状态发展"
+        },
+        {
+          "month": 24328,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林禾〕暂不推动婚配",
+          "result": "保留人物与关系，暂不支付婚配费用"
+        },
+        {
+          "month": 24333,
+          "actor": "人物决定",
+          "title": "磨损的工具让工作格外费力",
+          "domain": "工作环境",
+          "decision": "与同伴一起修整",
+          "result": "与同伴一起修整。这次共同经历让双方更亲近。这次实际练习留下了可继续积累的经验。",
+          "event_id": "daily1-1"
+        },
+        {
+          "month": 24333,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林远〕暂时保持安排",
+          "result": "不改变职责，问题继续按实际状态发展"
+        },
+        {
+          "month": 24336,
+          "actor": "人物决定",
+          "title": "秋收前发现储粮处漏雨",
+          "domain": "日常变化",
+          "decision": "说明当前安排不足，本次暂不改变生活",
+          "result": "说明了当前限制，本次没有改变既有安排。",
+          "event_id": "daily0-1"
+        },
+        {
+          "month": 24345,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林远〕暂时保持安排",
+          "result": "不改变职责，问题继续按实际状态发展"
+        },
+        {
+          "month": 24345,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林安〕保留现有安排",
+          "result": "不投入本次资源；不启动该机会"
+        },
+        {
+          "month": 24348,
+          "actor": "人物决定",
+          "title": "熟人请你为一场误会作证",
+          "domain": "社交网络积累",
+          "decision": "说明当前安排不足，本次暂不改变生活",
+          "result": "说明了当前限制，本次没有改变既有安排。",
+          "event_id": "network-2"
+        },
+        {
+          "month": 24351,
+          "actor": "人物决定",
+          "title": "邻里请你长期协助协调杂务",
+          "domain": "社交网络积累",
+          "decision": "说明当前安排不足，本次暂不改变生活",
+          "result": "说明了当前限制，本次没有改变既有安排。",
+          "event_id": "network-4"
+        },
+        {
+          "month": 24352,
+          "actor": "人物决定",
+          "title": "你发现师傅这次估错了用料",
+          "domain": "师徒关系",
+          "decision": "私下提醒并核对",
+          "result": "私下提醒并核对。这次共同经历让双方更亲近。这次实际练习留下了可继续积累的经验。",
+          "event_id": "mentor-3"
+        },
+        {
+          "month": 24354,
+          "actor": "人物决定",
+          "title": "短工报酬比约定少了一份",
+          "domain": "职业与谋生",
+          "decision": "当面核对工日",
+          "result": "投入了时间或资源，但受到当前压力、健康与熟练程度限制，预期的学习或收益没有实现。",
+          "event_id": "firstwork-2"
+        },
+        {
+          "month": 24355,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林安〕暂不推动婚配",
+          "result": "保留人物与关系，暂不支付婚配费用"
+        },
+        {
+          "month": 24357,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林远〕暂时保持安排",
+          "result": "不改变职责，问题继续按实际状态发展"
+        },
+        {
+          "month": 24358,
+          "actor": "人物决定",
+          "title": "连日少客，原定工时难以维持",
+          "domain": "失败与挫折",
+          "decision": "说明当前安排不足，本次暂不改变生活",
+          "result": "说明了当前限制，本次没有改变既有安排。",
+          "event_id": "setback-2"
+        },
+        {
+          "month": 24360,
+          "actor": "人物决定",
+          "title": "旧识在集市认出了你",
+          "domain": "朋友 / 熟人",
+          "decision": "约定下次再谈",
+          "result": "约定下次再谈。这次共同经历让双方更亲近。",
+          "event_id": "friends-1"
+        },
+        {
+          "month": 24366,
+          "actor": "人物决定",
+          "title": "朋友请你帮忙介绍可靠的短工",
+          "domain": "朋友 / 熟人",
+          "decision": "核实双方要求再介绍",
+          "result": "核实双方要求再介绍。这次共同经历让双方更亲近。",
+          "event_id": "friends-2"
+        },
+        {
+          "month": 24369,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林远〕暂时保持安排",
+          "result": "不改变职责，问题继续按实际状态发展"
+        },
+        {
+          "month": 24370,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔沈宁〕保留现有安排",
+          "result": "不投入本次资源；不启动该机会"
+        },
+        {
+          "month": 24381,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林远〕暂时保持安排",
+          "result": "不改变职责，问题继续按实际状态发展"
+        },
+        {
+          "month": 24383,
+          "actor": "人物决定",
+          "title": "家人合力准备一顿节令饭",
+          "domain": "家庭日常",
+          "decision": "负责一道拿手的菜",
+          "result": "负责一道拿手的菜。这次共同经历让双方更亲近。这次实际练习留下了可继续积累的经验。",
+          "event_id": "daily5-1"
+        },
+        {
+          "month": 24387,
+          "actor": "人物决定",
+          "title": "短工报酬比约定少了一份",
+          "domain": "职业与谋生",
+          "decision": "先收下现钱，保留争议",
+          "result": "先收下现钱，保留争议。双方留下了一些不满，之后的互动会带着这段经历。",
+          "event_id": "firstwork-2"
+        },
+        {
+          "month": 24393,
+          "actor": "人物决定",
+          "title": "家中旧账本成了识字材料",
+          "domain": "教育与学习",
+          "decision": "自己临摹熟悉的字",
+          "result": "自己临摹熟悉的字。这次实际练习留下了可继续积累的经验。",
+          "event_id": "education-1"
+        },
+        {
+          "month": 24393,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林远〕暂时保持安排",
+          "result": "不改变职责，问题继续按实际状态发展"
+        },
+        {
+          "month": 24393,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林安〕暂不推动婚配",
+          "result": "保留人物与关系，暂不支付婚配费用"
+        },
+        {
+          "month": 24394,
+          "actor": "人物决定",
+          "title": "旧识在集市认出了你",
+          "domain": "朋友 / 熟人",
+          "decision": "说明当前安排不足，本次暂不改变生活",
+          "result": "说明了当前限制，本次没有改变既有安排。",
+          "event_id": "friends-1"
+        },
+        {
+          "month": 24395,
+          "actor": "人物决定",
+          "title": "一笔拖欠的小报酬终于送到",
+          "domain": "个人财富",
+          "decision": "留下部分个人备用",
+          "result": "留下部分个人备用。",
+          "event_id": "improve-1"
+        },
+        {
+          "month": 24396,
+          "actor": "人物决定",
+          "title": "朋友请你帮忙介绍可靠的短工",
+          "domain": "朋友 / 熟人",
+          "decision": "说明当前安排不足，本次暂不改变生活",
+          "result": "说明了当前限制，本次没有改变既有安排。",
+          "event_id": "friends-2"
+        },
+        {
+          "month": 24399,
+          "actor": "人物决定",
+          "title": "磨损的工具让工作格外费力",
+          "domain": "工作环境",
+          "decision": "与同伴一起修整",
+          "result": "与同伴一起修整。这次共同经历让双方更亲近。这次实际练习留下了可继续积累的经验。",
+          "event_id": "daily1-1"
+        },
+        {
+          "month": 24401,
+          "actor": "人物决定",
+          "title": "熟人请你为一场误会作证",
+          "domain": "社交网络积累",
+          "decision": "只说明亲眼看到的部分",
+          "result": "只说明亲眼看到的部分。这次共同经历让双方更亲近。",
+          "event_id": "network-2"
+        },
+        {
+          "month": 24405,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林远〕暂时保持安排",
+          "result": "不改变职责，问题继续按实际状态发展"
+        },
+        {
+          "month": 24406,
+          "actor": "人物决定",
+          "title": "粮缸见底，家里重新盘点口粮",
+          "domain": "家庭资源",
+          "decision": "共同清点并减少损耗",
+          "result": "共同清点并减少损耗。这次共同经历让双方更亲近。",
+          "event_id": "hardship-1"
+        },
+        {
+          "month": 24408,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林远〕保留现有安排",
+          "result": "不投入本次资源；不启动该机会"
+        },
+        {
+          "month": 24417,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林远〕暂时保持安排",
+          "result": "不改变职责，问题继续按实际状态发展"
+        },
+        {
+          "month": 24419,
+          "actor": "人物决定",
+          "title": "空闲时发现一把需要修整的小工具",
+          "domain": "技能成长",
+          "decision": "说明当前安排不足，本次暂不改变生活",
+          "result": "说明了当前限制，本次没有改变既有安排。",
+          "event_id": "skill-1"
+        },
+        {
+          "month": 24424,
+          "actor": "人物决定",
+          "title": "粮缸见底，家里重新盘点口粮",
+          "domain": "家庭资源",
+          "decision": "说明当前安排不足，本次暂不改变生活",
+          "result": "说明了当前限制，本次没有改变既有安排。",
+          "event_id": "hardship-1"
+        },
+        {
+          "month": 24425,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔沈宁25〕不提供本次额外支持",
+          "result": "不支付资源、不启动该机会；保留现有生活"
+        },
+        {
+          "month": 24427,
+          "actor": "人物决定",
+          "title": "过去练习的手法终于派上用场",
+          "domain": "技能成长",
+          "decision": "独自完成自己的那一份",
+          "result": "独自完成自己的那一份。",
+          "event_id": "skill-3"
+        },
+        {
+          "month": 24428,
+          "actor": "人物决定",
+          "title": "熟人请你为一场误会作证",
+          "domain": "社交网络积累",
+          "decision": "只说明亲眼看到的部分",
+          "result": "只说明亲眼看到的部分。这次共同经历让双方更亲近。",
+          "event_id": "network-2"
+        },
+        {
+          "month": 24429,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林远〕暂时保持安排",
+          "result": "不改变职责，问题继续按实际状态发展"
+        },
+        {
+          "month": 24432,
+          "actor": "人物决定",
+          "title": "旧识在集市认出了你",
+          "domain": "朋友 / 熟人",
+          "decision": "说明当前安排不足，本次暂不改变生活",
+          "result": "说明了当前限制，本次没有改变既有安排。",
+          "event_id": "friends-1"
+        }
+      ],
+      "summary": [
+        {
+          "age": "18-23",
+          "events": 18,
+          "player": 9
+        },
+        {
+          "age": "23-28",
+          "events": 22,
+          "player": 8
+        }
+      ],
+      "final": {
+        "age": 28,
+        "health": 100,
+        "stress": 0,
+        "skills": [
+          {
+            "name": "农事",
+            "level": 51.6,
+            "source": "MOCK_ONLY"
+          },
+          {
+            "name": "手工",
+            "level": 4,
+            "source": "MOCK_ONLY"
+          },
+          {
+            "name": "经商",
+            "level": 1,
+            "source": "MOCK_ONLY"
+          },
+          {
+            "name": "烹饪",
+            "level": 2,
+            "source": "MOCK_ONLY"
+          },
+          {
+            "name": "书法",
+            "level": 1,
+            "source": "MOCK_ONLY"
+          }
+        ]
+      }
+    },
+    {
+      "background": "家庭条件较好的青年",
+      "stats": {
+        "seed": 111,
+        "months": 120,
+        "initial_age": 18,
+        "domains": [
+          "教育与学习",
+          "职业与谋生",
+          "父母与子女",
+          "兄弟姐妹",
+          "工作环境",
+          "家庭事业",
+          "失败与挫折",
+          "个人财富",
+          "朋友 / 熟人",
+          "婚配",
+          "家庭日常",
+          "社交网络积累"
+        ],
+        "unique_templates": 18,
+        "career_path": [
+          "农事劳动",
+          "商铺帮工"
+        ],
+        "education_path": [
+          "识字学习"
+        ],
+        "marriages": 0,
+        "children": 0,
+        "resources": {
+          "before": 4000,
+          "after": 29525.39
+        },
+        "migration": 0,
+        "relationships": [
+          {
+            "people": [
+              "character-7",
+              "character-9"
+            ],
+            "attitude": 23,
+            "interactions": 2
+          },
+          {
+            "people": [
+              "character-7",
+              "character-3"
+            ],
+            "attitude": 28,
+            "interactions": 2
+          },
+          {
+            "people": [
+              "character-7",
+              "character-26"
+            ],
+            "attitude": 10,
+            "interactions": 4
+          },
+          {
+            "people": [
+              "character-7",
+              "character-30"
+            ],
+            "attitude": 0,
+            "interactions": 0
+          },
+          {
+            "people": [
+              "character-8",
+              "character-7"
+            ],
+            "attitude": 13,
+            "interactions": 4
+          },
+          {
+            "people": [
+              "character-7",
+              "character-5"
+            ],
+            "attitude": 10,
+            "interactions": 4
+          },
+          {
+            "people": [
+              "character-59",
+              "character-7"
+            ],
+            "attitude": 15,
+            "interactions": 5
+          },
+          {
+            "people": [
+              "character-7",
+              "character-55"
+            ],
+            "attitude": -1,
+            "interactions": 1
+          }
+        ],
+        "long_states": [
+          "career",
+          "education",
+          "firstwork",
+          "parents",
+          "siblings",
+          "improve",
+          "match",
+          "enterprise"
+        ],
+        "problems": 17,
+        "player_decisions": 15,
+        "paused_months": 15,
+        "failed": 2,
+        "alive": true,
+        "summary_count": 2
+      },
+      "rows": [
+        {
+          "month": 24313,
+          "actor": "人物决定",
+          "title": "一篇习作被退回重写",
+          "domain": "教育与学习",
+          "decision": "说明当前安排不足，本次暂不改变生活",
+          "result": "说明了当前限制，本次没有改变既有安排。",
+          "event_id": "education-3"
+        },
+        {
+          "month": 24320,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林禾〕重点推动与林安26议亲",
+          "result": "提供具体婚配机会；本人、对象及家庭继续独立回应"
+        },
+        {
+          "month": 24321,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林安〕支持：提供学习商铺事务的机会",
+          "result": "提供学习商铺事务的机会。家庭支付了这次安排所需的费用。"
+        },
+        {
+          "month": 24322,
+          "actor": "人物决定",
+          "title": "短工报酬比约定少了一份",
+          "domain": "职业与谋生",
+          "decision": "当面核对工日",
+          "result": "投入了时间或资源，但受到当前压力、健康与熟练程度限制，预期的学习或收益没有实现。",
+          "event_id": "firstwork-2"
+        },
+        {
+          "month": 24324,
+          "actor": "状态发展",
+          "domain": "家庭",
+          "title": "family_conflict",
+          "result": "worsened；程度 44"
+        },
+        {
+          "month": 24326,
+          "actor": "状态发展",
+          "domain": "家庭",
+          "title": "family_conflict",
+          "result": "worsened；程度 60"
+        },
+        {
+          "month": 24326,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林禾〕重新分配家庭照护",
+          "result": "优先寻找可承担责任的同住成年人；无接替者时减少工作时间"
+        },
+        {
+          "month": 24329,
+          "actor": "状态发展",
+          "domain": "家庭",
+          "title": "family_conflict",
+          "result": "worsened；程度 84"
+        },
+        {
+          "month": 24330,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林安〕重点推动与沈安59议亲",
+          "result": "提供具体婚配机会；本人、对象及家庭继续独立回应"
+        },
+        {
+          "month": 24331,
+          "actor": "状态发展",
+          "domain": "家庭",
+          "title": "family_conflict",
+          "result": "worsened；程度 100"
+        },
+        {
+          "month": 24334,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔沈宁〕支持：转做商铺帮工",
+          "result": "转做商铺帮工。"
+        },
+        {
+          "month": 24338,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林禾〕重新分配家庭照护",
+          "result": "优先寻找可承担责任的同住成年人；无接替者时减少工作时间"
+        },
+        {
+          "month": 24339,
+          "actor": "状态发展",
+          "domain": "家庭",
+          "title": "family_conflict",
+          "result": "improved；程度 88"
+        },
+        {
+          "month": 24340,
+          "actor": "状态发展",
+          "domain": "家庭",
+          "title": "family_conflict",
+          "result": "improved；程度 76"
+        },
+        {
+          "month": 24341,
+          "actor": "人物决定",
+          "title": "长辈讲起自己年轻时错过的机会",
+          "domain": "父母与子女",
+          "decision": "认真听完并追问",
+          "result": "投入了时间或资源，但受到当前压力、健康与熟练程度限制，预期的学习或收益没有实现。",
+          "event_id": "parents-1"
+        },
+        {
+          "month": 24342,
+          "actor": "人物决定",
+          "title": "兄弟想让你替他完成一份差事",
+          "domain": "兄弟姐妹",
+          "decision": "一起完成最难的部分",
+          "result": "一起完成最难的部分。这次共同经历让双方更亲近。",
+          "event_id": "siblings-2"
+        },
+        {
+          "month": 24342,
+          "actor": "状态发展",
+          "domain": "家庭",
+          "title": "family_conflict",
+          "result": "improved；程度 52"
+        },
+        {
+          "month": 24343,
+          "actor": "人物决定",
+          "title": "磨损的工具让工作格外费力",
+          "domain": "工作环境",
+          "decision": "说明当前安排不足，本次暂不改变生活",
+          "result": "说明了当前限制，本次没有改变既有安排。",
+          "event_id": "daily1-1"
+        },
+        {
+          "month": 24343,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林禾〕重点推动与林安26议亲",
+          "result": "提供具体婚配机会；本人、对象及家庭继续独立回应"
+        },
+        {
+          "month": 24344,
+          "actor": "状态发展",
+          "domain": "家庭",
+          "title": "family_conflict",
+          "result": "improved；程度 28"
+        },
+        {
+          "month": 24345,
+          "actor": "状态发展",
+          "domain": "家庭",
+          "title": "family_conflict",
+          "result": "improved；程度 16"
+        },
+        {
+          "month": 24347,
+          "actor": "人物决定",
+          "title": "固定买家要求先做一批样品",
+          "domain": "家庭事业",
+          "decision": "说明当前安排不足，本次暂不改变生活",
+          "result": "说明了当前限制，本次没有改变既有安排。",
+          "event_id": "enterprise-2"
+        },
+        {
+          "month": 24347,
+          "actor": "状态发展",
+          "domain": "家庭",
+          "title": "family_conflict",
+          "result": "resolved；程度 0"
+        },
+        {
+          "month": 24351,
+          "actor": "人物决定",
+          "title": "卖出的货被退回一小件",
+          "domain": "失败与挫折",
+          "decision": "说明当前安排不足，本次暂不改变生活",
+          "result": "说明了当前限制，本次没有改变既有安排。",
+          "event_id": "setback-1"
+        },
+        {
+          "month": 24356,
+          "actor": "人物决定",
+          "title": "家中终于能换掉漏底的锅",
+          "domain": "个人财富",
+          "decision": "买结实的日用品",
+          "result": "买结实的日用品。家庭支付了这次安排所需的费用。",
+          "event_id": "improve-2"
+        },
+        {
+          "month": 24356,
+          "actor": "人物决定",
+          "title": "父亲承认误会了你的一次迟归",
+          "domain": "父母与子女",
+          "decision": "接受道歉，不再细究",
+          "result": "接受道歉，不再细究。这次共同经历让双方更亲近。",
+          "event_id": "parents-3"
+        },
+        {
+          "month": 24357,
+          "actor": "人物决定",
+          "title": "旧识在集市认出了你",
+          "domain": "朋友 / 熟人",
+          "decision": "说明当前安排不足，本次暂不改变生活",
+          "result": "说明了当前限制，本次没有改变既有安排。",
+          "event_id": "friends-1"
+        },
+        {
+          "month": 24358,
+          "actor": "人物决定",
+          "title": "妹妹主动归还上次借去的东西",
+          "domain": "兄弟姐妹",
+          "decision": "说明当前安排不足，本次暂不改变生活",
+          "result": "说明了当前限制，本次没有改变既有安排。",
+          "event_id": "siblings-3"
+        },
+        {
+          "month": 24361,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林安〕支持：安排交接后离乡",
+          "result": "安排交接后离乡。"
+        },
+        {
+          "month": 24368,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林禾〕重点推动与陈明议亲",
+          "result": "提供具体婚配机会；本人、对象及家庭继续独立回应"
+        },
+        {
+          "month": 24374,
+          "actor": "人物决定",
+          "title": "兄妹争用同一件工具",
+          "domain": "兄弟姐妹",
+          "decision": "说明当前安排不足，本次暂不改变生活",
+          "result": "说明了当前限制，本次没有改变既有安排。",
+          "event_id": "siblings-1"
+        },
+        {
+          "month": 24376,
+          "actor": "人物决定",
+          "title": "磨损的工具让工作格外费力",
+          "domain": "工作环境",
+          "decision": "与同伴一起修整",
+          "result": "与同伴一起修整。这次共同经历让双方更亲近。这次实际练习留下了可继续积累的经验。",
+          "event_id": "daily1-1"
+        },
+        {
+          "month": 24380,
+          "actor": "人物决定",
+          "title": "家中终于能换掉漏底的锅",
+          "domain": "个人财富",
+          "decision": "修补旧物继续用",
+          "result": "修补旧物继续用。这次实际练习留下了可继续积累的经验。家庭支付了这次安排所需的费用。",
+          "event_id": "improve-2"
+        },
+        {
+          "month": 24385,
+          "actor": "人物决定",
+          "title": "亲友谈起一位尚未婚配的熟人",
+          "domain": "婚配",
+          "decision": "暂时只保持普通来往",
+          "result": "暂时只保持普通来往。这次共同经历让双方更亲近。",
+          "event_id": "match-1"
+        },
+        {
+          "month": 24385,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林安〕重点推动与沈安59议亲",
+          "result": "提供具体婚配机会；本人、对象及家庭继续独立回应"
+        },
+        {
+          "month": 24387,
+          "actor": "人物决定",
+          "title": "长辈讲起自己年轻时错过的机会",
+          "domain": "父母与子女",
+          "decision": "认真听完并追问",
+          "result": "认真听完并追问。这次共同经历让双方更亲近。这次实际练习留下了可继续积累的经验。",
+          "event_id": "parents-1"
+        },
+        {
+          "month": 24388,
+          "actor": "人物决定",
+          "title": "兄弟想让你替他完成一份差事",
+          "domain": "兄弟姐妹",
+          "decision": "一起完成最难的部分",
+          "result": "一起完成最难的部分。这次共同经历让双方更亲近。",
+          "event_id": "siblings-2"
+        },
+        {
+          "month": 24390,
+          "actor": "人物决定",
+          "title": "集市收摊后留下搬运活",
+          "domain": "职业与谋生",
+          "decision": "量力接下一小批",
+          "result": "量力接下一小批。",
+          "event_id": "firstwork-3"
+        },
+        {
+          "month": 24391,
+          "actor": "人物决定",
+          "title": "短工报酬比约定少了一份",
+          "domain": "职业与谋生",
+          "decision": "说明当前安排不足，本次暂不改变生活",
+          "result": "说明了当前限制，本次没有改变既有安排。",
+          "event_id": "firstwork-2"
+        },
+        {
+          "month": 24392,
+          "actor": "人物决定",
+          "title": "兄妹争用同一件工具",
+          "domain": "兄弟姐妹",
+          "decision": "先让对方用完",
+          "result": "先让对方用完。这次共同经历让双方更亲近。",
+          "event_id": "siblings-1"
+        },
+        {
+          "month": 24395,
+          "actor": "人物决定",
+          "title": "家人合力准备一顿节令饭",
+          "domain": "家庭日常",
+          "decision": "说明当前安排不足，本次暂不改变生活",
+          "result": "说明了当前限制，本次没有改变既有安排。",
+          "event_id": "daily5-1"
+        },
+        {
+          "month": 24397,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林安〕支持本人重新选择去留",
+          "result": "提供返回、续期、定居、转换道路的可行机会；人物自主决定"
+        },
+        {
+          "month": 24398,
+          "actor": "人物决定",
+          "title": "议亲对象希望先谈清家庭责任",
+          "domain": "婚配",
+          "decision": "承认暂时安排不开",
+          "result": "承认暂时安排不开。双方留下了一些不满，之后的互动会带着这段经历。",
+          "event_id": "match-2"
+        },
+        {
+          "month": 24400,
+          "actor": "人物决定",
+          "title": "家里尝试在市集卖掉多余制品",
+          "domain": "家庭事业",
+          "decision": "记下每笔成本与收入",
+          "result": "记下每笔成本与收入。这次实际练习留下了可继续积累的经验。",
+          "event_id": "enterprise-1"
+        },
+        {
+          "month": 24403,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林安〕重点推动与沈安59议亲",
+          "result": "提供具体婚配机会；本人、对象及家庭继续独立回应"
+        },
+        {
+          "month": 24406,
+          "actor": "人物决定",
+          "title": "磨损的工具让工作格外费力",
+          "domain": "工作环境",
+          "decision": "暂用备用工具",
+          "result": "暂用备用工具。",
+          "event_id": "daily1-1"
+        },
+        {
+          "month": 24409,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林禾〕重点推动与林安26议亲",
+          "result": "提供具体婚配机会；本人、对象及家庭继续独立回应"
+        },
+        {
+          "month": 24418,
+          "actor": "人物决定",
+          "title": "熟人请你为一场误会作证",
+          "domain": "社交网络积累",
+          "decision": "说明当前安排不足，本次暂不改变生活",
+          "result": "说明了当前限制，本次没有改变既有安排。",
+          "event_id": "network-2"
+        },
+        {
+          "month": 24419,
+          "actor": "人物决定",
+          "title": "家里尝试在市集卖掉多余制品",
+          "domain": "家庭事业",
+          "decision": "说明当前安排不足，本次暂不改变生活",
+          "result": "说明了当前限制，本次没有改变既有安排。",
+          "event_id": "enterprise-1"
+        },
+        {
+          "month": 24419,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林安〕重点推动与沈安59议亲",
+          "result": "提供具体婚配机会；本人、对象及家庭继续独立回应"
+        },
+        {
+          "month": 24421,
+          "actor": "人物决定",
+          "title": "固定买家要求先做一批样品",
+          "domain": "家庭事业",
+          "decision": "用可承受的材料试做",
+          "result": "用可承受的材料试做。这次实际练习留下了可继续积累的经验。家庭支付了这次安排所需的费用。",
+          "event_id": "enterprise-2"
+        },
+        {
+          "month": 24431,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林禾〕重点推动与陈明议亲",
+          "result": "提供具体婚配机会；本人、对象及家庭继续独立回应"
+        }
+      ],
+      "summary": [
+        {
+          "age": "18-23",
+          "events": 30,
+          "player": 9
+        },
+        {
+          "age": "23-28",
+          "events": 22,
+          "player": 6
+        }
+      ],
+      "final": {
+        "age": 28,
+        "health": 96,
+        "stress": 0,
+        "skills": [
+          {
+            "name": "读书",
+            "level": 29.22,
+            "source": "MOCK_ONLY"
+          },
+          {
+            "name": "经商",
+            "level": 39.56,
+            "source": "MOCK_ONLY"
+          },
+          {
+            "name": "手工",
+            "level": 5,
+            "source": "MOCK_ONLY"
+          }
+        ]
+      }
+    },
+    {
+      "background": "家庭责任较重的青年",
+      "stats": {
+        "seed": 112,
+        "months": 120,
+        "initial_age": 18,
+        "domains": [
+          "个人财富",
+          "疾病与恢复",
+          "长期照护",
+          "失败与挫折",
+          "兄弟姐妹",
+          "家庭日常",
+          "技能成长",
+          "工作环境",
+          "朋友 / 熟人",
+          "家庭责任",
+          "教育与学习",
+          "NPC 主动行为",
+          "社交网络积累",
+          "邻里",
+          "离乡 / 迁移"
+        ],
+        "unique_templates": 21,
+        "career_path": [
+          "农事劳动"
+        ],
+        "education_path": [],
+        "marriages": 1,
+        "children": 0,
+        "resources": {
+          "before": 300,
+          "after": 1592
+        },
+        "migration": 0,
+        "relationships": [
+          {
+            "people": [
+              "character-7",
+              "character-9"
+            ],
+            "attitude": 35,
+            "interactions": 6
+          },
+          {
+            "people": [
+              "character-7",
+              "character-3"
+            ],
+            "attitude": 28,
+            "interactions": 4
+          },
+          {
+            "people": [
+              "character-8",
+              "character-7"
+            ],
+            "attitude": 40,
+            "interactions": 13
+          },
+          {
+            "people": [
+              "character-7",
+              "character-5"
+            ],
+            "attitude": 17,
+            "interactions": 5
+          },
+          {
+            "people": [
+              "character-47",
+              "character-7"
+            ],
+            "attitude": 5,
+            "interactions": 3
+          },
+          {
+            "people": [
+              "character-43",
+              "character-7"
+            ],
+            "attitude": 13,
+            "interactions": 3
+          },
+          {
+            "people": [
+              "character-85",
+              "character-7"
+            ],
+            "attitude": 6,
+            "interactions": 3
+          },
+          {
+            "people": [
+              "character-7",
+              "character-104"
+            ],
+            "attitude": 0,
+            "interactions": 2
+          },
+          {
+            "people": [
+              "character-7",
+              "character-108"
+            ],
+            "attitude": 4,
+            "interactions": 1
+          }
+        ],
+        "long_states": [
+          "career",
+          "improve",
+          "setback",
+          "siblings",
+          "skill",
+          "friends",
+          "duty",
+          "education",
+          "marriage",
+          "care"
+        ],
+        "problems": 20,
+        "player_decisions": 9,
+        "paused_months": 9,
+        "failed": 0,
+        "alive": true,
+        "summary_count": 2
+      },
+      "rows": [
+        {
+          "month": 24318,
+          "actor": "人物决定",
+          "title": "家中终于能换掉漏底的锅",
+          "domain": "个人财富",
+          "decision": "买结实的日用品",
+          "result": "买结实的日用品。家庭支付了这次安排所需的费用。",
+          "event_id": "improve-2"
+        },
+        {
+          "month": 24321,
+          "actor": "人物决定",
+          "title": "家人轻微不适，暂时做不了家务",
+          "domain": "疾病与恢复",
+          "decision": "说明当前安排不足，本次暂不改变生活",
+          "result": "说明了当前限制，本次没有改变既有安排。",
+          "event_id": "illness-1"
+        },
+        {
+          "month": 24322,
+          "actor": "人物决定",
+          "title": "照护者发现更省力的起居安排",
+          "domain": "长期照护",
+          "decision": "说明当前安排不足，本次暂不改变生活",
+          "result": "说明了当前限制，本次没有改变既有安排。",
+          "event_id": "care-1"
+        },
+        {
+          "month": 24328,
+          "actor": "人物决定",
+          "title": "连日少客，原定工时难以维持",
+          "domain": "失败与挫折",
+          "decision": "用空出的时间练熟手艺",
+          "result": "用空出的时间练熟手艺。这次实际练习留下了可继续积累的经验。",
+          "event_id": "setback-2"
+        },
+        {
+          "month": 24328,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林远〕重新分配家庭照护",
+          "result": "优先寻找可承担责任的同住成年人；无接替者时减少工作时间"
+        },
+        {
+          "month": 24335,
+          "actor": "人物决定",
+          "title": "兄妹争用同一件工具",
+          "domain": "兄弟姐妹",
+          "decision": "约好轮流用",
+          "result": "约好轮流用。这次共同经历让双方更亲近。这次实际练习留下了可继续积累的经验。",
+          "event_id": "siblings-1"
+        },
+        {
+          "month": 24336,
+          "actor": "人物决定",
+          "title": "兄弟想让你替他完成一份差事",
+          "domain": "兄弟姐妹",
+          "decision": "一起完成最难的部分",
+          "result": "一起完成最难的部分。这次共同经历让双方更亲近。",
+          "event_id": "siblings-2"
+        },
+        {
+          "month": 24336,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林远〕支持：安排交接后离乡",
+          "result": "安排交接后离乡。"
+        },
+        {
+          "month": 24339,
+          "actor": "人物决定",
+          "title": "家人合力准备一顿节令饭",
+          "domain": "家庭日常",
+          "decision": "帮忙收拾并陪伴",
+          "result": "帮忙收拾并陪伴。这次共同经历让双方更亲近。",
+          "event_id": "daily5-1"
+        },
+        {
+          "month": 24340,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林远〕重新分配家庭照护",
+          "result": "优先寻找可承担责任的同住成年人；无接替者时减少工作时间"
+        },
+        {
+          "month": 24341,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林禾〕暂不推动婚配",
+          "result": "保留人物与关系，暂不支付婚配费用"
+        },
+        {
+          "month": 24342,
+          "actor": "人物决定",
+          "title": "空闲时发现一把需要修整的小工具",
+          "domain": "技能成长",
+          "decision": "试着修好并记录手法",
+          "result": "试着修好并记录手法。这次实际练习留下了可继续积累的经验。",
+          "event_id": "skill-1"
+        },
+        {
+          "month": 24343,
+          "actor": "人物决定",
+          "title": "磨损的工具让工作格外费力",
+          "domain": "工作环境",
+          "decision": "说明当前安排不足，本次暂不改变生活",
+          "result": "说明了当前限制，本次没有改变既有安排。",
+          "event_id": "daily1-1"
+        },
+        {
+          "month": 24345,
+          "actor": "人物决定",
+          "title": "家人轻微不适，暂时做不了家务",
+          "domain": "疾病与恢复",
+          "decision": "说明当前安排不足，本次暂不改变生活",
+          "result": "说明了当前限制，本次没有改变既有安排。",
+          "event_id": "illness-1"
+        },
+        {
+          "month": 24346,
+          "actor": "人物决定",
+          "title": "朋友请你帮忙介绍可靠的短工",
+          "domain": "朋友 / 熟人",
+          "decision": "只转达消息，不作担保",
+          "result": "只转达消息，不作担保。这次共同经历让双方更亲近。这次实际练习留下了可继续积累的经验。",
+          "event_id": "friends-2"
+        },
+        {
+          "month": 24348,
+          "actor": "人物决定",
+          "title": "过去练习的手法终于派上用场",
+          "domain": "技能成长",
+          "decision": "用熟练手法帮助同伴",
+          "result": "用熟练手法帮助同伴。这次共同经历让双方更亲近。这次实际练习留下了可继续积累的经验。",
+          "event_id": "skill-3"
+        },
+        {
+          "month": 24352,
+          "actor": "人物决定",
+          "title": "天未亮，照护与备饭同时等着你",
+          "domain": "家庭责任",
+          "decision": "请同住者搭把手",
+          "result": "请同住者搭把手。这次共同经历让双方更亲近。",
+          "event_id": "duty-1"
+        },
+        {
+          "month": 24358,
+          "actor": "人物决定",
+          "title": "连日少客，原定工时难以维持",
+          "domain": "失败与挫折",
+          "decision": "缩减工时保住岗位",
+          "result": "缩减工时保住岗位。",
+          "event_id": "setback-2"
+        },
+        {
+          "month": 24359,
+          "actor": "人物决定",
+          "title": "家人合力准备一顿节令饭",
+          "domain": "家庭日常",
+          "decision": "负责一道拿手的菜",
+          "result": "负责一道拿手的菜。这次共同经历让双方更亲近。这次实际练习留下了可继续积累的经验。",
+          "event_id": "daily5-1"
+        },
+        {
+          "month": 24367,
+          "actor": "人物决定",
+          "title": "旧识在集市认出了你",
+          "domain": "朋友 / 熟人",
+          "decision": "说明当前安排不足，本次暂不改变生活",
+          "result": "说明了当前限制，本次没有改变既有安排。",
+          "event_id": "friends-1"
+        },
+        {
+          "month": 24369,
+          "actor": "人物决定",
+          "title": "家中旧账本成了识字材料",
+          "domain": "教育与学习",
+          "decision": "请长辈逐字指认",
+          "result": "请长辈逐字指认。这次共同经历让双方更亲近。这次实际练习留下了可继续积累的经验。",
+          "event_id": "education-1"
+        },
+        {
+          "month": 24372,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林远〕支持本人重新选择去留",
+          "result": "提供返回、续期、定居、转换道路的可行机会；人物自主决定"
+        },
+        {
+          "month": 24376,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林安〕重点推动与王禾85议亲",
+          "result": "提供具体婚配机会；本人、对象及家庭继续独立回应"
+        },
+        {
+          "month": 24377,
+          "actor": "人物决定",
+          "title": "一笔拖欠的小报酬终于送到",
+          "domain": "个人财富",
+          "decision": "留下部分个人备用",
+          "result": "留下部分个人备用。",
+          "event_id": "improve-1"
+        },
+        {
+          "month": 24378,
+          "actor": "人物决定",
+          "title": "家人合力准备一顿节令饭",
+          "domain": "家庭日常",
+          "decision": "说明当前安排不足，本次暂不改变生活",
+          "result": "说明了当前限制，本次没有改变既有安排。",
+          "event_id": "daily5-1"
+        },
+        {
+          "month": 24379,
+          "actor": "人物决定",
+          "title": "空闲时发现一把需要修整的小工具",
+          "domain": "技能成长",
+          "decision": "说明当前安排不足，本次暂不改变生活",
+          "result": "说明了当前限制，本次没有改变既有安排。",
+          "event_id": "skill-1"
+        },
+        {
+          "month": 24383,
+          "actor": "人物决定",
+          "title": "旧识说起自己近来新学的本事",
+          "domain": "NPC 主动行为",
+          "decision": "说明当前安排不足，本次暂不改变生活",
+          "result": "说明了当前限制，本次没有改变既有安排。",
+          "event_id": "daily7-1"
+        },
+        {
+          "month": 24384,
+          "actor": "人物决定",
+          "title": "邻居邀请你一起修整公共小路",
+          "domain": "社交网络积累",
+          "decision": "说明当前安排不足，本次暂不改变生活",
+          "result": "说明了当前限制，本次没有改变既有安排。",
+          "event_id": "network-1"
+        },
+        {
+          "month": 24385,
+          "actor": "人物决定",
+          "title": "天未亮，照护与备饭同时等着你",
+          "domain": "家庭责任",
+          "decision": "说明当前安排不足，本次暂不改变生活",
+          "result": "说明了当前限制，本次没有改变既有安排。",
+          "event_id": "duty-1"
+        },
+        {
+          "month": 24387,
+          "actor": "人物决定",
+          "title": "朋友请你帮忙介绍可靠的短工",
+          "domain": "朋友 / 熟人",
+          "decision": "只转达消息，不作担保",
+          "result": "只转达消息，不作担保。这次共同经历让双方更亲近。这次实际练习留下了可继续积累的经验。",
+          "event_id": "friends-2"
+        },
+        {
+          "month": 24394,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林禾〕重点推动与林明104议亲",
+          "result": "提供具体婚配机会；本人、对象及家庭继续独立回应"
+        },
+        {
+          "month": 24399,
+          "actor": "人物决定",
+          "title": "兄弟想让你替他完成一份差事",
+          "domain": "兄弟姐妹",
+          "decision": "说明自己也有责任",
+          "result": "说明自己也有责任。双方留下了一些不满，之后的互动会带着这段经历。",
+          "event_id": "siblings-2"
+        },
+        {
+          "month": 24403,
+          "actor": "人物决定",
+          "title": "邻家送来一小篮时蔬",
+          "domain": "邻里",
+          "decision": "回送一点家中余物",
+          "result": "回送一点家中余物。这次共同经历让双方更亲近。家庭支付了这次安排所需的费用。",
+          "event_id": "daily2-1"
+        },
+        {
+          "month": 24403,
+          "actor": "人物决定",
+          "title": "家人愿意轮流承担今后的照护",
+          "domain": "长期照护",
+          "decision": "交接部分长期责任",
+          "result": "交接部分长期责任。这次共同经历让双方更亲近。",
+          "event_id": "care-4"
+        },
+        {
+          "month": 24406,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林安〕重点推动与林明47议亲",
+          "result": "提供具体婚配机会；本人、对象及家庭继续独立回应"
+        },
+        {
+          "month": 24410,
+          "actor": "人物决定",
+          "title": "行商带回外乡用工的消息",
+          "domain": "离乡 / 迁移",
+          "decision": "说明当前安排不足，本次暂不改变生活",
+          "result": "说明了当前限制，本次没有改变既有安排。",
+          "event_id": "away-1"
+        },
+        {
+          "month": 24411,
+          "actor": "人物决定",
+          "title": "家中终于能换掉漏底的锅",
+          "domain": "个人财富",
+          "decision": "修补旧物继续用",
+          "result": "修补旧物继续用。这次实际练习留下了可继续积累的经验。家庭支付了这次安排所需的费用。",
+          "event_id": "improve-2"
+        },
+        {
+          "month": 24416,
+          "actor": "人物决定",
+          "title": "连日少客，原定工时难以维持",
+          "domain": "失败与挫折",
+          "decision": "缩减工时保住岗位",
+          "result": "缩减工时保住岗位。",
+          "event_id": "setback-2"
+        },
+        {
+          "month": 24418,
+          "actor": "人物决定",
+          "title": "妹妹主动归还上次借去的东西",
+          "domain": "兄弟姐妹",
+          "decision": "感谢并聊聊近况",
+          "result": "感谢并聊聊近况。这次共同经历让双方更亲近。",
+          "event_id": "siblings-3"
+        },
+        {
+          "month": 24420,
+          "actor": "你的决定",
+          "domain": "玩家决定",
+          "title": "〔林安〕重点推动与林明43议亲",
+          "result": "提供具体婚配机会；本人、对象及家庭继续独立回应"
+        },
+        {
+          "month": 24423,
+          "actor": "人物决定",
+          "title": "一笔拖欠的小报酬终于送到",
+          "domain": "个人财富",
+          "decision": "说明当前安排不足，本次暂不改变生活",
+          "result": "说明了当前限制，本次没有改变既有安排。",
+          "event_id": "improve-1"
+        },
+        {
+          "month": 24424,
+          "actor": "人物决定",
+          "title": "朋友请你帮忙介绍可靠的短工",
+          "domain": "朋友 / 熟人",
+          "decision": "只转达消息，不作担保",
+          "result": "只转达消息，不作担保。这次共同经历让双方更亲近。这次实际练习留下了可继续积累的经验。",
+          "event_id": "friends-2"
+        },
+        {
+          "month": 24429,
+          "actor": "人物决定",
+          "title": "兄弟想让你替他完成一份差事",
+          "domain": "兄弟姐妹",
+          "decision": "一起完成最难的部分",
+          "result": "一起完成最难的部分。这次共同经历让双方更亲近。",
+          "event_id": "siblings-2"
+        }
+      ],
+      "summary": [
+        {
+          "age": "18-23",
+          "events": 22,
+          "player": 5
+        },
+        {
+          "age": "23-28",
+          "events": 21,
+          "player": 4
+        }
+      ],
+      "final": {
+        "age": 28,
+        "health": 100,
+        "stress": 0,
+        "skills": [
+          {
+            "name": "农事",
+            "level": 67.2,
+            "source": "MOCK_ONLY"
+          },
+          {
+            "name": "手工",
+            "level": 8,
+            "source": "MOCK_ONLY"
+          },
+          {
+            "name": "经商",
+            "level": 3,
+            "source": "MOCK_ONLY"
+          },
+          {
+            "name": "烹饪",
+            "level": 2,
+            "source": "MOCK_ONLY"
+          },
+          {
+            "name": "读书",
+            "level": 2,
+            "source": "MOCK_ONLY"
+          }
+        ]
+      }
+    }
+  ],
+  "examples": [
+    {
+      "id": "education-4",
+      "event": "林禾遇到：私塾愿意接纳长期旁听。青年；作坊工匠；住在家中；相关人物：沈宁。",
+      "actions": [
+        "争取完整的学习安排",
+        "暂时只借读旧书",
+        "说明当前安排不足，本次暂不改变生活",
+        "核实这件事的费用、时间和当事人要求"
+      ],
+      "choice": "争取完整的学习安排",
+      "result": "争取完整的学习安排。这次实际练习留下了可继续积累的经验。家庭支付了这次安排所需的费用。",
+      "before": {
+        "character": {
+          "character_id": "character-7",
+          "surname": "林",
+          "given_name": "禾",
+          "sex": "女",
+          "alive": true,
+          "active_simulation": true,
+          "birth_month": 24024,
+          "death_month": null,
+          "birthplace": "ancient",
+          "biological_parent_ids": [
+            "character-3",
+            "character-5"
+          ],
+          "adoptive_parent_ids": [],
+          "adoption_records": [],
+          "current_household_id": "household-1",
+          "marriage_id": "marriage-18",
+          "spouse_character_id": "character-9",
+          "lineage_id": "lineage-4",
+          "life_goal": "职业成就",
+          "skills": [
+            {
+              "name": "手工",
+              "level": 30,
+              "source": "MOCK_ONLY"
+            }
+          ],
+          "dynamic": {
+            "fatigue": 70,
+            "stress": 60,
+            "mood": 65
+          },
+          "experiences": [
+            {
+              "month": 24312,
+              "type": "birth",
+              "genetics": {
+                "continuous": {
+                  "intelligence": {
+                    "father": 79,
+                    "mother": 54,
+                    "sampling_interval": [
+                      54,
+                      79
+                    ],
+                    "outside": false,
+                    "value": 54
+                  },
+                  "social": {
+                    "father": 71,
+                    "mother": 81,
+                    "sampling_interval": [
+                      71,
+                      81
+                    ],
+                    "outside": false,
+                    "value": 74
+                  },
+                  "athletic": {
+                    "father": 74,
+                    "mother": 12,
+                    "sampling_interval": [
+                      12,
+                      74
+                    ],
+                    "outside": false,
+                    "value": 61
+                  },
+                  "stress_resistance": {
+                    "father": 10,
+                    "mother": 0,
+                    "sampling_interval": [
+                      0,
+                      10
+                    ],
+                    "outside": false,
+                    "value": 4
+                  },
+                  "curiosity": {
+                    "father": 76,
+                    "mother": 44,
+                    "sampling_interval": [
+                      44,
+                      76
+                    ],
+                    "outside": false,
+                    "value": 51
+                  },
+                  "height_basis": {
+                    "father": 89,
+                    "mother": 67,
+                    "sampling_interval": [
+                      67,
+                      89
+                    ],
+                    "outside": false,
+                    "value": 84
+                  },
+                  "constitution": {
+                    "father": 64,
+                    "mother": 99,
+                    "sampling_interval": [
+                      64,
+                      99
+                    ],
+                    "outside": false,
+                    "value": 82
+                  },
+                  "fertility_basis": {
+                    "father": 67,
+                    "mother": 15,
+                    "sampling_interval": [
+                      15,
+                      67
+                    ],
+                    "outside": false,
+                    "value": 51
+                  }
+                },
+                "face": {
+                  "face_shape_id": {
+                    "source": "father",
+                    "value": "mock_face_shape_id_01"
+                  },
+                  "brow_shape_id": {
+                    "source": "mother",
+                    "value": "mock_brow_shape_id_02"
+                  },
+                  "eye_shape_id": {
+                    "source": "mother",
+                    "value": "mock_eye_shape_id_03"
+                  },
+                  "nose_shape_id": {
+                    "source": "father",
+                    "value": "mock_nose_shape_id_02"
+                  },
+                  "mouth_shape_id": {
+                    "source": "mother",
+                    "value": "mock_mouth_shape_id_03"
+                  }
+                },
+                "colors": {
+                  "hair_color_id": {
+                    "father": "mock_hair_02",
+                    "mother": "mock_hair_01",
+                    "value": "mock_hair_02"
+                  },
+                  "eye_color_id": {
+                    "father": "mock_eye_02",
+                    "mother": "mock_eye_01",
+                    "value": "mock_eye_01"
+                  },
+                  "skin_tone_id": {
+                    "father": "skin_02",
+                    "mother": "skin_04",
+                    "value": "skin_02"
+                  }
+                },
+                "body": {
+                  "father": "偏瘦",
+                  "mother": "偏瘦",
+                  "value": "壮实"
+                },
+                "hairstyle": "independent MOCK_ONLY pool"
+              }
+            },
+            {
+              "month": 24312,
+              "type": "life_goal",
+              "goal": "职业成就",
+              "weights": [
+                1.12,
+                1.92,
+                1.46,
+                1
+              ],
+              "source": "MOCK_TUNABLE"
+            },
+            {
+              "month": 24312,
+              "type": "marriage",
+              "marriage_id": "marriage-18"
+            }
+          ],
+          "mentor_character_id": "character-3"
+        },
+        "character_age": 24,
+        "household": {
+          "household_id": "household-1",
+          "name": "林家",
+          "members": [
+            "character-7",
+            "character-9",
+            "character-3",
+            "character-5",
+            "character-8",
+            "character-25",
+            "character-27"
+          ],
+          "responsibilities": {},
+          "history": [
+            {
+              "month": 24312,
+              "character_id": "character-3",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-5",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-7",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-8",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-9",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-3",
+              "type": "left"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-3",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-5",
+              "type": "left"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-5",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-8",
+              "type": "left"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-8",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-25",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-27",
+              "type": "joined"
+            }
+          ]
+        },
+        "health": {
+          "value": 90,
+          "condition": "normal",
+          "history": []
+        },
+        "education": {
+          "id": "training",
+          "name": "作坊学艺",
+          "skill": "手工",
+          "time": 0.6,
+          "status": "active",
+          "start_month": 24312,
+          "progress": 0,
+          "duration": 36
+        },
+        "career": {
+          "id": "workshop",
+          "name": "作坊工匠",
+          "skill": "手工",
+          "wage": 1.2,
+          "time": 0.7,
+          "status": "active",
+          "start_month": 24312,
+          "progress": 0
+        },
+        "resources": {
+          "household": {
+            "household_resources": 2900,
+            "recurring_income": 0,
+            "recurring_expenses": 0,
+            "one_time_income": 0,
+            "one_time_expense": 100,
+            "unfunded_months": 0,
+            "support_enabled": true
+          },
+          "personal": {
+            "personal_inheritable_estate": 200
+          }
+        },
+        "relationships": [
+          {
+            "id": "character-7:character-9",
+            "people": [
+              "character-7",
+              "character-9"
+            ],
+            "strength": 20.2,
+            "attitude": -28,
+            "source": "MOCK_ONLY",
+            "history": [
+              {
+                "month": 24312,
+                "before": -30,
+                "after": -28,
+                "reason": "建立婚姻，关系不等于婚姻状态"
+              }
+            ]
+          },
+          {
+            "id": "character-3:character-7",
+            "people": [
+              "character-7",
+              "character-3"
+            ],
+            "strength": 20,
+            "attitude": 20,
+            "source": "MOCK_ONLY",
+            "history": []
+          },
+          {
+            "id": "character-22:character-7",
+            "people": [
+              "character-7",
+              "character-22"
+            ],
+            "strength": 21,
+            "attitude": -10,
+            "source": "MOCK_ONLY",
+            "history": [
+              {
+                "month": 24312,
+                "before": 0,
+                "after": -10,
+                "reason": "测试熟识"
+              }
+            ]
+          }
+        ],
+        "marriages": [
+          {
+            "id": "marriage-18",
+            "people": [
+              "character-7",
+              "character-9"
+            ],
+            "status": "active",
+            "start_month": 24312,
+            "origin": "MOCK fixture",
+            "history": []
+          }
+        ],
+        "ongoing_situations": [],
+        "recent_history": [],
+        "long_term_states": [
+          {
+            "id": "long-14",
+            "character_id": "character-7",
+            "type": "career",
+            "source": {
+              "system": "careers",
+              "id": "character-7"
+            },
+            "start_month": 24312,
+            "expected_duration": null,
+            "status": "ended",
+            "priority": 80,
+            "default_behavior_effects": [
+              "工作"
+            ],
+            "end_conditions": [
+              "source_ended",
+              "duration_elapsed",
+              "death"
+            ]
+          },
+          {
+            "id": "long-15",
+            "character_id": "character-7",
+            "type": "education",
+            "source": {
+              "system": "education",
+              "id": "character-7"
+            },
+            "start_month": 24312,
+            "expected_duration": 36,
+            "status": "active",
+            "priority": 80,
+            "default_behavior_effects": [
+              "学习"
+            ],
+            "end_conditions": [
+              "source_ended",
+              "duration_elapsed",
+              "death"
+            ]
+          },
+          {
+            "id": "long-16",
+            "character_id": "character-7",
+            "type": "career",
+            "source": {
+              "system": "careers",
+              "id": "character-7"
+            },
+            "start_month": 24312,
+            "expected_duration": null,
+            "status": "active",
+            "priority": 80,
+            "default_behavior_effects": [
+              "工作"
+            ],
+            "end_conditions": [
+              "source_ended",
+              "duration_elapsed",
+              "death"
+            ]
+          },
+          {
+            "id": "long-19",
+            "character_id": "character-7",
+            "type": "marriage",
+            "source": {
+              "system": "marriages",
+              "id": "marriage-18"
+            },
+            "start_month": 24312,
+            "expected_duration": null,
+            "status": "active",
+            "priority": 60,
+            "default_behavior_effects": [
+              "共同生活"
+            ],
+            "end_conditions": [
+              "source_ended",
+              "duration_elapsed",
+              "death"
+            ]
+          }
+        ],
+        "complete_state_available_via_replay": true
+      },
+      "after": {
+        "character": {
+          "character_id": "character-7",
+          "surname": "林",
+          "given_name": "禾",
+          "sex": "女",
+          "alive": true,
+          "active_simulation": true,
+          "birth_month": 24024,
+          "death_month": null,
+          "birthplace": "ancient",
+          "biological_parent_ids": [
+            "character-3",
+            "character-5"
+          ],
+          "adoptive_parent_ids": [],
+          "adoption_records": [],
+          "current_household_id": "household-1",
+          "marriage_id": "marriage-18",
+          "spouse_character_id": "character-9",
+          "lineage_id": "lineage-4",
+          "life_goal": "职业成就",
+          "skills": [
+            {
+              "name": "手工",
+              "level": 30,
+              "source": "MOCK_ONLY"
+            },
+            {
+              "name": "读书",
+              "level": 1,
+              "source": "MOCK_ONLY"
+            }
+          ],
+          "dynamic": {
+            "fatigue": 70,
+            "stress": 60,
+            "mood": 65
+          },
+          "experiences": [
+            {
+              "month": 24312,
+              "type": "birth",
+              "genetics": {
+                "continuous": {
+                  "intelligence": {
+                    "father": 79,
+                    "mother": 54,
+                    "sampling_interval": [
+                      54,
+                      79
+                    ],
+                    "outside": false,
+                    "value": 54
+                  },
+                  "social": {
+                    "father": 71,
+                    "mother": 81,
+                    "sampling_interval": [
+                      71,
+                      81
+                    ],
+                    "outside": false,
+                    "value": 74
+                  },
+                  "athletic": {
+                    "father": 74,
+                    "mother": 12,
+                    "sampling_interval": [
+                      12,
+                      74
+                    ],
+                    "outside": false,
+                    "value": 61
+                  },
+                  "stress_resistance": {
+                    "father": 10,
+                    "mother": 0,
+                    "sampling_interval": [
+                      0,
+                      10
+                    ],
+                    "outside": false,
+                    "value": 4
+                  },
+                  "curiosity": {
+                    "father": 76,
+                    "mother": 44,
+                    "sampling_interval": [
+                      44,
+                      76
+                    ],
+                    "outside": false,
+                    "value": 51
+                  },
+                  "height_basis": {
+                    "father": 89,
+                    "mother": 67,
+                    "sampling_interval": [
+                      67,
+                      89
+                    ],
+                    "outside": false,
+                    "value": 84
+                  },
+                  "constitution": {
+                    "father": 64,
+                    "mother": 99,
+                    "sampling_interval": [
+                      64,
+                      99
+                    ],
+                    "outside": false,
+                    "value": 82
+                  },
+                  "fertility_basis": {
+                    "father": 67,
+                    "mother": 15,
+                    "sampling_interval": [
+                      15,
+                      67
+                    ],
+                    "outside": false,
+                    "value": 51
+                  }
+                },
+                "face": {
+                  "face_shape_id": {
+                    "source": "father",
+                    "value": "mock_face_shape_id_01"
+                  },
+                  "brow_shape_id": {
+                    "source": "mother",
+                    "value": "mock_brow_shape_id_02"
+                  },
+                  "eye_shape_id": {
+                    "source": "mother",
+                    "value": "mock_eye_shape_id_03"
+                  },
+                  "nose_shape_id": {
+                    "source": "father",
+                    "value": "mock_nose_shape_id_02"
+                  },
+                  "mouth_shape_id": {
+                    "source": "mother",
+                    "value": "mock_mouth_shape_id_03"
+                  }
+                },
+                "colors": {
+                  "hair_color_id": {
+                    "father": "mock_hair_02",
+                    "mother": "mock_hair_01",
+                    "value": "mock_hair_02"
+                  },
+                  "eye_color_id": {
+                    "father": "mock_eye_02",
+                    "mother": "mock_eye_01",
+                    "value": "mock_eye_01"
+                  },
+                  "skin_tone_id": {
+                    "father": "skin_02",
+                    "mother": "skin_04",
+                    "value": "skin_02"
+                  }
+                },
+                "body": {
+                  "father": "偏瘦",
+                  "mother": "偏瘦",
+                  "value": "壮实"
+                },
+                "hairstyle": "independent MOCK_ONLY pool"
+              }
+            },
+            {
+              "month": 24312,
+              "type": "life_goal",
+              "goal": "职业成就",
+              "weights": [
+                1.12,
+                1.92,
+                1.46,
+                1
+              ],
+              "source": "MOCK_TUNABLE"
+            },
+            {
+              "month": 24312,
+              "type": "marriage",
+              "marriage_id": "marriage-18"
+            },
+            {
+              "month": 24312,
+              "type": "new_skill",
+              "name": "读书"
+            }
+          ],
+          "mentor_character_id": "character-3"
+        },
+        "character_age": 24,
+        "household": {
+          "household_id": "household-1",
+          "name": "林家",
+          "members": [
+            "character-7",
+            "character-9",
+            "character-3",
+            "character-5",
+            "character-8",
+            "character-25",
+            "character-27"
+          ],
+          "responsibilities": {},
+          "history": [
+            {
+              "month": 24312,
+              "character_id": "character-3",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-5",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-7",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-8",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-9",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-3",
+              "type": "left"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-3",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-5",
+              "type": "left"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-5",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-8",
+              "type": "left"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-8",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-25",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-27",
+              "type": "joined"
+            }
+          ]
+        },
+        "health": {
+          "value": 90,
+          "condition": "normal",
+          "history": []
+        },
+        "education": {
+          "id": "school",
+          "name": "识字学习",
+          "skill": "读书",
+          "time": 0.65,
+          "status": "active",
+          "start_month": 24312,
+          "progress": 0,
+          "duration": 36
+        },
+        "career": {
+          "id": "workshop",
+          "name": "作坊工匠",
+          "skill": "手工",
+          "wage": 1.2,
+          "time": 0.7,
+          "status": "active",
+          "start_month": 24312,
+          "progress": 0
+        },
+        "resources": {
+          "household": {
+            "household_resources": 2780,
+            "recurring_income": 0,
+            "recurring_expenses": 0,
+            "one_time_income": 0,
+            "one_time_expense": 100,
+            "unfunded_months": 0,
+            "support_enabled": true
+          },
+          "personal": {
+            "personal_inheritable_estate": 200
+          }
+        },
+        "relationships": [
+          {
+            "id": "character-7:character-9",
+            "people": [
+              "character-7",
+              "character-9"
+            ],
+            "strength": 20.2,
+            "attitude": -28,
+            "source": "MOCK_ONLY",
+            "history": [
+              {
+                "month": 24312,
+                "before": -30,
+                "after": -28,
+                "reason": "建立婚姻，关系不等于婚姻状态"
+              }
+            ]
+          },
+          {
+            "id": "character-3:character-7",
+            "people": [
+              "character-7",
+              "character-3"
+            ],
+            "strength": 20,
+            "attitude": 20,
+            "source": "MOCK_ONLY",
+            "history": []
+          },
+          {
+            "id": "character-22:character-7",
+            "people": [
+              "character-7",
+              "character-22"
+            ],
+            "strength": 21,
+            "attitude": -10,
+            "source": "MOCK_ONLY",
+            "history": [
+              {
+                "month": 24312,
+                "before": 0,
+                "after": -10,
+                "reason": "测试熟识"
+              }
+            ]
+          }
+        ],
+        "marriages": [
+          {
+            "id": "marriage-18",
+            "people": [
+              "character-7",
+              "character-9"
+            ],
+            "status": "active",
+            "start_month": 24312,
+            "origin": "MOCK fixture",
+            "history": []
+          }
+        ],
+        "ongoing_situations": [],
+        "recent_history": [],
+        "long_term_states": [
+          {
+            "id": "long-14",
+            "character_id": "character-7",
+            "type": "career",
+            "source": {
+              "system": "careers",
+              "id": "character-7"
+            },
+            "start_month": 24312,
+            "expected_duration": null,
+            "status": "ended",
+            "priority": 80,
+            "default_behavior_effects": [
+              "工作"
+            ],
+            "end_conditions": [
+              "source_ended",
+              "duration_elapsed",
+              "death"
+            ]
+          },
+          {
+            "id": "long-15",
+            "character_id": "character-7",
+            "type": "education",
+            "source": {
+              "system": "education",
+              "id": "character-7"
+            },
+            "start_month": 24312,
+            "expected_duration": 36,
+            "status": "ended",
+            "priority": 80,
+            "default_behavior_effects": [
+              "学习"
+            ],
+            "end_conditions": [
+              "source_ended",
+              "duration_elapsed",
+              "death"
+            ]
+          },
+          {
+            "id": "long-16",
+            "character_id": "character-7",
+            "type": "career",
+            "source": {
+              "system": "careers",
+              "id": "character-7"
+            },
+            "start_month": 24312,
+            "expected_duration": null,
+            "status": "active",
+            "priority": 80,
+            "default_behavior_effects": [
+              "工作"
+            ],
+            "end_conditions": [
+              "source_ended",
+              "duration_elapsed",
+              "death"
+            ]
+          },
+          {
+            "id": "long-19",
+            "character_id": "character-7",
+            "type": "marriage",
+            "source": {
+              "system": "marriages",
+              "id": "marriage-18"
+            },
+            "start_month": 24312,
+            "expected_duration": null,
+            "status": "active",
+            "priority": 60,
+            "default_behavior_effects": [
+              "共同生活"
+            ],
+            "end_conditions": [
+              "source_ended",
+              "duration_elapsed",
+              "death"
+            ]
+          },
+          {
+            "id": "long-29",
+            "character_id": "character-7",
+            "type": "education",
+            "source": {
+              "system": "education",
+              "id": "character-7"
+            },
+            "start_month": 24312,
+            "expected_duration": 36,
+            "status": "active",
+            "priority": 80,
+            "default_behavior_effects": [
+              "学习"
+            ],
+            "end_conditions": [
+              "source_ended",
+              "duration_elapsed",
+              "death"
+            ]
+          },
+          {
+            "id": "long-30",
+            "character_id": "character-7",
+            "type": "content_theme",
+            "source": null,
+            "start_month": 24312,
+            "expected_duration": 120,
+            "status": "active",
+            "priority": 20,
+            "default_behavior_effects": [
+              "教育与学习 的已有经历影响后续机会"
+            ],
+            "end_conditions": [
+              "source_ended",
+              "duration_elapsed",
+              "death"
+            ],
+            "content_theme": "education",
+            "last_event_id": "education-4",
+            "development_count": 1
+          }
+        ],
+        "complete_state_available_via_replay": true
+      }
+    },
+    {
+      "id": "away-4",
+      "event": "林禾遇到：远方铺子提供三年学做生意机会。青年；作坊工匠；住在家中；相关人物：林禾25。",
+      "actions": [
+        "安排交接后离乡",
+        "留乡寻找相近的活计",
+        "说明当前安排不足，本次暂不改变生活",
+        "核实这件事的费用、时间和当事人要求"
+      ],
+      "choice": "安排交接后离乡",
+      "result": "安排交接后离乡。",
+      "before": {
+        "character": {
+          "character_id": "character-7",
+          "surname": "林",
+          "given_name": "禾",
+          "sex": "女",
+          "alive": true,
+          "active_simulation": true,
+          "birth_month": 24024,
+          "death_month": null,
+          "birthplace": "ancient",
+          "biological_parent_ids": [
+            "character-3",
+            "character-5"
+          ],
+          "adoptive_parent_ids": [],
+          "adoption_records": [],
+          "current_household_id": "household-1",
+          "marriage_id": "marriage-18",
+          "spouse_character_id": "character-9",
+          "lineage_id": "lineage-4",
+          "life_goal": "职业成就",
+          "skills": [
+            {
+              "name": "手工",
+              "level": 30,
+              "source": "MOCK_ONLY"
+            }
+          ],
+          "dynamic": {
+            "fatigue": 70,
+            "stress": 60,
+            "mood": 65
+          },
+          "experiences": [
+            {
+              "month": 24312,
+              "type": "birth",
+              "genetics": {
+                "continuous": {
+                  "intelligence": {
+                    "father": 79,
+                    "mother": 54,
+                    "sampling_interval": [
+                      54,
+                      79
+                    ],
+                    "outside": false,
+                    "value": 54
+                  },
+                  "social": {
+                    "father": 71,
+                    "mother": 81,
+                    "sampling_interval": [
+                      71,
+                      81
+                    ],
+                    "outside": false,
+                    "value": 74
+                  },
+                  "athletic": {
+                    "father": 74,
+                    "mother": 12,
+                    "sampling_interval": [
+                      12,
+                      74
+                    ],
+                    "outside": false,
+                    "value": 61
+                  },
+                  "stress_resistance": {
+                    "father": 10,
+                    "mother": 0,
+                    "sampling_interval": [
+                      0,
+                      10
+                    ],
+                    "outside": false,
+                    "value": 4
+                  },
+                  "curiosity": {
+                    "father": 76,
+                    "mother": 44,
+                    "sampling_interval": [
+                      44,
+                      76
+                    ],
+                    "outside": false,
+                    "value": 51
+                  },
+                  "height_basis": {
+                    "father": 89,
+                    "mother": 67,
+                    "sampling_interval": [
+                      67,
+                      89
+                    ],
+                    "outside": false,
+                    "value": 84
+                  },
+                  "constitution": {
+                    "father": 64,
+                    "mother": 99,
+                    "sampling_interval": [
+                      64,
+                      99
+                    ],
+                    "outside": false,
+                    "value": 82
+                  },
+                  "fertility_basis": {
+                    "father": 67,
+                    "mother": 15,
+                    "sampling_interval": [
+                      15,
+                      67
+                    ],
+                    "outside": false,
+                    "value": 51
+                  }
+                },
+                "face": {
+                  "face_shape_id": {
+                    "source": "father",
+                    "value": "mock_face_shape_id_01"
+                  },
+                  "brow_shape_id": {
+                    "source": "mother",
+                    "value": "mock_brow_shape_id_02"
+                  },
+                  "eye_shape_id": {
+                    "source": "mother",
+                    "value": "mock_eye_shape_id_03"
+                  },
+                  "nose_shape_id": {
+                    "source": "father",
+                    "value": "mock_nose_shape_id_02"
+                  },
+                  "mouth_shape_id": {
+                    "source": "mother",
+                    "value": "mock_mouth_shape_id_03"
+                  }
+                },
+                "colors": {
+                  "hair_color_id": {
+                    "father": "mock_hair_02",
+                    "mother": "mock_hair_01",
+                    "value": "mock_hair_02"
+                  },
+                  "eye_color_id": {
+                    "father": "mock_eye_02",
+                    "mother": "mock_eye_01",
+                    "value": "mock_eye_01"
+                  },
+                  "skin_tone_id": {
+                    "father": "skin_02",
+                    "mother": "skin_04",
+                    "value": "skin_02"
+                  }
+                },
+                "body": {
+                  "father": "偏瘦",
+                  "mother": "偏瘦",
+                  "value": "壮实"
+                },
+                "hairstyle": "independent MOCK_ONLY pool"
+              }
+            },
+            {
+              "month": 24312,
+              "type": "life_goal",
+              "goal": "职业成就",
+              "weights": [
+                1.12,
+                1.92,
+                1.46,
+                1
+              ],
+              "source": "MOCK_TUNABLE"
+            },
+            {
+              "month": 24312,
+              "type": "marriage",
+              "marriage_id": "marriage-18"
+            }
+          ],
+          "mentor_character_id": "character-3"
+        },
+        "character_age": 24,
+        "household": {
+          "household_id": "household-1",
+          "name": "林家",
+          "members": [
+            "character-7",
+            "character-9",
+            "character-3",
+            "character-5",
+            "character-8",
+            "character-25",
+            "character-27"
+          ],
+          "responsibilities": {},
+          "history": [
+            {
+              "month": 24312,
+              "character_id": "character-3",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-5",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-7",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-8",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-9",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-3",
+              "type": "left"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-3",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-5",
+              "type": "left"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-5",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-8",
+              "type": "left"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-8",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-25",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-27",
+              "type": "joined"
+            }
+          ]
+        },
+        "health": {
+          "value": 90,
+          "condition": "normal",
+          "history": []
+        },
+        "education": {
+          "id": "training",
+          "name": "作坊学艺",
+          "skill": "手工",
+          "time": 0.6,
+          "status": "active",
+          "start_month": 24312,
+          "progress": 0,
+          "duration": 36
+        },
+        "career": {
+          "id": "workshop",
+          "name": "作坊工匠",
+          "skill": "手工",
+          "wage": 1.2,
+          "time": 0.7,
+          "status": "active",
+          "start_month": 24312,
+          "progress": 0
+        },
+        "resources": {
+          "household": {
+            "household_resources": 2900,
+            "recurring_income": 0,
+            "recurring_expenses": 0,
+            "one_time_income": 0,
+            "one_time_expense": 100,
+            "unfunded_months": 0,
+            "support_enabled": true
+          },
+          "personal": {
+            "personal_inheritable_estate": 200
+          }
+        },
+        "relationships": [
+          {
+            "id": "character-7:character-9",
+            "people": [
+              "character-7",
+              "character-9"
+            ],
+            "strength": 20.2,
+            "attitude": -28,
+            "source": "MOCK_ONLY",
+            "history": [
+              {
+                "month": 24312,
+                "before": -30,
+                "after": -28,
+                "reason": "建立婚姻，关系不等于婚姻状态"
+              }
+            ]
+          },
+          {
+            "id": "character-3:character-7",
+            "people": [
+              "character-7",
+              "character-3"
+            ],
+            "strength": 20,
+            "attitude": 20,
+            "source": "MOCK_ONLY",
+            "history": []
+          },
+          {
+            "id": "character-22:character-7",
+            "people": [
+              "character-7",
+              "character-22"
+            ],
+            "strength": 21,
+            "attitude": -10,
+            "source": "MOCK_ONLY",
+            "history": [
+              {
+                "month": 24312,
+                "before": 0,
+                "after": -10,
+                "reason": "测试熟识"
+              }
+            ]
+          }
+        ],
+        "marriages": [
+          {
+            "id": "marriage-18",
+            "people": [
+              "character-7",
+              "character-9"
+            ],
+            "status": "active",
+            "start_month": 24312,
+            "origin": "MOCK fixture",
+            "history": []
+          }
+        ],
+        "ongoing_situations": [],
+        "recent_history": [],
+        "long_term_states": [
+          {
+            "id": "long-14",
+            "character_id": "character-7",
+            "type": "career",
+            "source": {
+              "system": "careers",
+              "id": "character-7"
+            },
+            "start_month": 24312,
+            "expected_duration": null,
+            "status": "ended",
+            "priority": 80,
+            "default_behavior_effects": [
+              "工作"
+            ],
+            "end_conditions": [
+              "source_ended",
+              "duration_elapsed",
+              "death"
+            ]
+          },
+          {
+            "id": "long-15",
+            "character_id": "character-7",
+            "type": "education",
+            "source": {
+              "system": "education",
+              "id": "character-7"
+            },
+            "start_month": 24312,
+            "expected_duration": 36,
+            "status": "active",
+            "priority": 80,
+            "default_behavior_effects": [
+              "学习"
+            ],
+            "end_conditions": [
+              "source_ended",
+              "duration_elapsed",
+              "death"
+            ]
+          },
+          {
+            "id": "long-16",
+            "character_id": "character-7",
+            "type": "career",
+            "source": {
+              "system": "careers",
+              "id": "character-7"
+            },
+            "start_month": 24312,
+            "expected_duration": null,
+            "status": "active",
+            "priority": 80,
+            "default_behavior_effects": [
+              "工作"
+            ],
+            "end_conditions": [
+              "source_ended",
+              "duration_elapsed",
+              "death"
+            ]
+          },
+          {
+            "id": "long-19",
+            "character_id": "character-7",
+            "type": "marriage",
+            "source": {
+              "system": "marriages",
+              "id": "marriage-18"
+            },
+            "start_month": 24312,
+            "expected_duration": null,
+            "status": "active",
+            "priority": 60,
+            "default_behavior_effects": [
+              "共同生活"
+            ],
+            "end_conditions": [
+              "source_ended",
+              "duration_elapsed",
+              "death"
+            ]
+          }
+        ],
+        "complete_state_available_via_replay": true
+      },
+      "after": {
+        "character": {
+          "character_id": "character-7",
+          "surname": "林",
+          "given_name": "禾",
+          "sex": "女",
+          "alive": true,
+          "active_simulation": true,
+          "birth_month": 24024,
+          "death_month": null,
+          "birthplace": "ancient",
+          "biological_parent_ids": [
+            "character-3",
+            "character-5"
+          ],
+          "adoptive_parent_ids": [],
+          "adoption_records": [],
+          "current_household_id": "household-1",
+          "marriage_id": "marriage-18",
+          "spouse_character_id": "character-9",
+          "lineage_id": "lineage-4",
+          "life_goal": "职业成就",
+          "skills": [
+            {
+              "name": "手工",
+              "level": 30,
+              "source": "MOCK_ONLY"
+            }
+          ],
+          "dynamic": {
+            "fatigue": 70,
+            "stress": 60,
+            "mood": 65
+          },
+          "experiences": [
+            {
+              "month": 24312,
+              "type": "birth",
+              "genetics": {
+                "continuous": {
+                  "intelligence": {
+                    "father": 79,
+                    "mother": 54,
+                    "sampling_interval": [
+                      54,
+                      79
+                    ],
+                    "outside": false,
+                    "value": 54
+                  },
+                  "social": {
+                    "father": 71,
+                    "mother": 81,
+                    "sampling_interval": [
+                      71,
+                      81
+                    ],
+                    "outside": false,
+                    "value": 74
+                  },
+                  "athletic": {
+                    "father": 74,
+                    "mother": 12,
+                    "sampling_interval": [
+                      12,
+                      74
+                    ],
+                    "outside": false,
+                    "value": 61
+                  },
+                  "stress_resistance": {
+                    "father": 10,
+                    "mother": 0,
+                    "sampling_interval": [
+                      0,
+                      10
+                    ],
+                    "outside": false,
+                    "value": 4
+                  },
+                  "curiosity": {
+                    "father": 76,
+                    "mother": 44,
+                    "sampling_interval": [
+                      44,
+                      76
+                    ],
+                    "outside": false,
+                    "value": 51
+                  },
+                  "height_basis": {
+                    "father": 89,
+                    "mother": 67,
+                    "sampling_interval": [
+                      67,
+                      89
+                    ],
+                    "outside": false,
+                    "value": 84
+                  },
+                  "constitution": {
+                    "father": 64,
+                    "mother": 99,
+                    "sampling_interval": [
+                      64,
+                      99
+                    ],
+                    "outside": false,
+                    "value": 82
+                  },
+                  "fertility_basis": {
+                    "father": 67,
+                    "mother": 15,
+                    "sampling_interval": [
+                      15,
+                      67
+                    ],
+                    "outside": false,
+                    "value": 51
+                  }
+                },
+                "face": {
+                  "face_shape_id": {
+                    "source": "father",
+                    "value": "mock_face_shape_id_01"
+                  },
+                  "brow_shape_id": {
+                    "source": "mother",
+                    "value": "mock_brow_shape_id_02"
+                  },
+                  "eye_shape_id": {
+                    "source": "mother",
+                    "value": "mock_eye_shape_id_03"
+                  },
+                  "nose_shape_id": {
+                    "source": "father",
+                    "value": "mock_nose_shape_id_02"
+                  },
+                  "mouth_shape_id": {
+                    "source": "mother",
+                    "value": "mock_mouth_shape_id_03"
+                  }
+                },
+                "colors": {
+                  "hair_color_id": {
+                    "father": "mock_hair_02",
+                    "mother": "mock_hair_01",
+                    "value": "mock_hair_02"
+                  },
+                  "eye_color_id": {
+                    "father": "mock_eye_02",
+                    "mother": "mock_eye_01",
+                    "value": "mock_eye_01"
+                  },
+                  "skin_tone_id": {
+                    "father": "skin_02",
+                    "mother": "skin_04",
+                    "value": "skin_02"
+                  }
+                },
+                "body": {
+                  "father": "偏瘦",
+                  "mother": "偏瘦",
+                  "value": "壮实"
+                },
+                "hairstyle": "independent MOCK_ONLY pool"
+              }
+            },
+            {
+              "month": 24312,
+              "type": "life_goal",
+              "goal": "职业成就",
+              "weights": [
+                1.12,
+                1.92,
+                1.46,
+                1
+              ],
+              "source": "MOCK_TUNABLE"
+            },
+            {
+              "month": 24312,
+              "type": "marriage",
+              "marriage_id": "marriage-18"
+            }
+          ],
+          "mentor_character_id": "character-3"
+        },
+        "character_age": 24,
+        "household": {
+          "household_id": "household-1",
+          "name": "林家",
+          "members": [
+            "character-7",
+            "character-9",
+            "character-3",
+            "character-5",
+            "character-8",
+            "character-25",
+            "character-27"
+          ],
+          "responsibilities": {},
+          "history": [
+            {
+              "month": 24312,
+              "character_id": "character-3",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-5",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-7",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-8",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-9",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-3",
+              "type": "left"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-3",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-5",
+              "type": "left"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-5",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-8",
+              "type": "left"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-8",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-25",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-27",
+              "type": "joined"
+            }
+          ]
+        },
+        "health": {
+          "value": 90,
+          "condition": "normal",
+          "history": []
+        },
+        "education": {
+          "id": "training",
+          "name": "作坊学艺",
+          "skill": "手工",
+          "time": 0.6,
+          "status": "active",
+          "start_month": 24312,
+          "progress": 0,
+          "duration": 36
+        },
+        "career": {
+          "id": "service",
+          "name": "商铺帮工",
+          "skill": "经商",
+          "wage": 1,
+          "time": 0.65,
+          "status": "active",
+          "start_month": 24312,
+          "progress": 0
+        },
+        "resources": {
+          "household": {
+            "household_resources": 2900,
+            "recurring_income": 0,
+            "recurring_expenses": 0,
+            "one_time_income": 0,
+            "one_time_expense": 100,
+            "unfunded_months": 0,
+            "support_enabled": true
+          },
+          "personal": {
+            "personal_inheritable_estate": 200
+          }
+        },
+        "relationships": [
+          {
+            "id": "character-7:character-9",
+            "people": [
+              "character-7",
+              "character-9"
+            ],
+            "strength": 20.2,
+            "attitude": -28,
+            "source": "MOCK_ONLY",
+            "history": [
+              {
+                "month": 24312,
+                "before": -30,
+                "after": -28,
+                "reason": "建立婚姻，关系不等于婚姻状态"
+              }
+            ]
+          },
+          {
+            "id": "character-3:character-7",
+            "people": [
+              "character-7",
+              "character-3"
+            ],
+            "strength": 20,
+            "attitude": 20,
+            "source": "MOCK_ONLY",
+            "history": []
+          },
+          {
+            "id": "character-22:character-7",
+            "people": [
+              "character-7",
+              "character-22"
+            ],
+            "strength": 21,
+            "attitude": -10,
+            "source": "MOCK_ONLY",
+            "history": [
+              {
+                "month": 24312,
+                "before": 0,
+                "after": -10,
+                "reason": "测试熟识"
+              }
+            ]
+          }
+        ],
+        "marriages": [
+          {
+            "id": "marriage-18",
+            "people": [
+              "character-7",
+              "character-9"
+            ],
+            "status": "active",
+            "start_month": 24312,
+            "origin": "MOCK fixture",
+            "history": []
+          }
+        ],
+        "ongoing_situations": [],
+        "recent_history": [],
+        "long_term_states": [
+          {
+            "id": "long-14",
+            "character_id": "character-7",
+            "type": "career",
+            "source": {
+              "system": "careers",
+              "id": "character-7"
+            },
+            "start_month": 24312,
+            "expected_duration": null,
+            "status": "ended",
+            "priority": 80,
+            "default_behavior_effects": [
+              "工作"
+            ],
+            "end_conditions": [
+              "source_ended",
+              "duration_elapsed",
+              "death"
+            ]
+          },
+          {
+            "id": "long-15",
+            "character_id": "character-7",
+            "type": "education",
+            "source": {
+              "system": "education",
+              "id": "character-7"
+            },
+            "start_month": 24312,
+            "expected_duration": 36,
+            "status": "active",
+            "priority": 80,
+            "default_behavior_effects": [
+              "学习"
+            ],
+            "end_conditions": [
+              "source_ended",
+              "duration_elapsed",
+              "death"
+            ]
+          },
+          {
+            "id": "long-16",
+            "character_id": "character-7",
+            "type": "career",
+            "source": {
+              "system": "careers",
+              "id": "character-7"
+            },
+            "start_month": 24312,
+            "expected_duration": null,
+            "status": "ended",
+            "priority": 80,
+            "default_behavior_effects": [
+              "工作"
+            ],
+            "end_conditions": [
+              "source_ended",
+              "duration_elapsed",
+              "death"
+            ]
+          },
+          {
+            "id": "long-19",
+            "character_id": "character-7",
+            "type": "marriage",
+            "source": {
+              "system": "marriages",
+              "id": "marriage-18"
+            },
+            "start_month": 24312,
+            "expected_duration": null,
+            "status": "active",
+            "priority": 60,
+            "default_behavior_effects": [
+              "共同生活"
+            ],
+            "end_conditions": [
+              "source_ended",
+              "duration_elapsed",
+              "death"
+            ]
+          },
+          {
+            "id": "long-29",
+            "character_id": "character-7",
+            "type": "career",
+            "source": {
+              "system": "careers",
+              "id": "character-7"
+            },
+            "start_month": 24312,
+            "expected_duration": null,
+            "status": "active",
+            "priority": 80,
+            "default_behavior_effects": [
+              "工作"
+            ],
+            "end_conditions": [
+              "source_ended",
+              "duration_elapsed",
+              "death"
+            ]
+          },
+          {
+            "id": "long-30",
+            "character_id": "character-7",
+            "type": "away_from_home_assignment",
+            "source": null,
+            "start_month": 24312,
+            "expected_duration": 36,
+            "status": "active",
+            "priority": 85,
+            "location_context": {
+              "id": "away:long-30",
+              "name": "外地市镇",
+              "source": "MOCK_ONLY"
+            },
+            "work_or_training_context": {
+              "name": "外地工作",
+              "career_id": "character-7"
+            },
+            "family_responsibility_changes": [],
+            "default_behavior_effects": [
+              "外地工作",
+              "远程家庭联系"
+            ],
+            "end_conditions": [
+              "去留决策",
+              "死亡"
+            ],
+            "due_decision": false
+          },
+          {
+            "id": "long-31",
+            "character_id": "character-7",
+            "type": "content_theme",
+            "source": null,
+            "start_month": 24312,
+            "expected_duration": 120,
+            "status": "active",
+            "priority": 20,
+            "default_behavior_effects": [
+              "离乡 / 迁移 的已有经历影响后续机会"
+            ],
+            "end_conditions": [
+              "source_ended",
+              "duration_elapsed",
+              "death"
+            ],
+            "content_theme": "away",
+            "last_event_id": "away-4",
+            "development_count": 1
+          }
+        ],
+        "complete_state_available_via_replay": true
+      }
+    },
+    {
+      "id": "hardship-2",
+      "event": "林禾遇到：修屋顶与买口粮不能同时办。青年；作坊工匠；住在家中；相关人物：林禾25。",
+      "actions": [
+        "先补最漏的一处",
+        "先保障口粮，暂缓修缮",
+        "说明当前安排不足，本次暂不改变生活",
+        "核实这件事的费用、时间和当事人要求"
+      ],
+      "choice": "先补最漏的一处",
+      "result": "先补最漏的一处。家庭支付了这次安排所需的费用。",
+      "before": {
+        "character": {
+          "character_id": "character-7",
+          "surname": "林",
+          "given_name": "禾",
+          "sex": "女",
+          "alive": true,
+          "active_simulation": true,
+          "birth_month": 24024,
+          "death_month": null,
+          "birthplace": "ancient",
+          "biological_parent_ids": [
+            "character-3",
+            "character-5"
+          ],
+          "adoptive_parent_ids": [],
+          "adoption_records": [],
+          "current_household_id": "household-1",
+          "marriage_id": "marriage-18",
+          "spouse_character_id": "character-9",
+          "lineage_id": "lineage-4",
+          "life_goal": "职业成就",
+          "skills": [
+            {
+              "name": "手工",
+              "level": 30,
+              "source": "MOCK_ONLY"
+            }
+          ],
+          "dynamic": {
+            "fatigue": 70,
+            "stress": 60,
+            "mood": 65
+          },
+          "experiences": [
+            {
+              "month": 24312,
+              "type": "birth",
+              "genetics": {
+                "continuous": {
+                  "intelligence": {
+                    "father": 79,
+                    "mother": 54,
+                    "sampling_interval": [
+                      54,
+                      79
+                    ],
+                    "outside": false,
+                    "value": 54
+                  },
+                  "social": {
+                    "father": 71,
+                    "mother": 81,
+                    "sampling_interval": [
+                      71,
+                      81
+                    ],
+                    "outside": false,
+                    "value": 74
+                  },
+                  "athletic": {
+                    "father": 74,
+                    "mother": 12,
+                    "sampling_interval": [
+                      12,
+                      74
+                    ],
+                    "outside": false,
+                    "value": 61
+                  },
+                  "stress_resistance": {
+                    "father": 10,
+                    "mother": 0,
+                    "sampling_interval": [
+                      0,
+                      10
+                    ],
+                    "outside": false,
+                    "value": 4
+                  },
+                  "curiosity": {
+                    "father": 76,
+                    "mother": 44,
+                    "sampling_interval": [
+                      44,
+                      76
+                    ],
+                    "outside": false,
+                    "value": 51
+                  },
+                  "height_basis": {
+                    "father": 89,
+                    "mother": 67,
+                    "sampling_interval": [
+                      67,
+                      89
+                    ],
+                    "outside": false,
+                    "value": 84
+                  },
+                  "constitution": {
+                    "father": 64,
+                    "mother": 99,
+                    "sampling_interval": [
+                      64,
+                      99
+                    ],
+                    "outside": false,
+                    "value": 82
+                  },
+                  "fertility_basis": {
+                    "father": 67,
+                    "mother": 15,
+                    "sampling_interval": [
+                      15,
+                      67
+                    ],
+                    "outside": false,
+                    "value": 51
+                  }
+                },
+                "face": {
+                  "face_shape_id": {
+                    "source": "father",
+                    "value": "mock_face_shape_id_01"
+                  },
+                  "brow_shape_id": {
+                    "source": "mother",
+                    "value": "mock_brow_shape_id_02"
+                  },
+                  "eye_shape_id": {
+                    "source": "mother",
+                    "value": "mock_eye_shape_id_03"
+                  },
+                  "nose_shape_id": {
+                    "source": "father",
+                    "value": "mock_nose_shape_id_02"
+                  },
+                  "mouth_shape_id": {
+                    "source": "mother",
+                    "value": "mock_mouth_shape_id_03"
+                  }
+                },
+                "colors": {
+                  "hair_color_id": {
+                    "father": "mock_hair_02",
+                    "mother": "mock_hair_01",
+                    "value": "mock_hair_02"
+                  },
+                  "eye_color_id": {
+                    "father": "mock_eye_02",
+                    "mother": "mock_eye_01",
+                    "value": "mock_eye_01"
+                  },
+                  "skin_tone_id": {
+                    "father": "skin_02",
+                    "mother": "skin_04",
+                    "value": "skin_02"
+                  }
+                },
+                "body": {
+                  "father": "偏瘦",
+                  "mother": "偏瘦",
+                  "value": "壮实"
+                },
+                "hairstyle": "independent MOCK_ONLY pool"
+              }
+            },
+            {
+              "month": 24312,
+              "type": "life_goal",
+              "goal": "职业成就",
+              "weights": [
+                1.12,
+                1.92,
+                1.46,
+                1
+              ],
+              "source": "MOCK_TUNABLE"
+            },
+            {
+              "month": 24312,
+              "type": "marriage",
+              "marriage_id": "marriage-18"
+            }
+          ],
+          "mentor_character_id": "character-3"
+        },
+        "character_age": 24,
+        "household": {
+          "household_id": "household-1",
+          "name": "林家",
+          "members": [
+            "character-7",
+            "character-9",
+            "character-3",
+            "character-5",
+            "character-8",
+            "character-25",
+            "character-27"
+          ],
+          "responsibilities": {},
+          "history": [
+            {
+              "month": 24312,
+              "character_id": "character-3",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-5",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-7",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-8",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-9",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-3",
+              "type": "left"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-3",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-5",
+              "type": "left"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-5",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-8",
+              "type": "left"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-8",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-25",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-27",
+              "type": "joined"
+            }
+          ]
+        },
+        "health": {
+          "value": 90,
+          "condition": "normal",
+          "history": []
+        },
+        "education": {
+          "id": "training",
+          "name": "作坊学艺",
+          "skill": "手工",
+          "time": 0.6,
+          "status": "active",
+          "start_month": 24312,
+          "progress": 0,
+          "duration": 36
+        },
+        "career": {
+          "id": "workshop",
+          "name": "作坊工匠",
+          "skill": "手工",
+          "wage": 1.2,
+          "time": 0.7,
+          "status": "active",
+          "start_month": 24312,
+          "progress": 0
+        },
+        "resources": {
+          "household": {
+            "household_resources": 100,
+            "recurring_income": 0,
+            "recurring_expenses": 0,
+            "one_time_income": 0,
+            "one_time_expense": 100,
+            "unfunded_months": 0,
+            "support_enabled": true
+          },
+          "personal": {
+            "personal_inheritable_estate": 200
+          }
+        },
+        "relationships": [
+          {
+            "id": "character-7:character-9",
+            "people": [
+              "character-7",
+              "character-9"
+            ],
+            "strength": 20.2,
+            "attitude": -28,
+            "source": "MOCK_ONLY",
+            "history": [
+              {
+                "month": 24312,
+                "before": -30,
+                "after": -28,
+                "reason": "建立婚姻，关系不等于婚姻状态"
+              }
+            ]
+          },
+          {
+            "id": "character-3:character-7",
+            "people": [
+              "character-7",
+              "character-3"
+            ],
+            "strength": 20,
+            "attitude": 20,
+            "source": "MOCK_ONLY",
+            "history": []
+          },
+          {
+            "id": "character-22:character-7",
+            "people": [
+              "character-7",
+              "character-22"
+            ],
+            "strength": 21,
+            "attitude": -10,
+            "source": "MOCK_ONLY",
+            "history": [
+              {
+                "month": 24312,
+                "before": 0,
+                "after": -10,
+                "reason": "测试熟识"
+              }
+            ]
+          }
+        ],
+        "marriages": [
+          {
+            "id": "marriage-18",
+            "people": [
+              "character-7",
+              "character-9"
+            ],
+            "status": "active",
+            "start_month": 24312,
+            "origin": "MOCK fixture",
+            "history": []
+          }
+        ],
+        "ongoing_situations": [],
+        "recent_history": [],
+        "long_term_states": [
+          {
+            "id": "long-14",
+            "character_id": "character-7",
+            "type": "career",
+            "source": {
+              "system": "careers",
+              "id": "character-7"
+            },
+            "start_month": 24312,
+            "expected_duration": null,
+            "status": "ended",
+            "priority": 80,
+            "default_behavior_effects": [
+              "工作"
+            ],
+            "end_conditions": [
+              "source_ended",
+              "duration_elapsed",
+              "death"
+            ]
+          },
+          {
+            "id": "long-15",
+            "character_id": "character-7",
+            "type": "education",
+            "source": {
+              "system": "education",
+              "id": "character-7"
+            },
+            "start_month": 24312,
+            "expected_duration": 36,
+            "status": "active",
+            "priority": 80,
+            "default_behavior_effects": [
+              "学习"
+            ],
+            "end_conditions": [
+              "source_ended",
+              "duration_elapsed",
+              "death"
+            ]
+          },
+          {
+            "id": "long-16",
+            "character_id": "character-7",
+            "type": "career",
+            "source": {
+              "system": "careers",
+              "id": "character-7"
+            },
+            "start_month": 24312,
+            "expected_duration": null,
+            "status": "active",
+            "priority": 80,
+            "default_behavior_effects": [
+              "工作"
+            ],
+            "end_conditions": [
+              "source_ended",
+              "duration_elapsed",
+              "death"
+            ]
+          },
+          {
+            "id": "long-19",
+            "character_id": "character-7",
+            "type": "marriage",
+            "source": {
+              "system": "marriages",
+              "id": "marriage-18"
+            },
+            "start_month": 24312,
+            "expected_duration": null,
+            "status": "active",
+            "priority": 60,
+            "default_behavior_effects": [
+              "共同生活"
+            ],
+            "end_conditions": [
+              "source_ended",
+              "duration_elapsed",
+              "death"
+            ]
+          }
+        ],
+        "complete_state_available_via_replay": true
+      },
+      "after": {
+        "character": {
+          "character_id": "character-7",
+          "surname": "林",
+          "given_name": "禾",
+          "sex": "女",
+          "alive": true,
+          "active_simulation": true,
+          "birth_month": 24024,
+          "death_month": null,
+          "birthplace": "ancient",
+          "biological_parent_ids": [
+            "character-3",
+            "character-5"
+          ],
+          "adoptive_parent_ids": [],
+          "adoption_records": [],
+          "current_household_id": "household-1",
+          "marriage_id": "marriage-18",
+          "spouse_character_id": "character-9",
+          "lineage_id": "lineage-4",
+          "life_goal": "职业成就",
+          "skills": [
+            {
+              "name": "手工",
+              "level": 30,
+              "source": "MOCK_ONLY"
+            }
+          ],
+          "dynamic": {
+            "fatigue": 70,
+            "stress": 58,
+            "mood": 65
+          },
+          "experiences": [
+            {
+              "month": 24312,
+              "type": "birth",
+              "genetics": {
+                "continuous": {
+                  "intelligence": {
+                    "father": 79,
+                    "mother": 54,
+                    "sampling_interval": [
+                      54,
+                      79
+                    ],
+                    "outside": false,
+                    "value": 54
+                  },
+                  "social": {
+                    "father": 71,
+                    "mother": 81,
+                    "sampling_interval": [
+                      71,
+                      81
+                    ],
+                    "outside": false,
+                    "value": 74
+                  },
+                  "athletic": {
+                    "father": 74,
+                    "mother": 12,
+                    "sampling_interval": [
+                      12,
+                      74
+                    ],
+                    "outside": false,
+                    "value": 61
+                  },
+                  "stress_resistance": {
+                    "father": 10,
+                    "mother": 0,
+                    "sampling_interval": [
+                      0,
+                      10
+                    ],
+                    "outside": false,
+                    "value": 4
+                  },
+                  "curiosity": {
+                    "father": 76,
+                    "mother": 44,
+                    "sampling_interval": [
+                      44,
+                      76
+                    ],
+                    "outside": false,
+                    "value": 51
+                  },
+                  "height_basis": {
+                    "father": 89,
+                    "mother": 67,
+                    "sampling_interval": [
+                      67,
+                      89
+                    ],
+                    "outside": false,
+                    "value": 84
+                  },
+                  "constitution": {
+                    "father": 64,
+                    "mother": 99,
+                    "sampling_interval": [
+                      64,
+                      99
+                    ],
+                    "outside": false,
+                    "value": 82
+                  },
+                  "fertility_basis": {
+                    "father": 67,
+                    "mother": 15,
+                    "sampling_interval": [
+                      15,
+                      67
+                    ],
+                    "outside": false,
+                    "value": 51
+                  }
+                },
+                "face": {
+                  "face_shape_id": {
+                    "source": "father",
+                    "value": "mock_face_shape_id_01"
+                  },
+                  "brow_shape_id": {
+                    "source": "mother",
+                    "value": "mock_brow_shape_id_02"
+                  },
+                  "eye_shape_id": {
+                    "source": "mother",
+                    "value": "mock_eye_shape_id_03"
+                  },
+                  "nose_shape_id": {
+                    "source": "father",
+                    "value": "mock_nose_shape_id_02"
+                  },
+                  "mouth_shape_id": {
+                    "source": "mother",
+                    "value": "mock_mouth_shape_id_03"
+                  }
+                },
+                "colors": {
+                  "hair_color_id": {
+                    "father": "mock_hair_02",
+                    "mother": "mock_hair_01",
+                    "value": "mock_hair_02"
+                  },
+                  "eye_color_id": {
+                    "father": "mock_eye_02",
+                    "mother": "mock_eye_01",
+                    "value": "mock_eye_01"
+                  },
+                  "skin_tone_id": {
+                    "father": "skin_02",
+                    "mother": "skin_04",
+                    "value": "skin_02"
+                  }
+                },
+                "body": {
+                  "father": "偏瘦",
+                  "mother": "偏瘦",
+                  "value": "壮实"
+                },
+                "hairstyle": "independent MOCK_ONLY pool"
+              }
+            },
+            {
+              "month": 24312,
+              "type": "life_goal",
+              "goal": "职业成就",
+              "weights": [
+                1.12,
+                1.92,
+                1.46,
+                1
+              ],
+              "source": "MOCK_TUNABLE"
+            },
+            {
+              "month": 24312,
+              "type": "marriage",
+              "marriage_id": "marriage-18"
+            }
+          ],
+          "mentor_character_id": "character-3"
+        },
+        "character_age": 24,
+        "household": {
+          "household_id": "household-1",
+          "name": "林家",
+          "members": [
+            "character-7",
+            "character-9",
+            "character-3",
+            "character-5",
+            "character-8",
+            "character-25",
+            "character-27"
+          ],
+          "responsibilities": {},
+          "history": [
+            {
+              "month": 24312,
+              "character_id": "character-3",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-5",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-7",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-8",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-9",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-3",
+              "type": "left"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-3",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-5",
+              "type": "left"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-5",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-8",
+              "type": "left"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-8",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-25",
+              "type": "joined"
+            },
+            {
+              "month": 24312,
+              "character_id": "character-27",
+              "type": "joined"
+            }
+          ]
+        },
+        "health": {
+          "value": 90,
+          "condition": "normal",
+          "history": []
+        },
+        "education": {
+          "id": "training",
+          "name": "作坊学艺",
+          "skill": "手工",
+          "time": 0.6,
+          "status": "active",
+          "start_month": 24312,
+          "progress": 0,
+          "duration": 36
+        },
+        "career": {
+          "id": "workshop",
+          "name": "作坊工匠",
+          "skill": "手工",
+          "wage": 1.2,
+          "time": 0.7,
+          "status": "active",
+          "start_month": 24312,
+          "progress": 0
+        },
+        "resources": {
+          "household": {
+            "household_resources": 86,
+            "recurring_income": 0,
+            "recurring_expenses": 0,
+            "one_time_income": 0,
+            "one_time_expense": 100,
+            "unfunded_months": 0,
+            "support_enabled": true
+          },
+          "personal": {
+            "personal_inheritable_estate": 200
+          }
+        },
+        "relationships": [
+          {
+            "id": "character-7:character-9",
+            "people": [
+              "character-7",
+              "character-9"
+            ],
+            "strength": 20.2,
+            "attitude": -28,
+            "source": "MOCK_ONLY",
+            "history": [
+              {
+                "month": 24312,
+                "before": -30,
+                "after": -28,
+                "reason": "建立婚姻，关系不等于婚姻状态"
+              }
+            ]
+          },
+          {
+            "id": "character-3:character-7",
+            "people": [
+              "character-7",
+              "character-3"
+            ],
+            "strength": 20,
+            "attitude": 20,
+            "source": "MOCK_ONLY",
+            "history": []
+          },
+          {
+            "id": "character-22:character-7",
+            "people": [
+              "character-7",
+              "character-22"
+            ],
+            "strength": 21,
+            "attitude": -10,
+            "source": "MOCK_ONLY",
+            "history": [
+              {
+                "month": 24312,
+                "before": 0,
+                "after": -10,
+                "reason": "测试熟识"
+              }
+            ]
+          }
+        ],
+        "marriages": [
+          {
+            "id": "marriage-18",
+            "people": [
+              "character-7",
+              "character-9"
+            ],
+            "status": "active",
+            "start_month": 24312,
+            "origin": "MOCK fixture",
+            "history": []
+          }
+        ],
+        "ongoing_situations": [
+          {
+            "id": "situation-30",
+            "type": "content_hardship",
+            "scope_key": null,
+            "start_month": 24312,
+            "severity": 10,
+            "status": "active",
+            "participants": [
+              "character-7",
+              "character-25"
+            ],
+            "causes": [
+              "修屋顶与买口粮不能同时办"
+            ],
+            "last_development_month": 24312,
+            "development_history": [
+              {
+                "month": 24312,
+                "kind": "started",
+                "severity": 20
+              },
+              {
+                "month": 24312,
+                "kind": "improved",
+                "event_id": "hardship-2",
+                "severity": 10
+              }
+            ],
+            "resolution_conditions": [
+              "原因消失并恢复",
+              "当事人死亡"
+            ],
+            "previous_situation_ids": [],
+            "needs_decision": false,
+            "last_decision_month": null,
+            "content_theme": "hardship",
+            "last_event_id": "hardship-2"
+          }
+        ],
+        "recent_history": [
+          {
+            "type": "content_hardship",
+            "phase": "situation_started",
+            "month": 24312
+          }
+        ],
+        "long_term_states": [
+          {
+            "id": "long-14",
+            "character_id": "character-7",
+            "type": "career",
+            "source": {
+              "system": "careers",
+              "id": "character-7"
+            },
+            "start_month": 24312,
+            "expected_duration": null,
+            "status": "ended",
+            "priority": 80,
+            "default_behavior_effects": [
+              "工作"
+            ],
+            "end_conditions": [
+              "source_ended",
+              "duration_elapsed",
+              "death"
+            ]
+          },
+          {
+            "id": "long-15",
+            "character_id": "character-7",
+            "type": "education",
+            "source": {
+              "system": "education",
+              "id": "character-7"
+            },
+            "start_month": 24312,
+            "expected_duration": 36,
+            "status": "active",
+            "priority": 80,
+            "default_behavior_effects": [
+              "学习"
+            ],
+            "end_conditions": [
+              "source_ended",
+              "duration_elapsed",
+              "death"
+            ]
+          },
+          {
+            "id": "long-16",
+            "character_id": "character-7",
+            "type": "career",
+            "source": {
+              "system": "careers",
+              "id": "character-7"
+            },
+            "start_month": 24312,
+            "expected_duration": null,
+            "status": "active",
+            "priority": 80,
+            "default_behavior_effects": [
+              "工作"
+            ],
+            "end_conditions": [
+              "source_ended",
+              "duration_elapsed",
+              "death"
+            ]
+          },
+          {
+            "id": "long-19",
+            "character_id": "character-7",
+            "type": "marriage",
+            "source": {
+              "system": "marriages",
+              "id": "marriage-18"
+            },
+            "start_month": 24312,
+            "expected_duration": null,
+            "status": "active",
+            "priority": 60,
+            "default_behavior_effects": [
+              "共同生活"
+            ],
+            "end_conditions": [
+              "source_ended",
+              "duration_elapsed",
+              "death"
+            ]
+          },
+          {
+            "id": "long-29",
+            "character_id": "character-7",
+            "type": "content_theme",
+            "source": null,
+            "start_month": 24312,
+            "expected_duration": 120,
+            "status": "active",
+            "priority": 20,
+            "default_behavior_effects": [
+              "家庭资源 的已有经历影响后续机会"
+            ],
+            "end_conditions": [
+              "source_ended",
+              "duration_elapsed",
+              "death"
+            ],
+            "content_theme": "hardship",
+            "last_event_id": "hardship-2",
+            "development_count": 1
+          }
+        ],
+        "complete_state_available_via_replay": true
+      }
+    }
+  ]
+}

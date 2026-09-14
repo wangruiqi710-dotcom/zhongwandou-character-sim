@@ -1,10 +1,20 @@
-# 种豌豆 · Mock V2.1.1-alpha
+# 种豌豆 · Mock V2.2.0-alpha
 
 首页是统一人生实验台，保持 GitHub Pages `main /根目录` 发布方式。完全静态，无真实 AI 或后端。
 
 设计元数据：`architecture_v014`，SHA-256 `6654561CAF9BE64D01FD1118A8F84E84A693B0AAFAA80ACD7FAA62841DB82E76`。私有设计文件没有复制进公开仓库。
 
-## 本轮闭环修复
+## 本轮：结构化人生内容
+
+新增104个古代模板：52日常、34中型、18重大；24组发展主题。人物、资源、真实关系、历史与长期状态决定哪些事件可能发生。概率核心沿用2.1.1。
+
+正常人生选择“推进生活 / 继续”，遇到可展示经历停下阅读。选择“高级批量观察”才连续运行；玩家决策仍然必须停下。人物下方可查看人生经历、五年事实回顾。测试中心或导航栏进入事件库，按领域/规模/多阶段/真实NPC/长期状态/持续问题筛选。事件侧重可选择正常人生或教育、职业、家庭、婚配、关系、资源、健康；重点模式标记 TEST FOCUS MODE，不绕过触发条件。
+
+[内容验收报告](./CONTENT_AUDIT.md) · [三段真实十年记录](./reports/ten-year-lives.md) · [机器可读验证结果](./reports/content-validation.json)
+
+旧2.1.1运行保持只读。schema仍为3，但版本不同不可继续或重算，请新建2.2运行。
+
+## 沿用的闭环机制
 
 普通解释、可点击人物卡、多阶段终局、离乡真实状态、持续问题与冷却已接入。新增必须等待玩家的家庭决策，以及每3个月的主动窗口。详见 [闭环审计与边界](./CLOSURE_AUDIT.md)。
 
@@ -28,6 +38,8 @@ V2 使用独立 IndexedDB `pea-mock-v2` 保存运行和反馈。旧版 localStor
 - `src/testing`：原14个固定案例及7个玩家决策案例、8个系统组合、共享 Behavior Lab、Genetics Lab、运行/反馈持久化和重放。
 - `src/config`：冻结版本元数据、集中 MOCK_TUNABLE 参数、两个世界的小型数据集、MOCK_ONLY 外貌特征池。
 - `decisions.js`：V1/V2 共用事件候选、可行性、log-weight/softmax 和整数概率抽样。V2 增加专业系统约束与可传入临时配置；旧版默认参数不变。
+
+内容测试：`node tests/content.cjs`；手机内容测试：`node tests/content-mobile.cjs`。测试输出为合成运行，不包含浏览器个人存档。
 
 核心测试：`node tests/v2.cjs`。旧版回归：`node test-worlds.cjs`、`node test-behavior-lab.cjs`。
 

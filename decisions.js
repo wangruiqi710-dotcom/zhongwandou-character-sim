@@ -76,7 +76,7 @@ function generateCandidateActions(event,context) {
   const defaults=Object.fromEntries(DECISION_RULES.trait_names.map(t=>[t,0]));
   const make=(id,action,traits={},tags=[],extra={})=>({action_id:id,action,traits:{...defaults,...traits},action_tags:tags,base_weight:1,...extra});
   let actions;
-  if(event.mock_actions) return event.mock_actions.map(a=>({...make(a.id,a.name,a.traits,a.tags,a.conditions),interest_domains:p.domains}));
+  if(event.mock_actions) return event.mock_actions.map(a=>({...make(a.id,a.name,a.traits,a.tags,a.conditions),interest_domains:event.interest_domains||p.domains}));
   if(context.age<6) actions=[
     make('child_join','在照护者陪伴下接触眼前事物',{novelty:.5,social_exposure:.5},['participate']),
     make('child_watch','靠在照护者身边观察',{planning_need:.1},['observe']),

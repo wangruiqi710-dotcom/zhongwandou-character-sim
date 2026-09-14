@@ -1,3 +1,4 @@
+import {applyContent,FOCUS} from '../content/event_runtime.js';
 import {createCharacter} from '../systems/character_generation.js';
 import {createHousehold} from '../systems/household.js';
 import {clone,snapshot,diff,age,auditSnapshot} from './state.js';
@@ -29,6 +30,7 @@ export function reassignCare(s,cid){
 }
 function mentorFor(s,cid){const c=s.characters[cid];if(s.characters[c.mentor_character_id]?.alive)return c.mentor_character_id;const existing=Object.values(s.characters).find(x=>x.character_id!==cid&&x.alive&&age(s,x)>=18&&s.careers[x.character_id]?.status==='active');if(existing){c.mentor_character_id=existing.character_id;changeRelationship(s,cid,existing.character_id,0,'建立持续指导关系');return existing.character_id;}const hid=createHousehold(s,'指导者家庭'),mentor=createCharacter(s,{age_years:s.config.mentor_age,household_id:hid});employ(s,mentor.character_id,0);c.mentor_character_id=mentor.character_id;changeRelationship(s,cid,mentor.character_id,0,'建立持续指导关系');return mentor.character_id;}
 export function executeDecision(s,cid,result){
+ if(result.event.content_template)return applyContent(s,cid,result);
  const c=s.characters[cid],a=chosen(result),type=result.event.type,systems=[],changes=[];
  if(!a||a.action_type==='transition_action')throw Error('只有终局行为可以写回结果');
  if(a.resource_cost&&!spend(s,cid,a.resource_cost))throw Error('可行性与执行资源不一致');
@@ -91,7 +93,7 @@ export function month(s){
   reports.push({character_id:cid,before,defaults,developments,background_candidates:candidates,background,goal_generated:goal});
  }
  const resource_changes=settleResources(s,work);
- for(const r of reports){if(r.death)continue;const event=decisionEvent(s,r.character_id,r.defaults);
+ for(const r of reports){if(r.death)continue;if(r.background?.content_pending){r.background.decision=autonomous(s,r.character_id,r.background.event);delete r.background.content_pending;}const event=decisionEvent(s,r.character_id,r.defaults);
   if(event){const gate=needsPlayer(s,r.character_id,event);if(gate){r.player_opportunity={event,waiting:gate===true};}
    else if(event.type==='marriage'){r.arrangement=marriage(s,r.character_id,event.target_id,'autonomous');r.decision=r.arrangement.child;r.systems=r.arrangement.systems;}
    else{r.decision=autonomous(s,r.character_id,event);r.systems=r.decision.systems;}}
@@ -109,6 +111,7 @@ function playerResolve(s,cmd){
  if(e.type==='succession'){selectSuccessor(s,option.id);return {...result,selected:option.id};}
  if(e.type==='inheritance')return {...result,inheritance:inheritEstate(s,e.payload.deceased_id,option.id)};
  e.status='resolved';e.choice=option.id;e.resolved_month=s.current_world_month;recordEvent(s,cid,e.type,'player_decision');
+ if(e.type==='content'){if(option.id==='skip')return {...result,content_declined:true};const offered=clone(e.payload.event);const allocation=offered.mock_actions.find(a=>a.id===option.id)?.conditions.content_effects?.some(e=>['fundeducation','reduceeducation'].includes(e.kind));offered.decision_owner=allocation?'player':'character';offered.mock_actions=offered.mock_actions.filter(a=>a.id===option.id||!allocation&&(a.id==='leave_current'||a.conditions.action_type==='transition_action'));result.decision=autonomous(s,cid,offered,{intervention:{mode:'ordinary',action_id:option.id}});return result;}
  if(option.id==='skip'){
   if(e.type==='resource')for(const x of Object.values(s.characters).filter(x=>x.current_household_id===c.current_household_id&&s.education[x.character_id]?.status==='active'))s.education[x.character_id].status='paused';
   return result;
@@ -152,6 +155,7 @@ export function command(s,cmd){
  if(['event','marriage','wish','enroll','employ','player_window'].includes(cmd.type)&&!s.characters[cid]?.alive)throw Error('需要存活人物');
  switch(cmd.type){
  case 'month':return month(s);
+ case 'focus':if(!FOCUS.includes(cmd.value))throw Error('未知重点领域');s.test_focus_mode=cmd.value;result={focus:cmd.value};break;
  case 'player_choice':result=playerResolve(s,cmd);break;
  case 'player_window':if(cmd.direction==='marriage')ensureMarriageCandidates(s,cid);result=openPlayerWindow(s,cmd.direction,cid);break;
  case 'event':result=autonomous(s,cid,eventFor(s,cmd.event_type,cmd.target_id),{intervention:cmd.intervention});break;

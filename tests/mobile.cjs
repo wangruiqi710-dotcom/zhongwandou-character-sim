@@ -6,12 +6,12 @@ const fs=require('node:fs'),assert=require('node:assert/strict'),{chromium}=requ
  await page.locator('#new-life').click();await page.locator('#summary h3').waitFor();await page.locator('[data-months="1"]').click();await page.getByText('已逐月运行 1个月',{exact:true}).waitFor();
  // Open only the ordinary-month group and plain-language explanation.
  for(const d of await page.locator('#timeline details').all()){const txt=await d.locator('summary').first().textContent();if(txt.includes('普通月份'))await d.locator('summary').first().click();}
- await page.locator('#timeline summary').filter({hasText:/^查看原因$/}).first().click();
+ await page.locator('#timeline summary').filter({hasText:/查看原因/}).first().click();
  assert.equal(await page.locator('#timeline pre:visible').count(),0);
  await page.locator('[data-rate="合理"]').last().click();await page.getByText('已保存“合理”及完整现场').waitFor();
  await page.locator('[data-rate="问题"]').last().click();await page.locator('#issue-type').selectOption({label:'现实条件判断有问题'});await page.locator('#save-issue').click();
  await page.reload();await page.getByText('已读取 1个运行 / 2条反馈').waitFor();
- for(const width of [375,390,430]){await page.setViewportSize({width,height:844});for(const nav of ['simulation','tests','behavior','genetics','feedback','settings']){await page.locator('nav [data-page="'+nav+'"]').click();if(nav==='genetics')await page.locator('#gen-run').click();assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'overflow '+width+'/'+nav);}console.log('mobile width '+width+' passed');}
+ for(const width of [375,390,430]){await page.setViewportSize({width,height:844});for(const nav of ['simulation','tests','library','behavior','genetics','feedback','settings']){await page.locator('nav [data-page="'+nav+'"]').click();if(nav==='genetics')await page.locator('#gen-run').click();assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'overflow '+width+'/'+nav);}console.log('mobile width '+width+' passed');}
  await page.locator('nav [data-page="simulation"]').click();await page.locator('#summary [data-person]').first().click();await page.getByText('正在查看家庭或关系人物').waitFor();await page.locator('[data-return-person]').click();
  await page.locator('nav [data-page="behavior"]').click();await page.locator('#lab-count').selectOption('10000');await page.locator('#lab-sample').click();await page.locator('#lab-samples table').waitFor();
  await page.locator('nav [data-page="feedback"]').click();await page.locator('[data-replay]').first().click();await page.getByText('重放结果与保存现场一致').waitFor();

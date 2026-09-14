@@ -3,3 +3,5 @@
 .person-link{min-height:44px;margin:2px;padding:4px 8px;text-decoration:underline}.player-decision{border:2px solid #8c622c;background:#fff7e7}.decision-stage{border-left:3px solid #779781;padding:8px;margin:8px 0}#summary p{overflow-wrap:anywhere}dialog{max-height:85dvh;overflow-y:auto}#simulation{padding-bottom:100px}
 
 .fixed-controls[hidden]{display:none}
+
+.life-result{border-left:3px solid #6e8e6c;padding:8px 14px;margin:12px 0;background:#f6f7f1}.fact-changes{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:4px 12px}.fact-changes p{margin:3px 0}.life-result h4{margin-bottom:4px}#library-results summary{overflow-wrap:anywhere}#continue-life{min-height:48px}#focus-badge{color:#8a5720;font-weight:bold}

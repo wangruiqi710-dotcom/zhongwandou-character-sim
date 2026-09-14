@@ -1,3 +1,4 @@
+import {contentFeasibility,contentImpact} from '../content/event_runtime.js';
 import {id} from '../core/rng.js';
 import {age} from '../core/state.js';
 import {cooled,recordEvent} from './life_context.js';
@@ -14,8 +15,9 @@ export function pendingDecision(s){
  return (s.player_decision_events||[]).find(e=>e.status==='pending'&&s.characters[e.character_id]?.alive)||null;
 }
 export function needsPlayer(s,cid,event){
- if(event.type==='marriage'&&!inPlayerFamily(s,cid)&&inPlayerFamily(s,event.target_id)){const initiator=cid;cid=event.target_id;event={...event,target_id:initiator,incoming_initiator_id:initiator};}
+ if((event.type==='marriage'||event.content_template&&event.terminal_outcomes.some(o=>o.effects.some(e=>e.kind==='marriage')))&&!inPlayerFamily(s,cid)&&inPlayerFamily(s,event.target_id)){const initiator=cid;cid=event.target_id;event={...event,target_id:initiator,incoming_initiator_id:initiator};}
  if(!inPlayerFamily(s,cid))return false;
+ if(event.content_template){if(event.importance!=='major')return false;if(!cooled(s,cid,'player:content',s.config.player_event_cooldown))return 'cooldown';queuePlayerEvent(s,'content',cid,{event});recordEvent(s,cid,'player:content');return true;}
  const major=['education','career','relocation','marriage','health','conflict','away_review'].includes(event.type);
  if(!major)return false;if(!cooled(s,cid,'player:'+event.type,s.config.player_event_cooldown))return 'cooldown';
  const hid=s.characters[cid].current_household_id,students=s.households[hid].members.filter(x=>s.education[x]?.status==='active');const type=event.type==='conflict'&&students.length>1&&s.resources.households[hid].household_resources<s.config.opportunity_cost*2?'resource':event.type;queuePlayerEvent(s,type,cid,{event});recordEvent(s,cid,'player:'+event.type);return true;
@@ -33,6 +35,7 @@ const names=(s,cid)=>s.characters[cid].surname+s.characters[cid].given_name;
 export function playerChoices(s,e){
  const c=s.characters[e.character_id],hid=c?.current_household_id,funds=s.resources.households[hid]?.household_resources||0,cost=s.config.opportunity_cost;
  const choice=(id,label,impact,extra={})=>({id,label,impact,feasible:true,...extra});
+ if(e.type==='content')return e.payload.event.mock_actions.filter(a=>a.conditions.action_type==='terminal_action'&&a.id!=='leave_current').map(a=>choice(a.id,'支持：'+a.name,contentImpact(a),{feasible:!contentFeasibility(s,e.character_id,e.payload.event,{action_id:a.id}),reason:contentFeasibility(s,e.character_id,e.payload.event,{action_id:a.id})})).concat(choice('skip','保留现有安排','不投入本次资源；不启动该机会'));
  if(e.type==='succession')return e.payload.candidates.map(p=>choice(p.character_id,names(s,p.character_id),'直接切换下一位控制角色；不决定财产分配'));
  if(e.type==='inheritance')return e.payload.eligible.map(cid=>choice(cid,names(s,cid),'指定主财产继承人；多子女60/40，单子女100%'));
  if(e.type==='force')return [choice('force','使用一次强制干预','只覆盖本人对当前安排的拒绝；消耗一次机会，可能增加压力和关系损伤',{feasible:s.player.force_credits>0,reason:'强制机会不足'}),choice('respect','尊重此次拒绝','本次不执行安排；保留之后的自主生活')];

@@ -14,6 +14,7 @@ export function updateSituations(s,cid,defaults){
  if(marriage&&c.dynamic.stress>s.config.stress_trigger&&rel?.attitude<s.config.relationship_conflict_trigger)ensureSituation(s,'relationship_strain',[...marriage.people].sort(),['压力与关系同时恶化']);
  const developments=[];
  for(const x of Object.values(s.ongoing_situations).filter(x=>x.status==='active'&&x.participants[0]===cid)){
+  if(x.content_theme)continue;
   if(x.type==='marriage_negotiation'){const marriages=Object.values(s.marriages).filter(m=>m.status==='active'&&x.participants.some(p=>m.people.includes(p)));if(marriages.length){x.status=marriages.some(m=>x.participants.every(p=>m.people.includes(p)))?'resolved':'ended';x.end_month=s.current_world_month;x.development_history.push({month:s.current_world_month,kind:x.status,severity:x.severity});}continue;}
   const still=x.type==='financial_strain'?h.unfunded_months>=s.config.household_conflict_months:x.type==='family_conflict'?causes.length>0:!!(marriage&&rel?.attitude<s.config.relationship_conflict_trigger&&c.dynamic.stress>s.config.stress_trigger);
   const old=x.severity;x.severity=bound(old+(still?s.config.situation_worsening:-s.config.situation_recovery));x.causes=x.type==='family_conflict'?causes:x.causes;
