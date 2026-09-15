@@ -19,7 +19,7 @@ export function remoteFollowups(s){
   const urgent=old.alive&&!now.alive?'死亡消息':old.health>=30&&now.health<30?'严重健康求助':old.marriage!==now.marriage&&now.marriage?'婚姻消息':old.education!==now.education?'学习安排变化':old.career_status!==now.career_status||old.career!==now.career?'职业安排变化':!old.due&&now.due?'异地安排到期':Math.abs(now.resources-old.resources)>=(s.config.remote_resource_notice??120)?'异地收支明显变化':null;
   const periodic=c.alive&&s.current_world_month-t.last_followup_month>=(s.config.remote_followup_months??6),reasons=[];
   if(t.status==='deceased'&&t.death_reported)continue;
-  if(periodic&&now.alive){const family=t.important_participants.find(x=>s.characters[x]?.alive&&!sameLocation(s,cid,x));if(family){changeRelationship(s,cid,family,s.config.remote_relation_delta??.4,'通过来信维持异地联系');reasons.push('与'+s.characters[family].surname+s.characters[family].given_name+'通过来信保持联系');}}
+  if(periodic&&now.alive){const family=t.important_participants.find(x=>s.characters[x]?.alive&&!sameLocation(s,cid,x));if(family){changeRelationship(s,cid,family,s.config.remote_relation_delta??.4,'通过来信维持异地联系');reasons.push('与'+s.characters[family].surname+s.characters[family].given_name+'通过来信保持联系');now.relation_total=remoteFacts(s,cid).relation_total;}}
   if(periodic||urgent){
    if(now.career!==baseline.career||now.career_status!==baseline.career_status)reasons.push('职业安排：'+baseline.career+'（'+statusLabel(baseline.career_status)+'） → '+now.career+'（'+statusLabel(now.career_status)+'）');
    if(now.work_progress>baseline.work_progress)reasons.push(now.career+'继续进行，累计完成 '+(now.work_progress-baseline.work_progress).toFixed(1)+' 月投入');
