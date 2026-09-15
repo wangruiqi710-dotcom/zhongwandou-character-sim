@@ -1,0 +1,21 @@
+{
+  "test": "Three seeds, three annual NPC matching passes; complete state hash and RNG identical before/after local-context reuse",
+  "passed": true,
+  "seeds": [
+    {
+      "seed": 4,
+      "hash": "ce68cd9065a29b9b9eb57d85a0704cf7618b751f81ffb3defe5a812b5bf48a25",
+      "rng": 2940967039
+    },
+    {
+      "seed": 31,
+      "hash": "86c8d44b5e16d81e4eeb9d3beacf1d1b658fb80e1a5b36864cdac755f309450d",
+      "rng": 3174002954
+    },
+    {
+      "seed": 733,
+      "hash": "9d360bffe2bbb8818dceaf582d4ad3c2d83594ec4437faebedf453d672aa0430",
+      "rng": 3125215059
+    }
+  ]
+}

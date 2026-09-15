@@ -7,7 +7,7 @@ const assert=require('node:assert/strict'),{chromium}=require('playwright');
   const {fixture}=await import('./src/testing/test_cases.js'),{newRun,step}=await import('./src/testing/run.js'),{pendingDecision,playerChoices}=await import('./src/systems/player_decisions.js'),{saveWorkspace}=await import('./src/testing/feedback_store.js');
   const r=newRun(fixture({seed:31}),'life','mobile-66-months');let clicks=0;
   const resolve=()=>{for(let p;(p=pendingDecision(r.state));){if(++clicks>200)throw Error('unbounded test policy');const options=playerChoices(r.state,p).filter(o=>o.feasible),choice=options.find(o=>o.id==='respect')||options.find(o=>o.target_id)||options.find(o=>o.id==='support')||options.find(o=>o.id==='skip')||options[0];step(r,{type:'player_choice',event_id:p.id,option_id:choice.id});}};
-  for(let i=0;i<66;i++){resolve();step(r,{type:'month'});}resolve();
+  const end=r.state.current_world_month+66;while(r.state.current_world_month<end){resolve();step(r,{type:'month'});}resolve();
   await saveWorkspace({runs:[r],active_run:r.run_id,feedback:[]});return {months:66,player_inputs:clicks,records:r.state.history.length,people:Object.keys(r.state.characters).length};
  });
  await page.reload();await page.locator('.person-summary>h3').waitFor();assert.equal(await page.locator('body').getAttribute('data-density'),'compact');

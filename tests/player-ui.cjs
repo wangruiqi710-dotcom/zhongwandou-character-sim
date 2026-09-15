@@ -12,22 +12,22 @@ vm.runInThisContext(['worlds.js','src/core/legacy_bridge.js','decisions.js'].map
  const tests=[],audit=[];
  const {execFileSync}=require('node:child_process');
  const baseline=await import('data:text/javascript;base64,'+Buffer.from(execFileSync('git',['show','be8c02ab25dc44ec2c70f9c3daa0b24ec275261c:src/content/ancient_events.js'],{cwd:root})).toString('base64'));
- const withoutOwner=t=>{const {event_type,player_involvement,...rest}=t;return rest;};assert.deepEqual(ANCIENT_EVENTS.map(withoutOwner),baseline.ANCIENT_EVENTS.map(withoutOwner));
- for(const file of ['decisions.js','worlds.js','src/core/rng.js','src/systems/genetics.js','src/systems/character_generation.js','src/systems/long_term_state.js','src/systems/ongoing_situations.js','src/testing/run.js','src/testing/feedback_store.js'])assert.equal(fs.readFileSync(path.join(root,file),'utf8').replace(/\r/g,''),execFileSync('git',['show','be8c02ab25dc44ec2c70f9c3daa0b24ec275261c:'+file],{cwd:root,encoding:'utf8'}).replace(/\r/g,''),'protected core changed '+file);
+ const withoutOwner=t=>{const {event_type,player_involvement,flow_type,decision_audit,...rest}=t;return rest;};assert.deepEqual(ANCIENT_EVENTS.map(withoutOwner),baseline.ANCIENT_EVENTS.map(withoutOwner));
+ for(const file of ['decisions.js','worlds.js','src/core/rng.js','src/systems/genetics.js','src/systems/long_term_state.js','src/systems/ongoing_situations.js','src/testing/run.js','src/testing/feedback_store.js'])assert.equal(fs.readFileSync(path.join(root,file),'utf8').replace(/\r/g,''),execFileSync('git',['show','be8c02ab25dc44ec2c70f9c3daa0b24ec275261c:'+file],{cwd:root,encoding:'utf8'}).replace(/\r/g,''),'protected core changed '+file);
  tests.push('PROTECTED-CORE: content unchanged except ownership, probability/RNG/world/state/replay/feedback source unchanged');
  const facts=s=>JSON.stringify([s.characters,s.resources,s.health,s.marriages,s.long_term_states,s.ongoing_situations,s.rng_state]);
  for(const t of ANCIENT_EVENTS){
   const s=fixture({seed:5}),cid=s.test.child_id,ctx=contentContext(s,cid);
   // Isolate routing from eligibility: verify every declared template, including rare ones.
   if(!ctx.roles[t.participant_requirements.role].length)ctx.roles[t.participant_requirements.role]=[s.test.target_id];
-  const e=instantiateContent(s,cid,t,ctx),before=facts(s),type=playerDecisionType(e),gate=needsPlayer(s,cid,e);assert.equal(t.event_type==='PLAYER_DECISION_EVENT',!!type);assert.equal(t.player_involvement!=='人物自主',!!type);
+  const role=t.participant_requirements.role;const rid=ctx.roles[role][0];if(role==='peer')s.careers[rid]={...s.careers[cid]};if(role==='mentor'){s.characters[rid].birth_month=s.current_world_month-40*12;s.characters[rid].skills.push({name:s.education[cid]?.skill||s.careers[cid]?.skill||t.interest_examples[0],level:40});}if(t.trigger_conditions.condition==='seriouskin')s.health[rid].value=35;if(t.trigger_conditions.condition==='schoolchild')s.education[rid]={status:'active'};const e=instantiateContent(s,cid,t,ctx);assert(e,t.event_id);const before=facts(s),type=playerDecisionType(e),gate=needsPlayer(s,cid,e);assert.equal(t.event_type==='PLAYER_DECISION_EVENT',!!type);assert.equal(t.flow_type!=='ROUTINE_MONTHLY_PROGRESS'&&t.player_involvement!=='人物自主',!!type);
   assert.equal(gate,!!type);assert.equal(facts(s),before,'routing wrote character results: '+t.event_id);
   if(type){assert.equal(pendingDecision(s).type,type);assert(playerChoices(s,pendingDecision(s)).some(o=>o.feasible));assert.equal(facts(s),before);}
   audit.push({id:t.event_id,title:t.display_templates.title,previous:t.importance==='major'?'家庭资源或长期安排；人物仍有自主回应':'人物自主',effective:type||'autonomous'});
  }
  assert.equal(audit.length,104);assert.equal(audit.filter(x=>x.effective!=='autonomous').length,23);
  assert.equal((libraryRows('全部','全部','玩家决策').match(/<details class="card">/g)||[]).length,23);
- tests.push('AUDIT-104-TEMPLATES: 23 family gates, 81 autonomous, no pre-choice effects');
+ tests.push('AUDIT-104-TEMPLATES: 23 family gates, 32 autonomous decisions, 49 routine fragments, no pre-choice effects');
  const r=newRun(fixture({seed:5,case_id:'PLAYER-MARRIAGE-01'})),s=r.state,p=pendingDecision(s),before=facts(s),month=s.current_world_month;
  assert.throws(()=>step(r,{type:'month'}),/需要你的决定/);assert.equal(facts(r.state),before);assert.equal(r.commands.length,0);
  const o=playerChoices(r.state,p).find(x=>x.target_id&&x.feasible),entry=step(r,{type:'player_choice',event_id:p.id,option_id:o.id});

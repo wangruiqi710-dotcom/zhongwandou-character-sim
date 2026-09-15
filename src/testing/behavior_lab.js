@@ -3,7 +3,7 @@ import {decide,engine} from '../systems/behavior.js';
 import {eventFor} from '../systems/events.js';
 import {random} from '../core/rng.js';
 import {GOALS} from '../config/mock_tunables.js';
-export const ATTRIBUTES={extraversion:'外向性',intuition:'直觉性',thinking:'思考性',planning:'计划性',interest:'音乐兴趣',goal:'人生目标类别',resources:'资源水平',stress:'压力',relationship:'关系态度'};
+export const ATTRIBUTES={extraversion:'外向性',intuition:'直觉性',thinking:'思考性',planning:'计划性',risk_orientation:'谨慎 ←→ 大胆（Mock候选）',interest:'音乐兴趣',goal:'人生目标类别',resources:'资源水平',stress:'压力',relationship:'关系态度'};
 export function point(state,cid,type,attribute,value){const s=clone(state),c=s.characters[cid];if(Object.hasOwn(c.personality,attribute))c.personality[attribute]=value;
  else if(attribute==='interest')c.interests=[{name:'音乐',intensity:value,source:'MOCK_ONLY'}];
  else if(attribute==='goal')c.life_goal=value;

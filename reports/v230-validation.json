@@ -1,0 +1,228 @@
+{
+  "version": "2.3.0-alpha",
+  "tests": [
+    "TEST-MONTH-MULTITRACK-01",
+    "TEST-MONTH-MULTIEVENT-01",
+    "TEST-MONTH-MULTIEVENT-NATURAL: routine plus independently triggered queue, same month after choices",
+    "TEST-EVENT-DECISION-AUDIT-01",
+    "TEST-RISK-ORIENTATION-01",
+    "TEST-MARRIAGE-MATCH-01",
+    "TEST-MARRIAGE-MATCH-02",
+    "TEST-REPRO-POSTPARTUM-01",
+    "TEST-REPRO-AGE-01",
+    "TEST-REPRO-CHILDREN-01",
+    "TEST-REPRO-HEALTH-01",
+    "TEST-REPRO-FERTILITY-BASE-01",
+    "TEST-PREGNANCY-NOTICE-01",
+    "TEST-NPC-POOL-01",
+    "PLAYER-ESTATE-AFTER-CROSS-HOUSEHOLD-SUCCESSION",
+    "TEST-NAME-DIVERSITY-01",
+    "TEST-MARRIAGE-CANDIDATE-DIVERSITY-01"
+  ],
+  "statistics": {
+    "audit": {
+      "reviewed": 104,
+      "routine": 49,
+      "decisions": 55
+    },
+    "risk": [
+      {
+        "risk_orientation": 10,
+        "n": 10000,
+        "accept": 2104,
+        "inquire": 4392,
+        "defer": 1774,
+        "reject": 1730
+      },
+      {
+        "risk_orientation": 90,
+        "n": 10000,
+        "accept": 6212,
+        "inquire": 964,
+        "defer": 1389,
+        "reject": 1435
+      }
+    ],
+    "matching": [
+      {
+        "condition": "high_match",
+        "n": 10000,
+        "accept": 9425,
+        "defer": 444,
+        "reject": 131
+      },
+      {
+        "condition": "low_match",
+        "n": 10000,
+        "accept": 443,
+        "defer": 4820,
+        "reject": 4737
+      }
+    ],
+    "children": [
+      {
+        "children": 0,
+        "n": 5000,
+        "entered": 737,
+        "frequency": 0.1474,
+        "priority": 0.85,
+        "capacity": 0.722,
+        "chance": 0.159562
+      },
+      {
+        "children": 1,
+        "n": 5000,
+        "entered": 474,
+        "frequency": 0.0948,
+        "priority": 0.51,
+        "capacity": 0.722,
+        "chance": 0.0957372
+      },
+      {
+        "children": 2,
+        "n": 5000,
+        "entered": 219,
+        "frequency": 0.0438,
+        "priority": 0.255,
+        "capacity": 0.722,
+        "chance": 0.0478686
+      },
+      {
+        "children": 3,
+        "n": 5000,
+        "entered": 57,
+        "frequency": 0.0114,
+        "priority": 0.068,
+        "capacity": 0.722,
+        "chance": 0.01276496
+      },
+      {
+        "children": 4,
+        "n": 5000,
+        "entered": 22,
+        "frequency": 0.0044,
+        "priority": 0.02125,
+        "capacity": 0.722,
+        "chance": 0.00398905
+      }
+    ],
+    "health": [
+      {
+        "health": 100,
+        "health_factor": 0.95,
+        "n": 5000,
+        "entered": 793,
+        "frequency": 0.1586,
+        "priority": 0.85,
+        "capacity": 0.76,
+        "chance": 0.16796
+      },
+      {
+        "health": 70,
+        "health_factor": 0.6649999999999999,
+        "n": 5000,
+        "entered": 566,
+        "frequency": 0.1132,
+        "priority": 0.85,
+        "capacity": 0.5319999999999999,
+        "chance": 0.11757199999999998
+      },
+      {
+        "health": 40,
+        "health_factor": 0.38,
+        "n": 5000,
+        "entered": 317,
+        "frequency": 0.0634,
+        "priority": 0.85,
+        "capacity": 0.30400000000000005,
+        "chance": 0.06718400000000001
+      },
+      {
+        "health": 20,
+        "health_factor": 0.19,
+        "n": 5000,
+        "entered": 0,
+        "frequency": 0,
+        "priority": 0.85,
+        "capacity": 0,
+        "chance": 0
+      }
+    ],
+    "fertility": [
+      {
+        "fertility_base": 95,
+        "n": 5000,
+        "entered": 897,
+        "frequency": 0.1794,
+        "priority": 0.85,
+        "capacity": 0.8573749999999999,
+        "chance": 0.18947987499999996
+      },
+      {
+        "fertility_base": 55,
+        "n": 5000,
+        "entered": 531,
+        "frequency": 0.1062,
+        "priority": 0.85,
+        "capacity": 0.496375,
+        "chance": 0.109698875
+      },
+      {
+        "fertility_base": 10,
+        "n": 5000,
+        "entered": 93,
+        "frequency": 0.0186,
+        "priority": 0.85,
+        "capacity": 0.09025,
+        "chance": 0.01994525
+      }
+    ],
+    "initial_population": {
+      "total": 97,
+      "alive": 97,
+      "households": 18,
+      "age_groups": {
+        "中年": 4,
+        "成年": 30,
+        "青年": 18,
+        "老年": 15,
+        "青少年": 20,
+        "儿童": 10
+      },
+      "unmarried_eligible": 18,
+      "married": 34,
+      "careers": {
+        "作坊工匠": 20,
+        "商铺帮工": 15,
+        "农事劳动": 16,
+        "无固定职业": 46
+      },
+      "education": {
+        "无在读安排": 75,
+        "active": 22
+      },
+      "fidelity": {
+        "full": 4,
+        "simplified": 16,
+        "background": 77
+      }
+    },
+    "names": {
+      "n": 300,
+      "duplicates": 0,
+      "surnames_used": 60,
+      "given_names_used": 300,
+      "pool_sizes": {
+        "surnames": 60,
+        "male": 60,
+        "female": 60,
+        "neutral": 40
+      }
+    },
+    "candidates": {
+      "subjects": 18,
+      "average_pool": 8.777777777777779,
+      "unique_candidates": 18
+    }
+  }
+}

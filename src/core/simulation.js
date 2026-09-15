@@ -1,4 +1,6 @@
-import {applyContent,FOCUS} from '../content/event_runtime.js';
+import {fullSimulationIds,simplifiedDefaults,updateNPCMarriages,selectNPC,sameLocality} from '../systems/npc_world.js';
+import {routineRelations,routineSummary} from '../systems/monthly_routine.js';
+import {applyContent,applyRoutineContent,FOCUS} from '../content/event_runtime.js';
 import {createCharacter} from '../systems/character_generation.js';
 import {createHousehold} from '../systems/household.js';
 import {clone,snapshot,diff,age,auditSnapshot} from './state.js';
@@ -9,10 +11,10 @@ import {die} from '../systems/death.js';
 import {defaultBehaviors,executeDefaults} from '../systems/default_behavior.js';
 import {settleResources,spend} from '../systems/resources.js';
 import {updateLongTerms,addLongTerm} from '../systems/long_term_state.js';
-import {backgroundCandidates,triggerBackground,decisionEvent,eventFor} from '../systems/events.js';
+import {backgroundCandidates,triggerBackground,specialEvents,eventFor} from '../systems/events.js';
 import {resolveDecision,chosen,preparePlayerDecision} from '../systems/behavior.js';
 import {enroll,employ} from '../systems/education_career.js';
-import {updateReproduction,startReproduction} from '../systems/reproduction.js';
+import {updateReproduction,checkConception,monthlyConception} from '../systems/reproduction.js';
 import {arrangeMarriage,ensureMarriageCandidates} from '../systems/marriage.js';
 import {changeRelationship} from '../systems/relationships.js';
 import {applyForce,fulfillWish} from '../systems/player_intent.js';
@@ -28,7 +30,7 @@ export function reassignCare(s,cid){
  if(s.careers[cid]?.status==='active'){s.careers[cid].time=Math.max(s.config.minimum_work_time,s.careers[cid].time-s.config.work_reduction_fraction);s.careers[cid].wage*=1-s.config.work_reduction_fraction;}
  return {reduced_work:true};
 }
-function mentorFor(s,cid){const c=s.characters[cid];if(s.characters[c.mentor_character_id]?.alive)return c.mentor_character_id;const existing=Object.values(s.characters).find(x=>x.character_id!==cid&&x.alive&&age(s,x)>=18&&s.careers[x.character_id]?.status==='active');if(existing){c.mentor_character_id=existing.character_id;changeRelationship(s,cid,existing.character_id,0,'建立持续指导关系');return existing.character_id;}const hid=createHousehold(s,'指导者家庭'),mentor=createCharacter(s,{age_years:s.config.mentor_age,household_id:hid});employ(s,mentor.character_id,0);c.mentor_character_id=mentor.character_id;changeRelationship(s,cid,mentor.character_id,0,'建立持续指导关系');return mentor.character_id;}
+function mentorFor(s,cid){const c=s.characters[cid];if(s.characters[c.mentor_character_id]?.alive)return c.mentor_character_id;const skill=s.education[cid]?.skill||s.careers[cid]?.skill||(s.world_id==='ancient'?'手工':'编程'),pool=Object.values(s.characters).filter(x=>x.character_id!==cid&&x.alive&&age(s,x)>=25&&sameLocality(s,cid,x.character_id)&&(s.careers[x.character_id]?.skill===skill||x.skills.some(k=>k.name===skill&&k.level>=15))),existing=s.characters[selectNPC(s,cid,pool.map(x=>x.character_id),'mentor')];if(existing){c.mentor_character_id=existing.character_id;changeRelationship(s,cid,existing.character_id,0,'建立持续指导关系');return existing.character_id;}const hid=createHousehold(s,'指导者家庭'),mentor=createCharacter(s,{age_years:s.config.mentor_age,household_id:hid});employ(s,mentor.character_id,0);c.mentor_character_id=mentor.character_id;changeRelationship(s,cid,mentor.character_id,0,'建立持续指导关系');return mentor.character_id;}
 export function executeDecision(s,cid,result){
  if(result.event.content_template)return applyContent(s,cid,result);
  const c=s.characters[cid],a=chosen(result),type=result.event.type,systems=[],changes=[];
@@ -38,7 +40,7 @@ export function executeDecision(s,cid,result){
  if(effect==='career'||effect==='relocation'){employ(s,cid,result.event.career_index||0);systems.push('careers');changes.push('已进入新的职业安排');if(effect==='relocation'){startAway(s,cid);changes.push('进入外地生活；重新计算家庭责任、外地收入与生活支出');systems.push('long_term_states','households','resources');}}
  if(effect==='education'){enroll(s,cid,1);systems.push('education','long_term_states');changes.push('建立长期教育状态，之后按月学习');}
  if(effect==='learning'){const key=addLongTerm(s,cid,'short_trial',null,s.config.trial_months,75,['短期试学']);Object.assign(s.long_term_states[key],{time_cost:a.action_id==='partial'?s.config.trial_time/2:s.config.trial_time,skill:s.world_id==='ancient'?'手工':'音乐'});systems.push('long_term_states');changes.push('进入'+s.config.trial_months+'个月试学；之后按实际投入增长技能');}
- if(effect==='birth'){result.reproduction_result=startReproduction(s,cid,result.event.target_id);systems.push('reproduction');changes.push(result.reproduction_result.started?'建立孕育与照护安排':result.reproduction_result.reason);}
+ if(effect==='birth'){result.reproduction_result=checkConception(s,cid,result.event.target_id);systems.push('reproduction');changes.push(result.reproduction_result.started?'确认怀孕，开始孕期安排':result.reproduction_result.capacity?.blocker||'已支持生育计划，本月尚未怀孕，后续继续按现实条件检查');}
  if(['return','extend','settle','change_path'].includes(effect)){
   const t=s.long_term_states[result.event.long_term_id]||lifeContext(s,cid).terms.find(t=>t.type==='away_from_home_assignment');
   if(!t)throw Error('找不到需处理的离乡安排');
@@ -87,27 +89,42 @@ function marriage(s,cid,target,mode,previous=null){
  if(r.status==='refused'&&inPlayerFamily(s,cid)&&mode!=='force')queuePlayerEvent(s,'force',cid,{marriage:true,target_id:target,previous:r,reasons:r.child.decision_reasons});
  return r;
 }
+// Remember ownership before death/succession can change the controlled household.
+function deathAndRoute(s,cid,reason){const owned=inPlayerFamily(s,cid)||s.control.current_control_character_id===cid,result=die(s,cid,reason);if(owned&&s.inheritances[cid])s.inheritances[cid].player_family_decision=true;return result;}
+function drainMonthQueue(s,log){
+ while(s.month_queue?.items.length&&!pendingDecision(s)){
+  const {cid,event}=s.month_queue.items.shift();if(!s.characters[cid]?.alive)continue;
+  let r=log.reports.find(r=>r.character_id===cid);if(!r){r={character_id:cid,before:snapshot(s,cid),defaults:defaultBehaviors(s,cid),developments:[],special_events:[]};log.reports.push(r);}
+  const issue=s.ongoing_situations[event.situation_id];if(issue){issue.last_decision_month=s.current_world_month;issue.needs_decision=false;}const item={event},gate=needsPlayer(s,cid,event);(r.special_events||(r.special_events=[])).push(item);
+  if(gate){item.waiting=gate===true;item.status=gate===true?'awaiting_player':'cooldown';r.player_opportunity={event,waiting:item.waiting};}
+  else if(event.type==='marriage'){item.arrangement=marriage(s,cid,event.target_id,'autonomous');item.decision=item.arrangement.child;r.arrangement=item.arrangement;r.decision=item.decision;}
+  else{item.decision=autonomous(s,cid,event);r.decision=item.decision;r.systems=item.decision.systems;}
+  r.important=true;
+ }
+ updateLongTerms(s);log.remaining_events=s.month_queue?.items.length||0;
+ for(const r of log.reports){r.after=auditSnapshot(snapshot(s,r.character_id),s.current_world_month);r.before=auditSnapshot(r.before,s.current_world_month);r.diff=diff(r.before,r.after);}
+ log.rng_state=s.rng_state;
+}
 export function month(s){
  if(pendingDecision(s))throw Error('需要你的决定：时间已暂停');
- const controlled=s.control.current_control_character_id;s.current_world_month++;
- const active=Object.values(s.characters).filter(c=>c.alive&&c.active_simulation),reports=[],work={};updateLongTerms(s);
+ const controlled=s.control.current_control_character_id;
+ if(s.month_queue?.items.length){const log={kind:'month',continuation:true,month:s.current_world_month,control_character_id:controlled,reports:[],resource_changes:[],births:[],notices:[]};drainMonthQueue(s,log);s.history.push(log);return log;}
+ s.current_world_month++;const full=fullSimulationIds(s),active=Object.values(s.characters).filter(c=>c.alive&&c.active_simulation),reports=[],work={};updateLongTerms(s);
  for(const c of active){
-  const cid=c.character_id,before=snapshot(s,cid),goal=assignGoal(s,c);
-  if(updateHealth(s,c)){const death=die(s,cid,'MOCK_TUNABLE 健康过程确认死亡');reports.push({character_id:cid,before,after:snapshot(s,cid),death,important:true});continue;}
-  const defaults=defaultBehaviors(s,cid);executeDefaults(s,cid,defaults);work[cid]=defaults.work_fraction;
+  const cid=c.character_id,isFull=full.has(cid),before=isFull?snapshot(s,cid):null,goal=assignGoal(s,c);
+  if(updateHealth(s,c)){const death=deathAndRoute(s,cid,'MOCK_TUNABLE 健康过程确认死亡');if(isFull)reports.push({character_id:cid,before,after:snapshot(s,cid),death,important:true});continue;}
+  const defaults=isFull?defaultBehaviors(s,cid):simplifiedDefaults(s,cid);executeDefaults(s,cid,defaults);work[cid]=defaults.work_fraction;
+  if(!isFull)continue;
   const developments=updateSituations(s,cid,defaults),candidates=backgroundCandidates(s,cid),background=triggerBackground(s,cid,candidates);
-  reports.push({character_id:cid,before,defaults,developments,background_candidates:candidates,background,goal_generated:goal});
+  if(background?.content_pending){background.routine=applyRoutineContent(s,cid,background.event);delete background.content_pending;}
+  reports.push({character_id:cid,before,defaults,developments,background_candidates:candidates,background,goal_generated:goal,special_events:[]});
  }
- const resource_changes=settleResources(s,work);
- for(const r of reports){if(r.death)continue;if(r.background?.content_pending){const gate=needsPlayer(s,r.character_id,r.background.event);if(gate)r.player_opportunity={event:r.background.event,waiting:gate===true};else r.background.decision=autonomous(s,r.character_id,r.background.event);delete r.background.content_pending;}const event=decisionEvent(s,r.character_id,r.defaults);
-  if(event){const gate=needsPlayer(s,r.character_id,event);if(gate){r.player_opportunity={event,waiting:gate===true};}
-   else if(event.type==='marriage'){r.arrangement=marriage(s,r.character_id,event.target_id,'autonomous');r.decision=r.arrangement.child;r.systems=r.arrangement.systems;}
-   else{r.decision=autonomous(s,r.character_id,event);r.systems=r.decision.systems;}}
-  r.important=!!(r.decision||r.player_opportunity?.waiting||r.goal_generated||r.developments.some(x=>x.kind!=='unchanged'));
- }
- const births=updateReproduction(s).map(b=>({...b,newborn:snapshot(s,b.child_id)}));updateLongTerms(s);
- for(const r of reports){r.after=auditSnapshot(snapshot(s,r.character_id),s.current_world_month);r.before=auditSnapshot(r.before,s.current_world_month);r.diff=diff(r.before,r.after);}
- const log={kind:'month',month:s.current_world_month,control_character_id:controlled,reports,resource_changes,births,rng_state:s.rng_state};s.history.push(log);return log;
+ const relations=routineRelations(s,full),resource_changes=settleResources(s,work),allBirths=updateReproduction(s),births=allBirths.filter(b=>full.has(b.mother_id)||full.has(b.father_id)).map(b=>({...b,newborn:snapshot(s,b.child_id)})),conceptions=monthlyConception(s),npc_updates=updateNPCMarriages(s,full);updateLongTerms(s);
+ const items=[],queuedIssues=new Set();for(const r of reports){if(r.death)continue;r.routine=routineSummary(s,r.character_id,r.defaults,r.before,relations,resource_changes);r.important=!!(r.goal_generated||r.developments.some(x=>x.kind!=='unchanged'));for(const event of specialEvents(s,r.character_id,r.defaults)){if(event.situation_id&&queuedIssues.has(event.situation_id))continue;if(event.situation_id)queuedIssues.add(event.situation_id);items.push({cid:r.character_id,event});}}
+ items.sort((a,b)=>Number(b.event.type==='health')-Number(a.event.type==='health'));s.month_queue={month:s.current_world_month,items};
+ const notices=(s.life_notices||[]).filter(n=>n.month===s.current_world_month&&full.has(n.mother_id));
+ const log={kind:'month',month:s.current_world_month,control_character_id:controlled,reports,resource_changes,births,conceptions:conceptions.filter(x=>full.has(x.notice?.mother_id)),notices,npc_updates,npc_birth_count:allBirths.length-births.length};
+ drainMonthQueue(s,log);s.history.push(log);return log;
 }
 function playerResolve(s,cmd){
  const e=pendingDecision(s);if(!e||cmd.event_id!==e.id)throw Error('该玩家决定已结束或不是当前等待项');
@@ -168,7 +185,7 @@ export function command(s,cmd){
  case 'player_window':if(cmd.direction==='marriage')ensureMarriageCandidates(s,cid);result=openPlayerWindow(s,cmd.direction,cid);break;
  case 'event':result=autonomous(s,cid,eventFor(s,cmd.event_type,cmd.target_id),{intervention:cmd.intervention});break;
  case 'marriage':result=marriage(s,cid,cmd.target_id,cmd.mode);break;
- case 'death':result=die(s,cid);break;
+ case 'death':result=deathAndRoute(s,cid);break;
  case 'succession':selectSuccessor(s,cmd.target_id);result={type:'succession',selected:cmd.target_id};break;
  case 'inheritance':result=inheritEstate(s,cmd.deceased_id,cmd.target_id);break;
  case 'wish':fulfillWish(s,cid);result={type:'wish',credits:s.player.force_credits};break;

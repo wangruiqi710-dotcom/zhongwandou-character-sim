@@ -1,0 +1,34 @@
+{
+  "url": "local static preview",
+  "rows": [
+    {
+      "width": 375,
+      "overflow": false,
+      "nav_height": 52,
+      "months_before_check": 60,
+      "pregnancy_immediate": true,
+      "pregnancy_month_updates": true,
+      "multitrack_visible": true
+    },
+    {
+      "width": 390,
+      "overflow": false,
+      "nav_height": 52,
+      "months_before_check": 60,
+      "pregnancy_immediate": true,
+      "pregnancy_month_updates": true,
+      "multitrack_visible": true
+    },
+    {
+      "width": 430,
+      "overflow": false,
+      "nav_height": 52,
+      "months_before_check": 60,
+      "pregnancy_immediate": true,
+      "pregnancy_month_updates": true,
+      "multitrack_visible": true
+    }
+  ],
+  "errors": [],
+  "static_only": true
+}

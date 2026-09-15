@@ -1,3 +1,5 @@
+import {marriageMatch} from './marriage_match.js';
+import {sameLocality,recordNPCExposure} from './npc_world.js';
 import {reproductionPriority} from './reproduction.js';
 import {age} from '../core/state.js';
 import {id,integer} from '../core/rng.js';
@@ -23,6 +25,7 @@ export function marriageHardConditions(s,a,b){
  if(available(s,a)<s.config.marriage_cost)return '必要资源不足';
  return null;
 }
+export function eligibleMarriageCandidatePool(s,cid){return marriageCandidates(s,cid).filter(x=>!x.reason&&s.characters[x.character_id].sex!==s.characters[cid].sex&&s.characters[x.character_id].current_household_id!==s.characters[cid].current_household_id&&sameLocality(s,cid,x.character_id)&&Math.abs(age(s,s.characters[cid])-age(s,s.characters[x.character_id]))<=(s.config.npc_candidate_age_gap??20));}
 export function marriageCandidates(s,cid){return Object.values(s.characters).filter(c=>c.character_id!==cid&&c.alive).map(c=>({character_id:c.character_id,reason:marriageHardConditions(s,cid,c.character_id)}));}
 export function establishMarriage(s,a,b,origin='autonomous'){
  const reason=marriageHardConditions(s,a,b);if(reason)throw Error(reason);
@@ -33,17 +36,18 @@ export function establishMarriage(s,a,b,origin='autonomous'){
  for(const cid of [a,b]){addLongTerm(s,cid,'marriage',{system:'marriages',id:mid},null,60,['共同生活']);s.characters[cid].marriage_id=mid;s.characters[cid].spouse_character_id=cid===a?b:a;s.characters[cid].experiences.push({month:s.current_world_month,type:'marriage',marriage_id:mid});}
  changeRelationship(s,a,b,2,'建立婚姻，关系不等于婚姻状态');s.marriages[mid].reproduction_priority=reproductionPriority(s,a,b);return mid;
 }
-function marriageResponse(s,cid,event,player=false){
+export function marriageResponse(s,cid,event,player=false){
+ if(!player)event={...event,match_evidence:marriageMatch(s,cid,event)};
  const ready=preparePlayerDecision(s,cid,event);
  if(!player){ready.player_direct=false;ready.sampling.method='reason_supported_response';for(const stage of ready.stages||[])stage.sampling.method='reason_supported_response';if(!ready.player_conflict)ready.decision_reasons=chosen(ready).supporting_reasons;}
  if(ready.player_conflict)return ready;
- if(player||!chosen(ready).opposing_reasons.length){ready.character_response=player?'没有明确强烈反对，按家庭安排继续':'没有明确反对理由，愿意继续';return ready;}
+ if(player){ready.character_response=player?'没有明确强烈反对，按家庭安排继续':'没有明确反对理由，愿意继续';return ready;}
  return resolveDecision(s,cid,event);
 }
 export function arrangeMarriage(s,cid,target,mode='ordinary',actor=null,previous=null){
  const hard=marriageHardConditions(s,cid,target);const event={type:'marriage',title:'家庭安排婚配',description:'家人推动双方正式议亲，商议结婚与长期家庭责任。',category:'婚配',goal_tags:['marriage'],tags:['family','long_term'],target_id:target,conditions:{contract_terms_known:true},cost:s.config.marriage_cost,hard_block:hard};
  if(hard)return {status:'blocked',reason:hard,final_outcome:'无法执行：'+hard};
- relationship(s,cid,target);
+ relationship(s,cid,target);recordNPCExposure(s,cid,target,'candidate');
  const child=previous?.child||marriageResponse(s,cid,event,mode==='ordinary'||mode==='force');
  const otherEvent={...event,target_id:cid,cost:0,hard_block:hard};
  const other=previous?.other||marriageResponse(s,target,otherEvent);
@@ -65,4 +69,4 @@ export function arrangeMarriage(s,cid,target,mode='ordinary',actor=null,previous
  return {responses,final_outcome,kind:'marriage_arrangement',initiator_character_id:cid,candidate_character_id:target,family_actor_id:familyActor,status,reason:hard,stages:['家庭需求','候选筛选','指定重点对象','推动议亲','子女反应','对方反应','对方家庭反应','硬条件检查','安排执行'],child,other,family,force,marriage_id,systems:['relationships','marriages','households','resources','long_term_states','characters']};
 }
 
-export function ensureMarriageCandidates(s,cid){let candidates=marriageCandidates(s,cid).filter(x=>!x.reason&&s.characters[x.character_id].sex!==s.characters[cid].sex);while(candidates.length<s.config.marriage_candidate_count&&Object.values(s.characters).filter(c=>c.alive).length<s.config.contact_population_limit){const c=s.characters[cid];if(currentMarriage(s,cid)||age(s,c)<s.config.marriage_min_age||available(s,cid)<s.config.marriage_cost)break;const hid=createHousehold(s,'新接触的家庭'),person=createCharacter(s,{household_id:hid,age_years:Math.max(s.config.marriage_min_age,age(s,c)+integer(s,-s.config.contact_age_spread,s.config.contact_age_spread)),sex:c.sex==='女'?'男':'女'});s.resources.households[hid].household_resources=s.config.marriage_cost*2;employ(s,person.character_id,1);relationship(s,cid,person.character_id);candidates=marriageCandidates(s,cid).filter(x=>!x.reason&&s.characters[x.character_id].sex!==s.characters[cid].sex);}return candidates;}
+export function ensureMarriageCandidates(s,cid){let candidates=eligibleMarriageCandidatePool(s,cid);while(candidates.length<(s.npc_world?s.config.npc_candidate_min:s.config.marriage_candidate_count)&&Object.values(s.characters).filter(c=>c.alive).length<(s.npc_world?s.config.npc_initial_population+30:s.config.contact_population_limit)){const c=s.characters[cid];if(currentMarriage(s,cid)||age(s,c)<s.config.marriage_min_age||available(s,cid)<s.config.marriage_cost)break;const hid=createHousehold(s,'新接触的家庭'),person=createCharacter(s,{household_id:hid,age_years:Math.max(s.config.marriage_min_age,age(s,c)+integer(s,-s.config.contact_age_spread,s.config.contact_age_spread)),sex:c.sex==='女'?'男':'女'});s.resources.households[hid].household_resources=s.config.marriage_cost*2;employ(s,person.character_id,1);relationship(s,cid,person.character_id);candidates=eligibleMarriageCandidatePool(s,cid);}return candidates;}

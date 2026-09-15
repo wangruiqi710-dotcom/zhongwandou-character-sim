@@ -1,3 +1,4 @@
+import {selectNPC,recordNPCExposure,sameLocality} from '../systems/npc_world.js';
 import {applyForce} from '../systems/player_intent.js';
 import {resolveDecision,chosen,preparePlayerDecision} from '../systems/behavior.js';
 import {eventFor} from '../systems/events.js';
@@ -10,7 +11,7 @@ import {addLongTerm} from '../systems/long_term_state.js';
 import {ensureSituation} from '../systems/ongoing_situations.js';
 import {learn,enroll,employ} from '../systems/education_career.js';
 import {currentMarriage,marriageCandidates,arrangeMarriage} from '../systems/marriage.js';
-import {reproductionConditions,startReproduction} from '../systems/reproduction.js';
+import {reproductionConditions,checkConception} from '../systems/reproduction.js';
 const active=x=>x?.status==='active';
 const names=(s,id)=>{const c=s.characters[id];return c.surname+c.given_name;};
 export function contentImpact(action){
@@ -36,7 +37,7 @@ export function eligibleContent(s,cid,t,ctx=contentContext(s,cid)){
 }
 export function pickContent(s,cid,daily=false){
  if(s.world_id!=='ancient')return null;
- const ctx=contentContext(s,cid),pool=ANCIENT_EVENTS.filter(t=>(t.importance==='daily')===daily&&eligibleContent(s,cid,t,ctx));
+ const ctx=contentContext(s,cid),pool=ANCIENT_EVENTS.filter(t=>(t.flow_type==='ROUTINE_MONTHLY_PROGRESS')===daily&&eligibleContent(s,cid,t,ctx));
  if(!pool.length)return null;
  const focus=s.test_focus_mode||'正常人生',weights=pool.map(t=>(focus!=='正常人生'&&focusMatches(t,focus)?CFG.focus_multiplier:1)*(ctx.lc.terms.some(x=>x.content_theme===t.theme)?CFG.continuity_multiplier:1)*(1+CFG.interest_opportunity_multiplier*Math.max(0,...ctx.c.interests.filter(i=>t.interest_examples.includes(i.name)).map(i=>i.intensity/100)))),total=weights.reduce((a,b)=>a+b,0);let roll=random(s)*total,chosen=pool.at(-1);for(let i=0;i<pool.length;i++){roll-=weights[i];if(roll<0){chosen=pool[i];break;}}
  return instantiateContent(s,cid,chosen,ctx);
@@ -47,8 +48,11 @@ export function instantiateContent(s,cid,t,ctx=contentContext(s,cid)){
  let candidates=ctx.roles[t.participant_requirements.role];
  if(t.trigger_conditions.condition==='seriouskin')candidates=candidates.filter(id=>s.health[id].value<45);
  if(t.trigger_conditions.condition==='schoolchild')candidates=candidates.filter(id=>active(s.education[id]));
- const target_id=candidates.length?pick(s,candidates):null;
- const event={id:t.event_id,event_id:t.event_id,content_template:true,type:'content',title:t.display_templates.title,description:t.display_templates.description.replace('{person}',names(s,cid)).replace('{context}',ctx.stage+'；'+(active(s.careers[cid])?s.careers[cid].name:active(s.education[cid])?s.education[cid].name:'目前没有固定课业或工作')+'；'+(ctx.lc.away?'正在外乡生活':'住在家中')+'；'+(target_id?'相关人物：'+names(s,target_id)+'。':'')+(ctx.lc.care_time?'还承担家庭照护。':'')),category:t.domain,tags:[t.theme,...t.interest_examples],goal_tags:[],world_id:s.world_id,cost:0,source:'MOCK_EVENT_CONTENT',target_id,importance:t.importance,theme:t.theme,decision_goal:t.decision_goal,terminal_outcomes:clone(t.terminal_outcomes),transition_actions:clone(t.transition_actions),context_facts:{duration:3,cost:0,time:.15,participant_id:target_id},conditions:{contract_terms_known:true,information_verified:true},interest_examples:t.interest_examples,interest_domains:t.interest_examples.filter(Boolean).map(x=>({读书:'阅读',经商:'商业',农事:'自然',社交往来:'交流'}[x]||x))};
+ if(['neighbor','peer','friend','mentor'].includes(t.participant_requirements.role))candidates=candidates.filter(id=>sameLocality(s,cid,id));
+ if(t.participant_requirements.role==='peer'&&active(s.careers[cid]))candidates=candidates.filter(id=>s.careers[id]?.id===s.careers[cid].id);
+ if(t.participant_requirements.role==='mentor'){const skill=s.education[cid]?.skill||s.careers[cid]?.skill||t.interest_examples[0],qualified=candidates.filter(id=>age(s,s.characters[id])>=25&&(s.careers[id]?.skill===skill||s.characters[id].skills.some(k=>k.name===skill&&k.level>=15)));candidates=qualified;}
+ const target_id=selectNPC(s,cid,candidates,t.participant_requirements.role);if(t.participant_requirements.real_person&&!target_id)return null;
+ const event={flow_type:t.flow_type,id:t.event_id,event_id:t.event_id,content_template:true,type:'content',title:t.display_templates.title,description:t.display_templates.description.replace('{person}',names(s,cid)).replace('{context}',ctx.stage+'；'+(active(s.careers[cid])?s.careers[cid].name:active(s.education[cid])?s.education[cid].name:'目前没有固定课业或工作')+'；'+(ctx.lc.away?'正在外乡生活':'住在家中')+'；'+(target_id?'相关人物：'+names(s,target_id)+'。':'')+(ctx.lc.care_time?'还承担家庭照护。':'')),category:t.domain,tags:[t.theme,...t.interest_examples],goal_tags:[],world_id:s.world_id,cost:0,source:'MOCK_EVENT_CONTENT',target_id,importance:t.importance,theme:t.theme,decision_goal:t.decision_goal,terminal_outcomes:clone(t.terminal_outcomes),transition_actions:clone(t.transition_actions),context_facts:{duration:3,cost:0,time:.15,participant_id:target_id},conditions:{contract_terms_known:true,information_verified:true},interest_examples:t.interest_examples,interest_domains:t.interest_examples.filter(Boolean).map(x=>({读书:'阅读',经商:'商业',农事:'自然',社交往来:'交流'}[x]||x))};
  event.mock_actions=t.terminal_outcomes.map((o,i)=>({id:i===0?'commit_terms':'alternative',name:o.label,tags:[i===0?'participate':'preserve_stability',...goalTags(o.effects)],traits:{interest_match:i===0?1:.2,social_exposure:target_id?(i===0?.65:.3):0,planning_need:i===0?.4:.2,long_term_commitment:t.importance==='major'?.8:0,career_value:o.effects.some(e=>['career','education','targetcareer','trial'].includes(e.kind))?.8:0,financial_value:o.effects.some(e=>['personal','household','wage'].includes(e.kind)&&e.value>0)?.6:0,relationship_care:o.effects.some(e=>e.kind==='relation'&&e.value>0)?.7:0,time_cost:.1,novelty:i===0?.5:.2},conditions:{action_type:'terminal_action',outcome:i===0?'accept':'defer',effects:['content'],content_effects:clone(o.effects)}}));
  // Real opportunities, not personality, create these extra routes.
  if(t.theme==='education'&&ctx.funds<120&&ctx.skill>=5)event.mock_actions.push({id:'fee_relief',name:'凭现有课业争取免去一部分费用，短期旁听',tags:['participate','skill_practice'],traits:{planning_need:.6,interest_match:.7},conditions:{action_type:'terminal_action',outcome:'accept',effects:['content'],content_effects:[{kind:'trial',value:1},{kind:'stress',value:2}]}});
@@ -70,6 +74,7 @@ export function contentFeasibility(s,cid,event,action){
 export function applyContent(s,cid,result,marriageHandler=arrangeMarriage){
  const event=result.event,t=ANCIENT_EVENTS.find(t=>t.event_id===event.event_id),selected=event.mock_actions.find(a=>a.id===result.chosen_action_id),effects=selected?.conditions.content_effects||[],c=s.characters[cid],target=event.target_id,hh=s.households[c.current_household_id],fund=s.resources.households[c.current_household_id],before=auditSnapshot(snapshot(s,cid),s.current_world_month),relatedBefore=target?auditSnapshot(snapshot(s,target),s.current_world_month):null;
  if(!selected)throw Error('内容终局选项不存在');
+ recordNPCExposure(s,cid,target,t.participant_requirements.role);
  let targetAccepted=true;
  if(effects.some(e=>['targeteducation','targetcareer'].includes(e.kind))){const offer=effects.find(e=>['targeteducation','targetcareer'].includes(e.kind));const opportunity={...eventFor(s,offer.kind==='targeteducation'?'education':'career'),cost:0};result.recipient_decision=event.player_authority?preparePlayerDecision(s,target,opportunity):resolveDecision(s,target,opportunity);if(event.force_recipient&&result.recipient_decision.player_conflict){const rd=result.recipient_decision;rd.force=applyForce(s,target,rd,'commit_terms',cid);if(rd.force.executed){rd.chosen_action_id='commit_terms';rd.chosen_action=rd.force.action.action;rd.character_response='当前安排强制执行；之后仍保留人物自主反应';}}targetAccepted=chosen(result.recipient_decision).outcome==='accept';s.characters[target].experiences.push({month:s.current_world_month,type:'decision',event:'家庭提供的'+opportunity.title,action:result.recipient_decision.chosen_action});}
  const reason=contentFeasibility(s,cid,event,{action_id:selected.id});if(reason)throw Error(reason);
@@ -94,7 +99,7 @@ export function applyContent(s,cid,result,marriageHandler=arrangeMarriage){
  case 'stoptrial':for(const x of lifeContext(s,cid).terms.filter(x=>x.type==='short_trial'))x.status='ended';break;
  case 'fundeducation':for(const id of hh.members)if(active(s.education[id])){s.education[id].funding_fraction=id===cid?1:.5;s.education[id].time=id===cid?.65:.325;}break;
  case 'reduceeducation':for(const id of hh.members)if(active(s.education[id])){s.education[id].funding_fraction=.5;s.education[id].time=.325;}break;
- case 'marriage':result.content_arrangement=marriageHandler(s,cid,target,'ordinary');break;case 'birth':result.content_birth=startReproduction(s,cid,target);break;
+ case 'marriage':result.content_arrangement=marriageHandler(s,cid,target,'ordinary');break;case 'birth':result.content_birth=checkConception(s,cid,target);break;
  default:throw Error('未定义内容效果 '+e.kind);
  }}
  const meaningful=effects.length>0;
@@ -103,7 +108,12 @@ export function applyContent(s,cid,result,marriageHandler=arrangeMarriage){
   for(const issue of Object.values(s.ongoing_situations).filter(x=>active(x)&&x.content_theme===t.theme&&x.participants.includes(cid)&&(!target||x.participants.includes(target)))){const severityBefore=issue.severity;issue.severity=bound(issue.severity+(fail?8:-10));issue.development_history.push({month:s.current_world_month,kind:fail?'worsened':'improved',event_id:t.event_id,severity:issue.severity});if(issue.severity===0){issue.status='resolved';issue.end_month=s.current_world_month;}changes.push('持续处境：'+severityBefore+' → '+issue.severity);}
  }
  if(t.participant_requirements.role==='mentor'&&target&&meaningful)c.mentor_character_id=target;
- const outcome=result.content_arrangement?'本次正式议亲：'+({married:'双方接受，婚姻已经成立',refused:'本人拒绝，未成立婚姻',other_refused:'对方拒绝，未成立婚姻',delayed:'暂缓，继续保留议亲状态',blocked:'现实条件不满足，未成立婚姻'}[result.content_arrangement.status]||result.content_arrangement.status):result.content_birth?(result.content_birth.started?'双方开始孕育与照护安排。':'本次没有开始孕育：'+result.content_birth.reason):!targetAccepted?'家庭提供了具体机会，但当事人本次没有接受；未启动安排，预留费用未支出。':!meaningful?'说明了当前限制，本次没有改变既有安排。':fail?'投入了时间或资源，但受到当前压力、健康与熟练程度限制，预期的学习或收益没有实现。':selected.name+'。'+(effects.some(e=>e.kind==='relation'&&e.value>0)?'这次共同经历让双方更亲近。':effects.some(e=>e.kind==='relation'&&e.value<0)?'双方留下了一些不满，之后的互动会带着这段经历。':'')+(effects.some(e=>['skill','targetskill'].includes(e.kind))?'这次实际练习留下了可继续积累的经验。':'')+(effects.some(e=>e.kind==='household'&&e.value<0)?'家庭支付了这次安排所需的费用。':'');
+ const outcome=result.content_arrangement?'本次正式议亲：'+({married:'双方接受，婚姻已经成立',refused:'本人拒绝，未成立婚姻',other_refused:'对方拒绝，未成立婚姻',delayed:'暂缓，继续保留议亲状态',blocked:'现实条件不满足，未成立婚姻'}[result.content_arrangement.status]||result.content_arrangement.status):result.content_birth?(result.content_birth.started?'双方开始孕育与照护安排。':result.content_birth.capacity?.blocker||'家庭支持生育计划；本月尚未怀孕，之后继续按真实条件检查'):!targetAccepted?'家庭提供了具体机会，但当事人本次没有接受；未启动安排，预留费用未支出。':!meaningful?'说明了当前限制，本次没有改变既有安排。':fail?'投入了时间或资源，但受到当前压力、健康与熟练程度限制，预期的学习或收益没有实现。':selected.name+'。'+(effects.some(e=>e.kind==='relation'&&e.value>0)?'这次共同经历让双方更亲近。':effects.some(e=>e.kind==='relation'&&e.value<0)?'双方留下了一些不满，之后的互动会带着这段经历。':'')+(effects.some(e=>['skill','targetskill'].includes(e.kind))?'这次实际练习留下了可继续积累的经验。':'')+(effects.some(e=>e.kind==='household'&&e.value<0)?'家庭支付了这次安排所需的费用。':'');
  const after=auditSnapshot(snapshot(s,cid),s.current_world_month);result.content_result={outcome,failed:fail,before,after,related_before:relatedBefore,related_after:target?auditSnapshot(snapshot(s,target),s.current_world_month):null};result.actual_changes=[outcome,...changes];result.systems=[...new Set(effects.map(e=>e.kind))];
  c.experiences.push({month:s.current_world_month,type:'content',event_id:t.event_id,theme:t.theme,domain:t.domain,importance:t.importance,event:event.title,action:selected.name,outcome,related_person_id:target,failed:fail});recordEvent(s,cid,'content:'+t.event_id);return result.systems;
+}
+
+export function applyRoutineContent(s,cid,event){
+ const action=event.mock_actions.find(a=>a.conditions.action_type==='terminal_action'&&!contentFeasibility(s,cid,event,{action_id:a.id}));if(!action)return null;
+ const result={kind:'ROUTINE_MONTHLY_PROGRESS',event:{...event,decision_owner:'routine'},chosen_action_id:action.id,chosen_action:action.name,candidate_actions:[],decision_reasons:[]};applyContent(s,cid,result);return result;
 }

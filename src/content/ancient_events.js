@@ -1,3 +1,4 @@
+import {auditTemplate} from './decision_audit.js';
 import {playerDecisionType} from '../config/player_event_routes.js';
 // MOCK_EVENT_CONTENT. Authored situations, not a formal game event database.
 // Rows: title | eligibility | participant | primary response | alternative | effects | alternative effects.
@@ -172,7 +173,7 @@ function compile(theme,domain,interest,line,index,major){
   followup_tags:[theme],history_requirements:index>=2?[theme+' 的实际经历或对应生活状态']:[],cooldown:importance==='daily'?18:30,repeat_rules:{maximum:importance==='major'?2:6,per_person:true},
   player_involvement:importance==='major'?'家庭资源或长期安排；人物仍有自主回应':'人物自主',interest_examples:[interest],display_templates:{title,description:'{person}遇到：'+title+'。{context}'} };
  if(playerDecisionType({...template,content_template:true})){template.event_type='PLAYER_DECISION_EVENT';template.player_involvement='家庭资源或长期安排；人物仍有自主回应';}
- return template;
+ return auditTemplate(template);
 }
 export const ANCIENT_EVENTS=groups.flatMap(([theme,domain,interest,rows])=>rows.map((r,i)=>compile(theme,domain,interest,r,i,majorGroups.has(theme)))).concat(extras.map(([domain,...r],i)=>compile('daily'+i,domain,'',r.join('|'),0,false)));
 export const CONTENT_DOMAINS=[...new Set(ANCIENT_EVENTS.map(e=>e.domain))];

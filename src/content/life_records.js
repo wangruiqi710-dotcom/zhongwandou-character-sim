@@ -4,7 +4,7 @@ export function meaningfulEntries(s,cid){
  for(const log of s.history){
   if(log.kind==='month'){
    for(const r of log.reports.filter(r=>r.character_id===cid)){
-    for(const d of [r.background?.decision,r.decision].filter(Boolean))out.push({month:log.month,actor:'人物决定',title:d.event.title,domain:d.event.category,decision:d.chosen_action,result:d.content_result?.outcome||d.actual_changes?.join('；')||'',event_id:d.event.event_id,details:d.content_result});
+    for(const d of (r.special_events?.length?r.special_events.map(x=>x.decision):[r.background?.decision,r.decision]).filter(Boolean))out.push({month:log.month,actor:'人物决定',title:d.event.title,domain:d.event.category,decision:d.chosen_action,result:d.content_result?.outcome||d.actual_changes?.join('；')||'',event_id:d.event.event_id,details:d.content_result});
     if(r.death)out.push({month:log.month,actor:'人生事实',domain:'健康',title:'死亡',result:r.death.reason});
     for(const dev of r.developments||[])if(dev.kind!=='unchanged')out.push({month:log.month,actor:'状态发展',domain:'家庭',title:dev.type,result:dev.kind+'；程度 '+dev.severity});
    }

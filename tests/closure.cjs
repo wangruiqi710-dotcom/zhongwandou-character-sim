@@ -50,7 +50,7 @@ vm.runInThisContext(['worlds.js','src/core/legacy_bridge.js','decisions.js'].map
  check('MIXED-VERSION-ARCHIVE',()=>{const run=newRun(quiet()),old=structuredClone(run);old.mock_version='2.0.0-alpha';old.schema_version=2;delete old.state.config.event_cooldown;delete old.initial_state.config.event_cooldown;assert.doesNotThrow(()=>validateImport(exportEnvelope({feedback:[],runs:[old,run]})));assert.throws(()=>step(old,{type:'month'}),/旧版本存档/);});
  for(const months of [120,360]){
   const r=newRun(fixture({seed:31,world:'ancient',case_id:'TC-EDU-01'}),'life'),s=r.state;let playerCount=0,pausedMonths=new Set(),seen=new Set(Object.keys(s.characters)),lastBackground={},violations=0;
-  for(let i=0;i<months;i++){
+  const targetMonth=s.current_world_month+months;for(let i=0;s.current_world_month<targetMonth;i++){
    if(pendingDecision(s)){pausedMonths.add(i);playerCount+=chooseAll(s,cmd=>step(r,cmd));}
    if(!s.control.current_control_character_id)break;
    const log=step(r,{type:'month'});
@@ -61,5 +61,5 @@ vm.runInThisContext(['worlds.js','src/core/legacy_bridge.js','decisions.js'].map
   const stats={seed:31,months,people:Object.keys(s.characters).length,births:Object.values(s.reproduction).filter(x=>x.status==='completed').length,marriages:Object.keys(s.marriages).length,newMarriages:Object.keys(s.marriages).length-1,educationChanges:s.history.filter(h=>h.kind==='month').flatMap(h=>h.reports).filter(r=>r.diff?.some(d=>d.path.startsWith('education'))).length,decisions:s.history.flatMap(h=>h.reports||[]).filter(r=>r.decision).length,playerDecisions:playerCount,pausedMonths:pausedMonths.size,ongoingSituations:Object.keys(s.ongoing_situations).length,longTermStates:Object.keys(s.long_term_states).length,backgroundRepeatViolations:violations,householdResources:Object.values(s.resources.households).map(x=>Math.round(x.household_resources))};
   report.runs.push(stats);if(months===120){const expected=structuredClone(s);expected.history.forEach(e=>delete e.command_index);assert.deepEqual(replay(r),expected);}
  }
- report.tests.push('TEST-EVENT-REPETITION-01','ANCIENT-LIFE-10Y','ANCIENT-LIFE-30Y');console.log(JSON.stringify(report,null,2));
+ report.tests.push('TEST-EVENT-REPETITION-01','ANCIENT-LIFE-10Y','ANCIENT-LIFE-30Y');console.log(JSON.stringify(report,null,2));if(process.env.WRITE_V230_REPORT==='1')fs.writeFileSync(path.join(root,'reports/v230-regression.json'),JSON.stringify(report,null,2)+'\n');
 })().catch(e=>{console.error(e);process.exitCode=1;});

@@ -1,0 +1,275 @@
+{
+  "tests": [
+    "POPULATION-ARCHIVE-EQUIVALENCE-24-MONTHS",
+    "TEST-REPRO-FERTILITY-LONG-01",
+    "TEST-POPULATION-100-FAMILIES-100-YEARS",
+    "TEST-NPC-REUSE-01"
+  ],
+  "century": {
+    "initial_families": 100,
+    "years": 100,
+    "scope": "同一古代世界，背景精度月度生活、健康、收入支出、婚育与真实出生死亡；不保存逐月完整调试快照",
+    "decades": [
+      {
+        "year": 10,
+        "alive": 431,
+        "total_born": 231,
+        "children": 231,
+        "children_fraction": 0.5359628770301624,
+        "generations": {
+          "0": 200,
+          "1": 231
+        }
+      },
+      {
+        "year": 20,
+        "alive": 501,
+        "total_born": 301,
+        "children": 229,
+        "children_fraction": 0.45708582834331335,
+        "generations": {
+          "0": 200,
+          "1": 300,
+          "2": 1
+        }
+      },
+      {
+        "year": 30,
+        "alive": 625,
+        "total_born": 425,
+        "children": 175,
+        "children_fraction": 0.28,
+        "generations": {
+          "0": 200,
+          "1": 310,
+          "2": 115
+        }
+      },
+      {
+        "year": 40,
+        "alive": 776,
+        "total_born": 576,
+        "children": 256,
+        "children_fraction": 0.32989690721649484,
+        "generations": {
+          "0": 200,
+          "1": 310,
+          "2": 266
+        }
+      },
+      {
+        "year": 50,
+        "alive": 896,
+        "total_born": 696,
+        "children": 226,
+        "children_fraction": 0.25223214285714285,
+        "generations": {
+          "0": 200,
+          "1": 310,
+          "2": 347,
+          "3": 39
+        }
+      },
+      {
+        "year": 60,
+        "alive": 1065,
+        "total_born": 866,
+        "children": 267,
+        "children_fraction": 0.2507042253521127,
+        "generations": {
+          "0": 199,
+          "1": 310,
+          "2": 359,
+          "3": 197
+        }
+      },
+      {
+        "year": 70,
+        "alive": 1056,
+        "total_born": 1036,
+        "children": 303,
+        "children_fraction": 0.2869318181818182,
+        "generations": {
+          "0": 20,
+          "1": 310,
+          "2": 359,
+          "3": 350,
+          "4": 17
+        }
+      },
+      {
+        "year": 80,
+        "alive": 1213,
+        "total_born": 1213,
+        "children": 317,
+        "children_fraction": 0.26133553173948887,
+        "generations": {
+          "1": 310,
+          "2": 359,
+          "3": 410,
+          "4": 134
+        }
+      },
+      {
+        "year": 90,
+        "alive": 1378,
+        "total_born": 1404,
+        "children": 327,
+        "children_fraction": 0.23730043541364296,
+        "generations": {
+          "1": 284,
+          "2": 359,
+          "3": 423,
+          "4": 304,
+          "5": 8
+        }
+      },
+      {
+        "year": 100,
+        "alive": 1378,
+        "total_born": 1608,
+        "children": 355,
+        "children_fraction": 0.2576197387518142,
+        "generations": {
+          "1": 80,
+          "2": 359,
+          "3": 425,
+          "4": 411,
+          "5": 103
+        }
+      }
+    ],
+    "archived_retired_arrangements": 3985,
+    "founder_children": {
+      "average": 3.1,
+      "distribution": {
+        "0": 1,
+        "1": 5,
+        "2": 21,
+        "3": 34,
+        "4+": 39
+      },
+      "by_fertility": [
+        {
+          "fertility_base": 95,
+          "families": 33,
+          "average_children": 3.757575757575758,
+          "childless": 0
+        },
+        {
+          "fertility_base": 55,
+          "families": 34,
+          "average_children": 3.5588235294117645,
+          "childless": 0
+        },
+        {
+          "fertility_base": 10,
+          "families": 33,
+          "average_children": 1.9696969696969697,
+          "childless": 1
+        }
+      ]
+    }
+  },
+  "npc_reuse": {
+    "scope": "按事件发起者区分普通/重要关系，排除初始及当前控制人物本身",
+    "years": 20,
+    "player_test_inputs": 26,
+    "unique_ordinary_npcs": 81,
+    "total_ordinary_exposures": 190,
+    "top_ordinary_share": 0.09473684210526316,
+    "top": [
+      {
+        "id": "character-150",
+        "name": "孙素平",
+        "ordinary": 18,
+        "important": 0
+      },
+      {
+        "id": "character-170",
+        "name": "郑雪",
+        "ordinary": 12,
+        "important": 0
+      },
+      {
+        "id": "character-8",
+        "name": "林安",
+        "ordinary": 10,
+        "important": 19
+      },
+      {
+        "id": "character-63",
+        "name": "卫桃",
+        "ordinary": 10,
+        "important": 0
+      },
+      {
+        "id": "character-239",
+        "name": "沈松田",
+        "ordinary": 6,
+        "important": 0
+      },
+      {
+        "id": "character-203",
+        "name": "赵朴",
+        "ordinary": 5,
+        "important": 0
+      },
+      {
+        "id": "character-27",
+        "name": "孔岳若",
+        "ordinary": 5,
+        "important": 1
+      },
+      {
+        "id": "character-31",
+        "name": "孔康雨",
+        "ordinary": 5,
+        "important": 1
+      },
+      {
+        "id": "character-220",
+        "name": "马素",
+        "ordinary": 4,
+        "important": 2
+      },
+      {
+        "id": "character-65",
+        "name": "卫良若",
+        "ordinary": 4,
+        "important": 1
+      }
+    ],
+    "important_exposures": 131,
+    "final_population": {
+      "total": 158,
+      "alive": 151,
+      "households": 20,
+      "age_groups": {
+        "老年": 29,
+        "成年": 39,
+        "中年": 16,
+        "青年": 13,
+        "青少年": 23,
+        "儿童": 31
+      },
+      "unmarried_eligible": 15,
+      "married": 74,
+      "careers": {
+        "作坊工匠": 28,
+        "商铺帮工": 34,
+        "农事劳动": 27,
+        "无固定职业": 62
+      },
+      "education": {
+        "无在读安排": 131,
+        "completed": 20
+      },
+      "fidelity": {
+        "full": 4,
+        "simplified": 35,
+        "background": 112
+      }
+    }
+  }
+}

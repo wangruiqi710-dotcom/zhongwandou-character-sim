@@ -1,11 +1,15 @@
-export const META={schema_version:3,mock_version:'2.2.2-alpha',design_version:'architecture_v014',design_sha256:'6654561CAF9BE64D01FD1118A8F84E84A693B0AAFAA80ACD7FAA62841DB82E76'};
+export const META={schema_version:3,mock_version:'2.3.0-alpha',design_version:'architecture_v014',design_sha256:'6654561CAF9BE64D01FD1118A8F84E84A693B0AAFAA80ACD7FAA62841DB82E76'};
 export const GOALS=['职业成就','家庭生活','声望地位','财富积累'];
 // Every value below is MOCK_TUNABLE, not a rule added to the frozen design.
 export const TUNABLES={
+ npc_initial_population:[96,80,150],npc_name_retries:[24,1,100],npc_repeat_months:[12,1,60],npc_repeat_weight:[.15,.01,1],npc_candidate_min:[6,3,20],npc_candidate_age_gap:[20,5,40],npc_annual_marriage_rate:[.32,0,1],npc_full_limit:[10,4,30],
+ special_attempts:[2,1,4],risk_weight:[.9,0,2],routine_relation_delta:[.15,0,1],
+ marriage_match_weight:[.55,0,2],marriage_gap_years:[15,5,40],marriage_resource_ratio:[5,2,20],marriage_willingness_low:[25,0,50],
+ conception_base:[.26,0,1],fertility_health_cap:[.95,0,.95],birth_health_loss:[12,0,50],children_decay_1:[.6,0,1],children_decay_2:[.3,0,1],children_decay_3:[.08,.001,1],children_decay_4:[.025,.001,1],
  // MOCK_TUNABLE 2.2.2: motivation and dynamic reproduction, never formal rules.
  reason_low_interest:[20,0,50],reason_stress:[65,0,100],reason_bad_relation:[-60,-100,0],reason_family_reserve:[150,0,10000],
  reason_unmotivated_reject:[.02,.001,1],reason_unmotivated_defer:[.08,.001,1],reason_unmotivated_transition:[.2,.001,1],
- reproduction_priority_ancient:[.32,0,1],reproduction_priority_modern:[.16,0,1],reproduction_priority_child_penalty:[.55,0,3],reproduction_priority_spacing:[18,1,60],
+ reproduction_priority_ancient:[.85,0,1],reproduction_priority_modern:[.55,0,1],reproduction_priority_child_penalty:[.55,0,3],reproduction_priority_spacing:[18,1,60],
 
  education_min_age:[6,3,12],safe_route_time:[.05,0,.2],
  work_reduction_fraction:[.2,.05,.5],minimum_work_time:[.2,.1,.5],education_reduced_fraction:[.5,.1,1],mentor_age:[38,18,70],
@@ -32,4 +36,4 @@ export const TUNABLES={
  education_progress_fraction:[.6,.1,1],force_initial_credit:[1,0,10],contact_population_limit:[24,5,100],contact_age_spread:[5,0,15],relocation_months:[36,1,120]
 };
 export const defaults=()=>Object.fromEntries(Object.entries(TUNABLES).map(([k,v])=>[k,structuredClone(v[0])]));
-export function validateConfig(c){for(const [k,[,min,max]] of Object.entries(TUNABLES)){const v=c[k];if(v===undefined&&(k.startsWith('reason_')||k.startsWith('reproduction_priority_')))continue;if(k==='face_mutation_count_weights'){if(!Array.isArray(v)||v.length!==3||v.some(x=>!Number.isFinite(x)||x<0)||v.reduce((a,b)=>a+b,0)<=0)throw Error('五官变异权重需要三个非负数，合计大于0');}else if(!Number.isFinite(v)||v<min||v>max)throw Error('Mock 参数范围错误：'+k);}return c;}
+export function validateConfig(c){for(const [k,[,min,max]] of Object.entries(TUNABLES)){const v=c[k];if(v===undefined&&(k.startsWith('reason_')||k.startsWith('reproduction_priority_')||/^(npc_|special_|risk_|routine_|marriage_match_|marriage_gap_|marriage_resource_|marriage_willingness_|conception_|fertility_|birth_health_loss|children_decay_)/.test(k)))continue;if(k==='face_mutation_count_weights'){if(!Array.isArray(v)||v.length!==3||v.some(x=>!Number.isFinite(x)||x<0)||v.reduce((a,b)=>a+b,0)<=0)throw Error('五官变异权重需要三个非负数，合计大于0');}else if(!Number.isFinite(v)||v<min||v>max)throw Error('Mock 参数范围错误：'+k);}return c;}
