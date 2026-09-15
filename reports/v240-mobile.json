@@ -1,0 +1,39 @@
+{
+  "rows": [
+    {
+      "width": 375,
+      "overflow": false,
+      "nav_height": 52,
+      "months": 60,
+      "remote_followups": 10,
+      "remote_card": true,
+      "player_migration_clicked": true,
+      "household_unchanged": true,
+      "refresh_persisted": true
+    },
+    {
+      "width": 390,
+      "overflow": false,
+      "nav_height": 52,
+      "months": 60,
+      "remote_followups": 10,
+      "remote_card": true,
+      "player_migration_clicked": true,
+      "household_unchanged": true,
+      "refresh_persisted": true
+    },
+    {
+      "width": 430,
+      "overflow": false,
+      "nav_height": 52,
+      "months": 60,
+      "remote_followups": 10,
+      "remote_card": true,
+      "player_migration_clicked": true,
+      "household_unchanged": true,
+      "refresh_persisted": true
+    }
+  ],
+  "errors": [],
+  "static_only": true
+}

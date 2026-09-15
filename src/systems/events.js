@@ -1,3 +1,4 @@
+import {locationAllows,locationDue} from './location_context.js';
 import {selectNPC} from './npc_world.js';
 import {pickContent} from '../content/event_runtime.js';
 import {completeEvent} from './action_catalog.js';
@@ -24,7 +25,7 @@ export function eventFor(s,type,target_id=null){const ancient=s.world_id==='anci
  conflict:['责任与家计冲突','已有生活安排出现时间或资源冲突，需要协调家庭分工。','家庭安排',[],0],
  birth:['生育与照护安排','讨论是否尝试生育并承担长期照护。','生育',['parenthood'],0],
  strain:['共同生活发生明显冲突','关系紧张与持续压力使共同生活受到打断，可以协商、求助或寻求暂时离开。','家庭安排',['major_family_conflict'],0]
-};table.education=['长期教育机会','家庭支持的长期教育路线，需要投入学习时间与资源。','学习',['career_opportunity'],s.config.opportunity_cost];table.away_review=['离乡安排到期','原定期限已到，需要决定返回、延长、定居或转换道路。','工作机会',['long_absence'],0];table.marriage=['具体婚配机会','双方开始商量共同生活。','婚配',['marriage'],s.config.marriage_cost];const [title,description,category,goal_tags,cost]=table[type]||table.learning;const event={type,title,description,category,goal_tags,tags:[type],cost,target_id,world_id:s.world_id,source:'MOCK_ONLY',conditions:{contract_terms_known:true,information_verified:true}};
+};table.education=['长期教育机会','家庭支持的长期教育路线，需要投入学习时间与资源。','学习',['career_opportunity'],s.config.opportunity_cost];table.away_review=['离乡安排到期','原定期限已到，需要决定返回、延长、定居或转换道路。','工作机会',['long_absence'],0];table.marriage=['具体婚配机会','双方开始商量共同生活。','婚配',['marriage'],s.config.marriage_cost];const [title,description,category,goal_tags,cost]=table[type]||table.learning;const event={location_scope:['birth','strain'].includes(type)?'same_location':['marriage','health','conflict','away_review','relocation'].includes(type)?'anywhere':'local_only',type,title,description,category,goal_tags,tags:[type],cost,target_id,world_id:s.world_id,source:'MOCK_ONLY',conditions:{contract_terms_known:true,information_verified:true}};
  if(type==='strain')event.mock_actions=[
  {id:'discuss',name:'留在家中协商共同生活分工',traits:{relationship_care:1,planning_need:.6,time_cost:.4},tags:['family_priority','participate'],conditions:{}},
  {id:'seek_support',name:'向可信赖的亲友寻求调解',traits:{social_exposure:.7,relationship_care:.7,time_cost:.3},tags:['social','verify'],conditions:{requires_companion:true}},
@@ -33,12 +34,12 @@ export function eventFor(s,type,target_id=null){const ancient=s.world_id==='anci
  ];return completeEvent(s,event);}
 export function specialEvents(s,cid,defaults){
  const c=s.characters[cid],lc=lifeContext(s,cid),out=[];if(age(s,c)<6)return out;
- const due=lc.terms.find(t=>t.type==='away_from_home_assignment'&&t.due_decision);if(due)out.push({...eventFor(s,'away_review'),long_term_id:due.id});
+ const due=lc.terms.find(t=>t.type==='away_from_home_assignment'&&t.due_decision);if(locationDue(s,cid))out.push({...eventFor(s,'away_review'),long_term_id:due?.id});
  if(s.health[cid].value<30&&cooled(s,cid,'health'))out.push(eventFor(s,'health'));
  for(const issue of lc.situations.filter(x=>x.needs_decision))out.push({...eventFor(s,issue.type==='relationship_strain'?'strain':'conflict',issue.participants.find(p=>p!==cid)),situation_id:issue.id});
  if(!currentMarriage(s,cid)&&age(s,c)>=s.config.marriage_min_age&&cooled(s,cid,'marriage')&&random(s)<s.config.marriage_opportunity_frequency){const targets=ensureMarriageCandidates(s,cid);if(targets.length)out.push(eventFor(s,'marriage',selectNPC(s,cid,targets.map(x=>x.character_id),'candidate')));}
  for(let i=0;i<(s.config.special_attempts??2);i++){if(random(s)>=s.config.decision_event_frequency)continue;const content=s.world_id==='ancient'&&s.config.content_enabled!==false?pickContent(s,cid,false):null;if(content){out.push(content);continue;}
  const types=age(s,c)<18?['learning','education']:lc.away?['career','safety','learning']:['learning','career','music','safety','relocation'],pool=types.filter(t=>cooled(s,cid,t));if(pool.length)out.push(eventFor(s,pick(s,pool)));}
- const seen=new Set();return out.filter(e=>{const key=e.event_id||e.situation_id||e.type;if(seen.has(key))return false;seen.add(key);return true;}).map(e=>({...e,event_kind:'SPECIAL_EVENT'}));
+ const seen=new Set();return out.filter(e=>locationAllows(s,cid,e)).filter(e=>{const key=e.event_id||e.situation_id||e.type;if(seen.has(key))return false;seen.add(key);return true;}).map(e=>({...e,event_kind:'SPECIAL_EVENT'}));
 }
 export const decisionEvent=(s,cid,defaults)=>specialEvents(s,cid,defaults)[0]||null;

@@ -1,3 +1,5 @@
+import {locationOf,activeLocationContext,moveLocation,locationDue,syncRemoteThreads,locationAllows} from '../systems/location_context.js';
+import {remoteFollowups,importantRemote,ensureLocalContacts} from '../systems/remote_life.js';
 import {fullSimulationIds,simplifiedDefaults,updateNPCMarriages,selectNPC,sameLocality} from '../systems/npc_world.js';
 import {routineRelations,routineSummary} from '../systems/monthly_routine.js';
 import {applyContent,applyRoutineContent,FOCUS} from '../content/event_runtime.js';
@@ -30,24 +32,26 @@ export function reassignCare(s,cid){
  if(s.careers[cid]?.status==='active'){s.careers[cid].time=Math.max(s.config.minimum_work_time,s.careers[cid].time-s.config.work_reduction_fraction);s.careers[cid].wage*=1-s.config.work_reduction_fraction;}
  return {reduced_work:true};
 }
-function mentorFor(s,cid){const c=s.characters[cid];if(s.characters[c.mentor_character_id]?.alive)return c.mentor_character_id;const skill=s.education[cid]?.skill||s.careers[cid]?.skill||(s.world_id==='ancient'?'手工':'编程'),pool=Object.values(s.characters).filter(x=>x.character_id!==cid&&x.alive&&age(s,x)>=25&&sameLocality(s,cid,x.character_id)&&(s.careers[x.character_id]?.skill===skill||x.skills.some(k=>k.name===skill&&k.level>=15))),existing=s.characters[selectNPC(s,cid,pool.map(x=>x.character_id),'mentor')];if(existing){c.mentor_character_id=existing.character_id;changeRelationship(s,cid,existing.character_id,0,'建立持续指导关系');return existing.character_id;}const hid=createHousehold(s,'指导者家庭'),mentor=createCharacter(s,{age_years:s.config.mentor_age,household_id:hid});employ(s,mentor.character_id,0);c.mentor_character_id=mentor.character_id;changeRelationship(s,cid,mentor.character_id,0,'建立持续指导关系');return mentor.character_id;}
+function mentorFor(s,cid){const c=s.characters[cid];if(s.characters[c.mentor_character_id]?.alive&&sameLocality(s,cid,c.mentor_character_id))return c.mentor_character_id;const skill=s.education[cid]?.skill||s.careers[cid]?.skill||(s.world_id==='ancient'?'手工':'编程'),pool=Object.values(s.characters).filter(x=>x.character_id!==cid&&x.alive&&age(s,x)>=25&&sameLocality(s,cid,x.character_id)&&(s.careers[x.character_id]?.skill===skill||x.skills.some(k=>k.name===skill&&k.level>=15))),existing=s.characters[selectNPC(s,cid,pool.map(x=>x.character_id),'mentor')];if(existing){c.mentor_character_id=existing.character_id;changeRelationship(s,cid,existing.character_id,0,'建立持续指导关系');return existing.character_id;}const hid=createHousehold(s,'指导者家庭',locationOf(s,cid).ref),mentor=createCharacter(s,{age_years:s.config.mentor_age,household_id:hid});employ(s,mentor.character_id,0);c.mentor_character_id=mentor.character_id;changeRelationship(s,cid,mentor.character_id,0,'建立持续指导关系');return mentor.character_id;}
 export function executeDecision(s,cid,result){
+ if(!locationAllows(s,cid,result.event))throw Error('无法执行：地点条件已经改变');
  if(result.event.content_template)return applyContent(s,cid,result);
  const c=s.characters[cid],a=chosen(result),type=result.event.type,systems=[],changes=[];
  if(!a||a.action_type==='transition_action')throw Error('只有终局行为可以写回结果');
  if(a.resource_cost&&!spend(s,cid,a.resource_cost))throw Error('可行性与执行资源不一致');
  const effect=a.effects?.[0];if(['learning','education','career'].includes(effect))result.mentor_character_id=mentorFor(s,cid);
- if(effect==='career'||effect==='relocation'){employ(s,cid,result.event.career_index||0);systems.push('careers');changes.push('已进入新的职业安排');if(effect==='relocation'){startAway(s,cid);changes.push('进入外地生活；重新计算家庭责任、外地收入与生活支出');systems.push('long_term_states','households','resources');}}
- if(effect==='education'){enroll(s,cid,1);systems.push('education','long_term_states');changes.push('建立长期教育状态，之后按月学习');}
+ if(effect==='career'||effect==='relocation'){if(effect==='relocation')startAway(s,cid,result.event.destination||{});employ(s,cid,result.event.career_index||0);systems.push('careers');changes.push('已进入新的职业安排');if(effect==='relocation'){ensureLocalContacts(s,cid);changes.push('进入外地生活；重新计算家庭责任、外地收入与生活支出');systems.push('long_term_states','households','resources');}}
+ if(effect==='education'){if(result.event.destination){startAway(s,cid,{purpose:'study',...result.event.destination});ensureLocalContacts(s,cid);}enroll(s,cid,1);if(result.event.destination)result.mentor_character_id=mentorFor(s,cid);systems.push('education','long_term_states');changes.push('建立长期教育状态，之后按月学习');}
  if(effect==='learning'){const key=addLongTerm(s,cid,'short_trial',null,s.config.trial_months,75,['短期试学']);Object.assign(s.long_term_states[key],{time_cost:a.action_id==='partial'?s.config.trial_time/2:s.config.trial_time,skill:s.world_id==='ancient'?'手工':'音乐'});systems.push('long_term_states');changes.push('进入'+s.config.trial_months+'个月试学；之后按实际投入增长技能');}
  if(effect==='birth'){result.reproduction_result=checkConception(s,cid,result.event.target_id);systems.push('reproduction');changes.push(result.reproduction_result.started?'确认怀孕，开始孕期安排':result.reproduction_result.capacity?.blocker||'已支持生育计划，本月尚未怀孕，后续继续按现实条件检查');}
  if(['return','extend','settle','change_path'].includes(effect)){
-  const t=s.long_term_states[result.event.long_term_id]||lifeContext(s,cid).terms.find(t=>t.type==='away_from_home_assignment');
-  if(!t)throw Error('找不到需处理的离乡安排');
-  if(effect==='extend'){t.start_month=s.current_world_month;t.due_decision=false;changes.push('延长外地安排'+t.expected_duration+'个月');}
-  else if(effect==='settle'){t.status='ended';const k=addLongTerm(s,cid,'local_settlement',null,null,85,['当地工作','远程家庭联系']);s.long_term_states[k].location_context=clone(t.location_context);changes.push('转为当地长期生活');}
-  else{t.status='ended';if(effect==='change_path'){if(s.careers[cid])s.careers[cid].status='ended';changes.push('结束原工作，返回家乡寻找新道路');}else{employ(s,cid,2);changes.push('返回家乡，转入家乡工作');}}
-  systems.push('long_term_states','careers');
+  if(!locationDue(s,cid))throw Error('地点安排尚未到期或已经完成去留决定');
+  const old=locationOf(s,cid);for(const t of lifeContext(s,cid).terms.filter(t=>t.type==='away_from_home_assignment'))t.status='ended';
+  if(effect==='return'){moveLocation(s,cid,{context:'home',purpose:'family',return_expected:false});employ(s,cid,2);changes.push('返回家庭驻地，重新建立当地日常安排');}
+  if(effect==='extend'){startAway(s,cid,{context:old.context,purpose:old.purpose,duration:old.expected_duration||s.config.relocation_months,shared_context_ref:old.ref});changes.push('保持当前位置，续留一个安排期限');}
+  if(effect==='settle'){moveLocation(s,cid,{context:old.context,purpose:'migration',duration:null,return_expected:false,shared_context_ref:old.ref});const k=addLongTerm(s,cid,'local_settlement',null,null,85,['在当前位置长期生活']);s.long_term_states[k].location_context_ref=old.ref;changes.push('在当前位置长期生活；家庭归属不自动改变');}
+  if(effect==='change_path'){if(s.careers[cid])s.careers[cid].status='ended';startAway(s,cid,{context:'away',purpose:'migration'});changes.push('结束原工作，转到另一个生活上下文寻找新道路');}
+  ensureLocalContacts(s,cid);systems.push('characters','remote_life_threads','long_term_states','careers');
  }
  if(effect==='treatment'||effect==='rest'){s.health[cid].value=bound(s.health[cid].value+s.config.treatment_gain);addLongTerm(s,cid,'health_recovery',null,s.config.adjustment_months,100,['减少外出']);changes.push('进入休养安排');systems.push('health','long_term_states');}
  if(['reduce_work','redistribute','seek_work'].includes(effect)){
@@ -60,7 +64,7 @@ export function executeDecision(s,cid,result){
   const delta=effect==='distance'?-s.config.background_delta:s.config.background_delta;
   if(result.event.target_id)changeRelationship(s,cid,result.event.target_id,delta,'共同生活冲突后的自主回应');
   c.dynamic.stress=bound(c.dynamic.stress-s.config.decision_stress_relief);
-  if(effect==='distance'){if(lifeContext(s,cid).care_time)reassignCare(s,cid);addLongTerm(s,cid,'temporary_distance',null,s.config.temporary_distance_months,75,['减少共同活动']);}
+  if(effect==='distance'){if(lifeContext(s,cid).care_time)reassignCare(s,cid);startAway(s,cid,{context:'nearby',purpose:'family',duration:s.config.temporary_distance_months});}
   else if(effect==='discuss')reassignCare(s,cid);
   changes.push(effect==='distance'?'建立暂时减少共同活动的状态':'关系态度已更新，继续观察共同生活');systems.push('relationships','long_term_states','households');
  }
@@ -93,7 +97,7 @@ function marriage(s,cid,target,mode,previous=null){
 function deathAndRoute(s,cid,reason){const owned=inPlayerFamily(s,cid)||s.control.current_control_character_id===cid,result=die(s,cid,reason);if(owned&&s.inheritances[cid])s.inheritances[cid].player_family_decision=true;return result;}
 function drainMonthQueue(s,log){
  while(s.month_queue?.items.length&&!pendingDecision(s)){
-  const {cid,event}=s.month_queue.items.shift();if(!s.characters[cid]?.alive)continue;
+  const {cid,event}=s.month_queue.items.shift();if(!s.characters[cid]?.alive||!locationAllows(s,cid,event)){(log.location_skipped||(log.location_skipped=[])).push({cid,event:event.title,reason:'人物或参与者地点已改变'});continue;}
   let r=log.reports.find(r=>r.character_id===cid);if(!r){r={character_id:cid,before:snapshot(s,cid),defaults:defaultBehaviors(s,cid),developments:[],special_events:[]};log.reports.push(r);}
   const issue=s.ongoing_situations[event.situation_id];if(issue){issue.last_decision_month=s.current_world_month;issue.needs_decision=false;}const item={event},gate=needsPlayer(s,cid,event);(r.special_events||(r.special_events=[])).push(item);
   if(gate){item.waiting=gate===true;item.status=gate===true?'awaiting_player':'cooldown';r.player_opportunity={event,waiting:item.waiting};}
@@ -107,6 +111,7 @@ function drainMonthQueue(s,log){
 }
 export function month(s){
  if(pendingDecision(s))throw Error('需要你的决定：时间已暂停');
+ syncRemoteThreads(s);
  const controlled=s.control.current_control_character_id;
  if(s.month_queue?.items.length){const log={kind:'month',continuation:true,month:s.current_world_month,control_character_id:controlled,reports:[],resource_changes:[],births:[],notices:[]};drainMonthQueue(s,log);s.history.push(log);return log;}
  s.current_world_month++;const full=fullSimulationIds(s),active=Object.values(s.characters).filter(c=>c.alive&&c.active_simulation),reports=[],work={};updateLongTerms(s);
@@ -114,16 +119,24 @@ export function month(s){
   const cid=c.character_id,isFull=full.has(cid),before=isFull?snapshot(s,cid):null,goal=assignGoal(s,c);
   if(updateHealth(s,c)){const death=deathAndRoute(s,cid,'MOCK_TUNABLE 健康过程确认死亡');if(isFull)reports.push({character_id:cid,before,after:snapshot(s,cid),death,important:true});continue;}
   const defaults=isFull?defaultBehaviors(s,cid):simplifiedDefaults(s,cid);executeDefaults(s,cid,defaults);work[cid]=defaults.work_fraction;
-  if(!isFull)continue;
+  if(!isFull){if(s.remote_life_threads[c.remote_thread_id]?.status==='active')updateSituations(s,cid,defaults);continue;}
   const developments=updateSituations(s,cid,defaults),candidates=backgroundCandidates(s,cid),background=triggerBackground(s,cid,candidates);
   if(background?.content_pending){background.routine=applyRoutineContent(s,cid,background.event);delete background.content_pending;}
   reports.push({character_id:cid,before,defaults,developments,background_candidates:candidates,background,goal_generated:goal,special_events:[]});
  }
  const relations=routineRelations(s,full),resource_changes=settleResources(s,work),allBirths=updateReproduction(s),births=allBirths.filter(b=>full.has(b.mother_id)||full.has(b.father_id)).map(b=>({...b,newborn:snapshot(s,b.child_id)})),conceptions=monthlyConception(s),npc_updates=updateNPCMarriages(s,full);updateLongTerms(s);
+ const remote_followups=remoteFollowups(s);
  const items=[],queuedIssues=new Set();for(const r of reports){if(r.death)continue;r.routine=routineSummary(s,r.character_id,r.defaults,r.before,relations,resource_changes);r.important=!!(r.goal_generated||r.developments.some(x=>x.kind!=='unchanged'));for(const event of specialEvents(s,r.character_id,r.defaults)){if(event.situation_id&&queuedIssues.has(event.situation_id))continue;if(event.situation_id)queuedIssues.add(event.situation_id);items.push({cid:r.character_id,event});}}
+ for(const c of active.filter(c=>c.alive&&!full.has(c.character_id))){
+  const cid=c.character_id,t=s.remote_life_threads[c.remote_thread_id];
+  if(locationDue(s,cid))items.push({cid,event:eventFor(s,'away_review')});
+  else if(importantRemote(s,cid)&&s.health[cid].value<30&&!(s.recent_history[cid]||[]).some(x=>x.type==='health'&&s.current_world_month-x.month<s.config.event_cooldown))items.push({cid,event:eventFor(s,'health')});
+  else if(t?.status==='active'&&t.last_followup_month===s.current_world_month&&importantRemote(s,cid))for(const event of specialEvents(s,cid,defaultBehaviors(s,cid)))if(!event.situation_id||!queuedIssues.has(event.situation_id)){if(event.situation_id)queuedIssues.add(event.situation_id);items.push({cid,event:{...event,cross_location_event:true,remote_thread_id:t.remote_thread_id}});}
+ }
+
  items.sort((a,b)=>Number(b.event.type==='health')-Number(a.event.type==='health'));s.month_queue={month:s.current_world_month,items};
  const notices=(s.life_notices||[]).filter(n=>n.month===s.current_world_month&&full.has(n.mother_id));
- const log={kind:'month',month:s.current_world_month,control_character_id:controlled,reports,resource_changes,births,conceptions:conceptions.filter(x=>full.has(x.notice?.mother_id)),notices,npc_updates,npc_birth_count:allBirths.length-births.length};
+ const log={kind:'month',active_location_context:activeLocationContext(s),remote_followups,month:s.current_world_month,control_character_id:controlled,reports,resource_changes,births,conceptions:conceptions.filter(x=>full.has(x.notice?.mother_id)),notices,npc_updates,npc_birth_count:allBirths.length-births.length};
  drainMonthQueue(s,log);s.history.push(log);return log;
 }
 function playerResolve(s,cmd){
@@ -159,7 +172,7 @@ function playerResolve(s,cmd){
   if(option.id==='work')result.decision=playerExecute(s,cid,{...eventFor(s,'career'),description:'寻找不需先交费用的基础工作机会。',cost:0,career_index:2});
   return result;
  }
- if(e.type==='away_review'){const event=e.payload.event||eventFor(s,'away_review');result.decision=option.id==='return_offer'?playerExecute(s,cid,event,'return'):autonomous(s,cid,event);return result;}
+ if(e.type==='away_review'){const event=e.payload.event||eventFor(s,'away_review');result.decision=option.id==='support'?autonomous(s,cid,event):playerExecute(s,cid,event,option.id==='return_offer'?'return':option.id);return result;}
  let target=cid,type=e.type;
  if(e.type==='resource'){
   for(const x of Object.values(s.characters).filter(x=>x.current_household_id===c.current_household_id&&s.education[x.character_id]?.status==='active')){s.education[x.character_id].time*=s.config.education_reduced_fraction;s.education[x.character_id].funding_fraction=s.config.education_reduced_fraction;}
@@ -194,5 +207,7 @@ export function command(s,cmd){
  default:throw Error('未知测试命令');
  }
  if(cmd.type==='player_choice'){const arrangement=result.arrangement,decision=arrangement?.child||result.decision?.recipient_decision||result.decision;result.decision_reasons=decision?.decision_reasons||waiting?.payload?.reasons||[];result.character_choice=decision?.event?.decision_owner==='player'?null:decision?.character_response||decision?.chosen_action||waiting?.payload?.previous?.child?.chosen_action||waiting?.payload?.previous?.chosen_action||null;result.final_outcome=result.final_outcome||(arrangement?arrangement.final_outcome||({married:'双方接受，婚姻已成立',refused:'本人拒绝，婚姻未成立',other_refused:'对方拒绝，婚姻未成立',delayed:'议亲继续，尚未建立婚姻',blocked:'现实条件不满足，婚姻未成立',force_failed:'强制未执行'}[arrangement.status]||arrangement.status):result.decision?.content_result?.outcome||decision?.actual_changes?.join('；')||result.immediate_effect);}
+ syncRemoteThreads(s);if(['succession','player_choice'].includes(cmd.type)&&s.control.current_control_character_id)ensureLocalContacts(s,s.control.current_control_character_id);
+ if(result)result.remote_followups=remoteFollowups(s);
  const after=cid?snapshot(s,cid):null,entry={kind:cmd.type,month:s.current_world_month,character_id:cid,before,after,result:clone(result),diff:diff(before,after),important:true};s.history.push(entry);return entry;
 }

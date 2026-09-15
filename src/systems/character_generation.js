@@ -1,3 +1,4 @@
+import {initLocation} from './location_context.js';
 import {id,integer,pick,weighted} from '../core/rng.js';
 import {age} from '../core/state.js';
 import {PERSONALITY} from '../config/mock_feature_pools.js';
@@ -18,5 +19,5 @@ export function createCharacter(s,{name,sex,surname,age_years=0,parents=[],house
  sex=sex||pick(s,['男','女']);const named=name?{surname:name.slice(0,1),given_name:name.slice(1)}:randomName(s,sex,surname||a?.surname,household_id);
  const c={character_id:cid,...named,sex,simulation_fidelity:fidelity,alive:true,active_simulation:true,birth_month:s.current_world_month-Math.round(age_years*12),death_month:null,birthplace:s.world_id,biological_parent_ids:[...parents],adoptive_parent_ids:[],adoption_records:[],current_household_id:null,marriage_id:null,spouse_character_id:null,lineage_id:lineage_id||a?.lineage_id||id(s,'lineage'),talents:g.talents,physiology:g.physiology,appearance:g.appearance,personality:Object.fromEntries(PERSONALITY.map(k=>[k,integer(s,0,100)])),interests:chosen.map(name=>({name,intensity:integer(s,0,100),source:'MOCK_ONLY'})),life_goal:null,skills:[],dynamic:{fatigue:0,stress:10,mood:65},experiences:[{month:s.current_world_month,type:parents.length?'birth':'creation',genetics:g.explanation}]};
  c.personality.risk_orientation=integer(s,0,100);c.mock_marriage_willingness=integer(s,15,100);c.mock_design_candidates={risk_orientation:'MOCK_DESIGN_CANDIDATE'};
- s.characters[cid]=c;s.health[cid]={value:s.config.initial_health,condition:'normal',history:[]};s.resources.personal[cid]={personal_inheritable_estate:0};if(household_id)joinHousehold(s,cid,household_id);assignGoal(s,c);return c;
+ s.characters[cid]=c;s.health[cid]={value:s.config.initial_health,condition:'normal',history:[]};s.resources.personal[cid]={personal_inheritable_estate:0};if(household_id)joinHousehold(s,cid,household_id);initLocation(s,c);assignGoal(s,c);return c;
 }

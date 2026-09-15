@@ -1,0 +1,117 @@
+{
+  "version": "2.4.0-alpha",
+  "tests": [
+    "TEST-LOCATION-CONTEXT-01",
+    "TEST-ACTIVE-LOCATION-01",
+    "TEST-HOUSEHOLD-LOCATION-01",
+    "TEST-RELATIVE-CONTEXT-01",
+    "TEST-REMOTE-NPC-01",
+    "TEST-EVENT-LOCATION-01",
+    "TEST-CROSS-LOCATION-01",
+    "TEST-REMOTE-FOLLOWUP-01",
+    "TEST-LOCATION-EXPIRY-01",
+    "TEST-CONTROL-SUCCESSION-LOCATION-01",
+    "TEST-CARE-REASSIGNMENT-01",
+    "TEST-MARRIAGE-NO-TELEPORT-01",
+    "TEST-LOCAL-LIFE-01",
+    "TEST-REMOTE-RESOURCE-CONSERVATION-01",
+    "TEST-REMOTE-URGENT-01",
+    "TEST-LOCATION-REPLAY-01",
+    "TEST-LOCATION-OLD-SAVE-01",
+    "TEST-SINGLE-LOCATION-OWNER-01",
+    "TEST-QUEUED-LOCATION-RECHECK-01",
+    "TEST-REMOTE-COLOCATED-CARE-01",
+    "TEST-REMOTE-CARE-NOT-TELEPATHY-01",
+    "TEST-ALL-LOCATION-OUTCOMES-01",
+    "TEST-LOCATION-DUE-NO-COOLDOWN-SKIP-01",
+    "TEST-REMOTE-DEATH-NOTICE-01"
+  ],
+  "scope_counts": {
+    "same_location": 43,
+    "same_household": 49,
+    "anywhere": 10,
+    "remote_only": 2
+  },
+  "remote_36_months": {
+    "messages": [
+      {
+        "month": 1,
+        "title": "职业安排变化",
+        "reasons": [
+          "职业安排：作坊工匠（进行中） → 商铺帮工（进行中）",
+          "商铺帮工继续进行，累计完成 0.7 月投入",
+          "健康 90.0 → 91.0",
+          "个人备用资源 0.0 → 42.5"
+        ]
+      },
+      {
+        "month": 7,
+        "title": "异地来信",
+        "reasons": [
+          "与沈宁通过来信保持联系",
+          "商铺帮工继续进行，累计完成 3.9 月投入",
+          "健康 91.0 → 97.0",
+          "个人备用资源 42.5 → 297.5"
+        ]
+      },
+      {
+        "month": 13,
+        "title": "异地来信",
+        "reasons": [
+          "与沈宁通过来信保持联系",
+          "商铺帮工继续进行，累计完成 3.9 月投入",
+          "健康 97.0 → 100.0",
+          "个人备用资源 297.5 → 552.5"
+        ]
+      },
+      {
+        "month": 19,
+        "title": "异地来信",
+        "reasons": [
+          "与沈宁通过来信保持联系",
+          "商铺帮工继续进行，累计完成 3.9 月投入",
+          "个人备用资源 552.5 → 807.5"
+        ]
+      },
+      {
+        "month": 25,
+        "title": "异地来信",
+        "reasons": [
+          "与沈宁通过来信保持联系",
+          "商铺帮工继续进行，累计完成 3.9 月投入",
+          "个人备用资源 807.5 → 1062.5"
+        ]
+      },
+      {
+        "month": 31,
+        "title": "异地来信",
+        "reasons": [
+          "与沈宁通过来信保持联系",
+          "商铺帮工继续进行，累计完成 3.9 月投入",
+          "个人备用资源 1062.5 → 1317.5"
+        ]
+      },
+      {
+        "month": 36,
+        "title": "异地安排到期",
+        "reasons": [
+          "商铺帮工继续进行，累计完成 3.2 月投入",
+          "个人备用资源 1317.5 → 1530.0",
+          "预计期限已到，当前位置保留，等待去留决定"
+        ]
+      }
+    ],
+    "career_progress": 23.399999999999988,
+    "location": {
+      "context": "away",
+      "ref": "context-15",
+      "name": "外地",
+      "purpose": "work",
+      "start_month": 24312,
+      "expected_duration": 36,
+      "return_expected": true
+    },
+    "player_inputs": 0,
+    "pending": "away_review"
+  }
+}

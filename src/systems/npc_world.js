@@ -1,4 +1,6 @@
 // MOCK_CONTENT / MOCK_TUNABLE. Background people share real person/state records.
+import {sameLocation,isSameLocationAsHousehold,locationOf,canProvideCare} from './location_context.js';
+import {defaultBehaviors} from './default_behavior.js';
 import {integer,random,weighted} from '../core/rng.js';
 import {age} from '../core/state.js';
 import {lifeContext} from './life_context.js';
@@ -8,13 +10,13 @@ import {employ,enroll} from './education_career.js';
 import {establishMarriage,marriageHardConditions,arrangeMarriage,currentMarriage} from './marriage.js';
 import {relationship} from './relationships.js';
 export const stageOf=a=>a<12?'儿童':a<18?'青少年':a<30?'青年':a<45?'成年':a<60?'中年':'老年';
-export const sameLocality=(s,a,b,contexts=null)=>{const x=contexts?.get(a)||lifeContext(s,a),y=contexts?.get(b)||lifeContext(s,b);return x.away||y.away||!x.co_resident||!y.co_resident?x.location.id===y.location.id:(s.characters[a].mock_locality||'本地')===(s.characters[b].mock_locality||'本地');};
+export const sameLocality=(s,a,b)=>sameLocation(s,a,b);
 export function initializePopulation(s,total=s.config.npc_initial_population){
  const wanted=Math.max(0,total+1-Object.keys(s.characters).length),created=[];
  while(created.length<wanted){const hid=createHousehold(s,'本地人家'),fund=s.resources.households[hid];fund.household_resources=integer(s,200,5000);const motherAge=integer(s,30,46);let father,mother,elder;
   for(let i=0;i<6&&created.length<wanted;i++){
    const sex=i===0||i===2?'男':i===1?'女':integer(s,0,1)?'男':'女',years=i===0?motherAge+integer(s,0,6):i===1?motherAge:i===2?integer(s,Math.max(63,motherAge+26),80):i===3?integer(s,18,28):integer(s,i===4?3:12,Math.min(17,motherAge-18));
-   const c=createCharacter(s,{sex,surname:i===2||i===3?father.surname:undefined,age_years:years,household_id:hid,parents:i>=4?[father.character_id,mother.character_id]:i===3?[elder.character_id]:[],fidelity:i===3?'simplified':'background'});c.mock_locality='本地';c.mock_background=fund.household_resources<1500?'家计较紧':fund.household_resources>3500?'家计宽裕':'家计一般';
+   const c=createCharacter(s,{sex,surname:i===2||i===3?father.surname:undefined,age_years:years,household_id:hid,parents:i>=4?[father.character_id,mother.character_id]:i===3?[elder.character_id]:[],fidelity:i===3?'simplified':'background'});c.mock_background=fund.household_resources<1500?'家计较紧':fund.household_resources>3500?'家计宽裕':'家计一般';
    s.health[c.character_id].value=integer(s,55,100);c.dynamic.stress=integer(s,0,45);s.resources.personal[c.character_id].personal_inheritable_estate=integer(s,0,300);
    if(years>=18&&years<65){employ(s,c.character_id,integer(s,0,2));c.skills.push({name:s.careers[c.character_id].skill,level:integer(s,8,65),source:'MOCK_CONTENT'});}else if(years>=6&&years<18&&random(s)<.65)enroll(s,c.character_id,0);
    if(i===0){father=c;s.households[hid].name=c.surname+'家';}if(i===1){mother=c;establishMarriage(s,father.character_id,mother.character_id,'MOCK_CONTENT initial family');}
@@ -38,12 +40,14 @@ export function fullSimulationIds(s){
  const ids=new Set(s.npc_world?[]:Object.values(s.characters).filter(c=>c.alive&&c.active_simulation&&c.simulation_fidelity==='full').map(c=>c.character_id)),control=s.characters[s.control.current_control_character_id];
  if(control){for(const id of s.households[control.current_household_id].members)if(s.characters[id].alive)ids.add(id);if(control.mentor_character_id&&s.characters[control.mentor_character_id]?.alive)ids.add(control.mentor_character_id);}
  if(control&&s.npc_world)for(const r of Object.values(s.relationships).filter(r=>r.people.includes(control.character_id)&&r.attitude>=70).sort((a,b)=>b.attitude-a.attitude)){if(ids.size>=s.config.npc_full_limit)break;for(const id of r.people)if(s.characters[id].alive)ids.add(id);}
+ if(control){ids.add(control.character_id);for(const id of ids)if(id!==control.character_id&&!sameLocation(s,id,control.character_id))ids.delete(id);}
  return ids;
 }
 export function simplifiedDefaults(s,cid){
+ if(!isSameLocationAsHousehold(s,cid)||['careers','education'].some(g=>s[g][cid]?.location_context_ref&&s[g][cid].location_context_ref!==locationOf(s,cid).ref))return defaultBehaviors(s,cid);
  const c=s.characters[cid],a=age(s,c),job=s.careers[cid],edu=s.education[cid],care=s.households[c.current_household_id].responsibilities[cid],list=[];
  if(a>=18&&a<65&&!job&&edu?.status!=='active'&&s.current_world_month%12===0)employ(s,cid,integer(s,0,2));
- if(care?.until>s.current_world_month)list.push({type:'care',name:'育儿与家庭照护',time:care.time??s.config.care_time});
+ if(canProvideCare(s,cid))list.push({type:'care',name:'育儿与家庭照护',time:care.time??s.config.care_time});
  if(s.health[cid].value>=30){if(edu?.status==='active')list.push({type:'education',name:edu.name,time:edu.time,skill:edu.skill});const j=s.careers[cid];if(j?.status==='active')list.push({type:'career',name:j.name,time:j.time,skill:j.skill});}
  if(!list.length)list.push({type:'daily',name:'日常生活',time:.3});let used=0;for(const x of list){x.allocated=Math.max(0,Math.min(x.time,1-used));used+=x.allocated;}return {primary:list[0],secondary:list.slice(1),time_used:used,conflict:list.reduce((n,x)=>n+x.time,0)>1,work_fraction:(list.find(x=>x.type==='career')?.allocated||0)/(s.careers[cid]?.time||1)};
 }

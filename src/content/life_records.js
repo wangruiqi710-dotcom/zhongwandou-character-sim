@@ -2,6 +2,7 @@
 export function meaningfulEntries(s,cid){
  const out=[];
  for(const log of s.history){
+  for(const x of log.remote_followups||log.result?.remote_followups||[])if(x.character_id===cid)out.push({month:x.month,actor:'异地消息',domain:'迁移',title:x.title,result:x.reasons.join('；')});
   if(log.kind==='month'){
    for(const r of log.reports.filter(r=>r.character_id===cid)){
     for(const d of (r.special_events?.length?r.special_events.map(x=>x.decision):[r.background?.decision,r.decision]).filter(Boolean))out.push({month:log.month,actor:'人物决定',title:d.event.title,domain:d.event.category,decision:d.chosen_action,result:d.content_result?.outcome||d.actual_changes?.join('；')||'',event_id:d.event.event_id,details:d.content_result});
@@ -24,7 +25,7 @@ export function fiveYearSummaries(s,cid){
 export function changedFacts(before,after){
  if(!before||!after)return [];
  const rows=[],add=(name,a,b)=>{if(a!==b&&a!==undefined&&b!==undefined)rows.push({name,before:a,after:b});};
- const fields=[['家庭资源',x=>x.resources?.household?.household_resources],['个人财产',x=>x.resources?.personal?.personal_inheritable_estate],['健康',x=>x.health?.value],...['stress','mood','fatigue'].map((k,i)=>[['压力','心情','疲劳'][i],x=>x.character?.dynamic[k]]),['婚姻',x=>x.marriages?.find(m=>m.status==='active')?'婚姻共同生活':'无有效婚姻'],['家庭责任',x=>x.household?.responsibilities?.[x.character?.character_id]?.type||'无'],['教育',x=>x.education?x.education.name+' · '+x.education.status:'无'],['职业',x=>x.career?x.career.name+' · '+x.career.status:'无'],['学习进度',x=>x.education?.progress??0],['工作时间',x=>x.career?.time??0],['工资倍率',x=>x.career?.wage??0]];
+ const fields=[['地点',x=>x.character?.current_location_context],['离开原因',x=>x.character?.location_purpose],['家庭资源',x=>x.resources?.household?.household_resources],['个人财产',x=>x.resources?.personal?.personal_inheritable_estate],['健康',x=>x.health?.value],...['stress','mood','fatigue'].map((k,i)=>[['压力','心情','疲劳'][i],x=>x.character?.dynamic[k]]),['婚姻',x=>x.marriages?.find(m=>m.status==='active')?'婚姻共同生活':'无有效婚姻'],['家庭责任',x=>x.household?.responsibilities?.[x.character?.character_id]?.type||'无'],['教育',x=>x.education?x.education.name+' · '+x.education.status:'无'],['职业',x=>x.career?x.career.name+' · '+x.career.status:'无'],['学习进度',x=>x.education?.progress??0],['工作时间',x=>x.career?.time??0],['工资倍率',x=>x.career?.wage??0]];
  fields.forEach(([label,read])=>add(label,read(before),read(after)));
  for(const sk of after.character?.skills||[])add(sk.name+'技能',before.character.skills.find(x=>x.name===sk.name)?.level||0,sk.level);
  for(const rel of after.relationships||[])add('与 '+rel.people.find(id=>id!==after.character.character_id)+' 的关系',before.relationships?.find(x=>x.id===rel.id)?.attitude??0,rel.attitude);

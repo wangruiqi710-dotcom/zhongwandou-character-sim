@@ -1,3 +1,4 @@
+import {sameLocation} from './location_context.js';
 // MOCK_TUNABLE approximate matching; no formal social-class or romance system.
 import {age} from '../core/state.js';
 import {lifeContext} from './life_context.js';
@@ -16,7 +17,7 @@ export function marriageMatch(s,cid,event){
  if(c.preferred_partner_id&&c.preferred_partner_id!==other.character_id)add(obstacles,'other_partner','候选已记录对另一人的婚配偏好');
  if(Object.values(s.ongoing_situations).some(x=>x.type==='marriage_negotiation'&&x.status==='active'&&x.participants.includes(subject)&&!x.participants.includes(other.character_id)))add(obstacles,'other_arrangement','候选已有另一项正在进行的议亲安排');
  const lc=lifeContext(s,subject);factors.care_time=lc.care_time;if(lc.care_time>0)add(obstacles,'family_care','候选正在承担实际家庭照护，迁入另一家庭需要交接');
- const moving=lc.away||lifeContext(s,other.character_id).away||(c.mock_locality||'本地')!==(other.mock_locality||'本地');factors.post_marriage_residence='迁入提出议亲者家庭';if(moving)add(obstacles,'relocation','婚后共同生活涉及真实地点变化');
+ const moving=!sameLocation(s,subject,other.character_id);factors.post_marriage_residence='家庭归属与当前位置独立，婚姻不自动迁移';if(moving)add(obstacles,'relocation','双方目前异地，婚姻本身不自动改变住所');
  factors.goal=c.life_goal;if(c.life_goal==='家庭生活')add(support,'family_goal','建立稳定家庭与候选的人生目标一致');if(c.life_goal==='财富积累'&&fb<fa/5)add(obstacles,'wealth_conflict','婚后资源安排明显不符合候选积累财富的方向');
  return {support,obstacles,factors,source:'MOCK_TUNABLE'};
 }

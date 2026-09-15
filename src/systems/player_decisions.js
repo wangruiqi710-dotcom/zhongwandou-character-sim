@@ -23,7 +23,7 @@ export function needsPlayer(s,cid,event){if(event.flow_type==="ROUTINE_MONTHLY_P
  if(!inPlayerFamily(s,cid))return false;
  if(event.content_template){const type=playerDecisionType(event);if(!type)return false;if(!cooled(s,cid,'player:'+type,s.config.player_event_cooldown))return 'cooldown';queuePlayerEvent(s,type,cid,{event});recordEvent(s,cid,'player:'+type);return true;}
  const major=['education','career','relocation','marriage','health','conflict','away_review'].includes(event.type);
- if(!major)return false;if(!cooled(s,cid,'player:'+event.type,s.config.player_event_cooldown))return 'cooldown';
+ if(!major)return false;if(event.type!=='away_review'&&!cooled(s,cid,'player:'+event.type,s.config.player_event_cooldown))return 'cooldown';
  const hid=s.characters[cid].current_household_id,students=s.households[hid].members.filter(x=>s.education[x]?.status==='active');const type=event.type==='conflict'&&students.length>1&&s.resources.households[hid].household_resources<s.config.opportunity_cost*2?'resource':event.type;queuePlayerEvent(s,type,cid,{event});recordEvent(s,cid,'player:'+event.type);return true;
 }
 export const windowAvailable=s=>s.current_world_month-s.player.window_last_month>=s.config.player_window_months;
@@ -47,7 +47,7 @@ function rawChoices(s,e){
  if(e.type==='resource')return Object.values(s.characters).filter(x=>x.alive&&x.current_household_id===hid&&age(s,x)>=6).map(x=>choice(x.character_id,'优先支持'+names(s,x.character_id)+'学习','投入 '+cost+' 家庭资源；其他成员降低额外教育投入，为此人提供教育机会',{feasible:funds>=cost,reason:'家庭资源不足',target_id:x.character_id})).concat([choice('share','所有人降低额外投入','降低现有教育时间和费用，保留基础学习'),choice('skip','暂停额外教育投入','现有额外教育暂停，资源留在家庭')]);
  if(e.type==='care'||e.type==='conflict')return [choice('redistribute','重新分配家庭照护','优先寻找可承担责任的同住成年人；无接替者时减少工作时间'),choice('reduce','降低工作时间，优先照护','工作时间与收入下降，缓解职责冲突'),choice('work','优先稳定家庭收入','为适龄成员提供职业机会，随后由本人回应'),choice('skip','暂时保持安排','不改变职责，问题继续按实际状态发展')];
  if(e.type==='health')return [choice('treat','投入家庭资源医治','支付 '+s.config.major_treatment_cost+'；健康恢复 '+s.config.major_treatment_gain+'（Mock），不保证未来健康',{feasible:funds>=s.config.major_treatment_cost,reason:'家庭资金不足'}),choice('rest','承担照护，支持休养','减少当前工作与教育时间，家计收入可能下降')];
- if(e.type==='away_review')return [choice('support','支持本人重新选择去留','提供返回、续期、定居、转换道路的可行机会；人物自主决定'),choice('return_offer','重点支持返回家庭','现实允许且没有明确强冲突时执行回乡安排')];
+ if(e.type==='away_review')return ['return','extend','settle','change_path'].map((id,i)=>choice(id,['返回家庭驻地','续留当前安排','留在当前位置长期生活','转去另一处寻找道路'][i],'写回实际地点和长期安排；不自动改变家庭归属')).concat([choice('support','支持本人重新选择去留','提供返回、续期、定居、转换道路的可行机会；人物自主决定'),choice('return_offer','重点支持返回家庭','现实允许且没有明确强冲突时执行回乡安排')]);
  return [choice('support','投入家庭资源支持'+names(s,e.character_id),'支付 '+cost+'；提供'+(e.type==='education'?'长期教育':e.type==='relocation'?'离乡发展':'职业发展')+'安排；无硬条件阻碍或明确强冲突时直接执行',{feasible:funds>=cost,reason:'家庭资金不足'}),choice('skip','不提供本次额外支持','不支付资源、不启动该机会；保留现有生活')];
 }
 
@@ -58,6 +58,7 @@ export function playerChoices(s,e){return rawChoices(s,e).map(o=>{
  if(e.type==='resource'&&o.target_id){cid=o.target_id;event={...eventFor(s,'education'),cost:0};action='commit_terms';}
  if(e.type==='force'&&!e.payload.marriage&&o.id==='force'){event=e.payload.event;action=e.payload.action_id||'commit_terms';}
  if(['care','conflict'].includes(e.type)&&o.id==='work'){event={...eventFor(s,'career'),cost:0,career_index:2};action='commit_terms';}
+ if(e.type==='away_review'&&o.id!=='support'){event=e.payload.event||eventFor(s,'away_review');action=o.id==='return_offer'?'return':o.id;}
  if(event){try{preparePlayerDecision(s,cid,event,action);if(event.content_template){const effects=event.mock_actions.find(a=>a.id===action)?.conditions.content_effects||[],target=effects.find(x=>['targeteducation','targetcareer'].includes(x.kind));if(target)preparePlayerDecision(s,event.target_id,{...eventFor(s,target.kind==='targeteducation'?'education':'career'),cost:0});}}catch(error){return {...o,feasible:false,reason:error.message.replace(/^无法执行：/,'')};}}
  return o;
 });}
